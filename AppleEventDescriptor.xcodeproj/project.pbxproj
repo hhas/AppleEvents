@@ -7,7 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F14D16E22778AAD00AB6DCC /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F14D16D22778AAD00AB6DCC /* PackFuncs.swift */; };
+		4F20E1F3227B209E00819C4A /* UnpackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F20E1F2227B209E00819C4A /* UnpackFuncs.swift */; };
+		4F26AC6B2275F0CD0013CDD5 /* AddressDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F26AC6A2275F0CD0013CDD5 /* AddressDescriptor.swift */; };
+		4F26AC6D227602570013CDD5 /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F26AC6C227602570013CDD5 /* AppleEventDescriptor.swift */; };
+		4F26AC6F227602830013CDD5 /* RecordDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F26AC6E227602830013CDD5 /* RecordDescriptor.swift */; };
+		4F283C852273AADF00F8C045 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F283C842273AADF00F8C045 /* Support.swift */; };
+		4F283C8922745F0200F8C045 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F283C8822745F0200F8C045 /* Constants.swift */; };
+		4F283C8B2274892B00F8C045 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F283C8A2274892B00F8C045 /* Error.swift */; };
+		4F283C8D22748ACD00F8C045 /* ListDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F283C8C22748ACD00F8C045 /* ListDescriptor.swift */; };
 		4F2861BF227344750000CEBA /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2861BE227344750000CEBA /* main.swift */; };
+		4F2861C6227344880000CEBA /* ScalarDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2861C5227344880000CEBA /* ScalarDescriptor.swift */; };
+		4F510DAB227C69590011B00F /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F510DAA227C69590011B00F /* Descriptor.swift */; };
+		4F510DAD227CDE670011B00F /* QueryDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F510DAC227CDE670011B00F /* QueryDescriptors.swift */; };
+		4F510DB2227DAA710011B00F /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F510DB1227DAA710011B00F /* Unflatten.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +36,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F14D16D22778AAD00AB6DCC /* PackFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackFuncs.swift; sourceTree = "<group>"; };
+		4F20E1F2227B209E00819C4A /* UnpackFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnpackFuncs.swift; sourceTree = "<group>"; };
+		4F26AC6A2275F0CD0013CDD5 /* AddressDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDescriptor.swift; sourceTree = "<group>"; };
+		4F26AC6C227602570013CDD5 /* AppleEventDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEventDescriptor.swift; sourceTree = "<group>"; };
+		4F26AC6E227602830013CDD5 /* RecordDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDescriptor.swift; sourceTree = "<group>"; };
+		4F283C842273AADF00F8C045 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
+		4F283C8822745F0200F8C045 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		4F283C8A2274892B00F8C045 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		4F283C8C22748ACD00F8C045 /* ListDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDescriptor.swift; sourceTree = "<group>"; };
 		4F2861BB227344750000CEBA /* AppleEventDescriptor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AppleEventDescriptor; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F2861BE227344750000CEBA /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		4F2861C5227344880000CEBA /* ScalarDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScalarDescriptor.swift; sourceTree = "<group>"; };
+		4F510DAA227C69590011B00F /* Descriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Descriptor.swift; sourceTree = "<group>"; };
+		4F510DAC227CDE670011B00F /* QueryDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryDescriptors.swift; sourceTree = "<group>"; };
+		4F510DB1227DAA710011B00F /* Unflatten.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unflatten.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +84,37 @@
 			isa = PBXGroup;
 			children = (
 				4F2861BE227344750000CEBA /* main.swift */,
+				4F510DB0227CF22C0011B00F /* codecs */,
+				4F510DAF227CECFE0011B00F /* descriptors */,
+				4F283C8A2274892B00F8C045 /* Error.swift */,
+				4F283C842273AADF00F8C045 /* Support.swift */,
+				4F283C8822745F0200F8C045 /* Constants.swift */,
 			);
 			path = AppleEventDescriptor;
+			sourceTree = "<group>";
+		};
+		4F510DAF227CECFE0011B00F /* descriptors */ = {
+			isa = PBXGroup;
+			children = (
+				4F510DAA227C69590011B00F /* Descriptor.swift */,
+				4F2861C5227344880000CEBA /* ScalarDescriptor.swift */,
+				4F26AC6A2275F0CD0013CDD5 /* AddressDescriptor.swift */,
+				4F283C8C22748ACD00F8C045 /* ListDescriptor.swift */,
+				4F26AC6E227602830013CDD5 /* RecordDescriptor.swift */,
+				4F510DAC227CDE670011B00F /* QueryDescriptors.swift */,
+				4F26AC6C227602570013CDD5 /* AppleEventDescriptor.swift */,
+			);
+			name = descriptors;
+			sourceTree = "<group>";
+		};
+		4F510DB0227CF22C0011B00F /* codecs */ = {
+			isa = PBXGroup;
+			children = (
+				4F510DB1227DAA710011B00F /* Unflatten.swift */,
+				4F14D16D22778AAD00AB6DCC /* PackFuncs.swift */,
+				4F20E1F2227B209E00819C4A /* UnpackFuncs.swift */,
+			);
+			name = codecs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,7 +173,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F283C8922745F0200F8C045 /* Constants.swift in Sources */,
+				4F26AC6F227602830013CDD5 /* RecordDescriptor.swift in Sources */,
+				4F14D16E22778AAD00AB6DCC /* PackFuncs.swift in Sources */,
+				4F20E1F3227B209E00819C4A /* UnpackFuncs.swift in Sources */,
+				4F510DAD227CDE670011B00F /* QueryDescriptors.swift in Sources */,
+				4F2861C6227344880000CEBA /* ScalarDescriptor.swift in Sources */,
 				4F2861BF227344750000CEBA /* main.swift in Sources */,
+				4F283C8B2274892B00F8C045 /* Error.swift in Sources */,
+				4F26AC6D227602570013CDD5 /* AppleEventDescriptor.swift in Sources */,
+				4F283C8D22748ACD00F8C045 /* ListDescriptor.swift in Sources */,
+				4F283C852273AADF00F8C045 /* Support.swift in Sources */,
+				4F510DAB227C69590011B00F /* Descriptor.swift in Sources */,
+				4F26AC6B2275F0CD0013CDD5 /* AddressDescriptor.swift in Sources */,
+				4F510DB2227DAA710011B00F /* Unflatten.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
