@@ -1,5 +1,5 @@
 //
-//  PackUnpack.swift
+//  Pack.swift
 //
 
 import Foundation
@@ -70,6 +70,7 @@ public func packAsFourCharCode(type: DescType, code: OSType) -> ScalarDescriptor
 }
 
 public func packAsType(_ value: OSType) -> ScalarDescriptor {
+    // TO DO: how should cMissingValue be handled?
     return ScalarDescriptor(type: typeType, data: packUInt32(value))
 }
 

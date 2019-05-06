@@ -6,7 +6,7 @@ import Foundation
 
 
 
-private let descriptionForError: [Int:String] = [
+internal let descriptionForError: [Int:String] = [
     // OS errors
     -34: "Disk is full.",
     -35: "Disk wasn't found.",
@@ -75,6 +75,8 @@ private let descriptionForError: [Int:String] = [
     -1730: "Container specified was an empty list.",
     -1731: "Unknown object type.",
     -1739: "Attempting to perform an invalid operation on a null descriptor.",
+    -1741: "Buffer for AEFlattenDesc too small.",
+
     // Application scripting errors
     -10000: "Apple event handler failed.",
     -10001: "Type error.",

@@ -2,6 +2,7 @@
 //  Constants.swift
 //
 
+// TO DO: trim down constants list
 
 /******************************************************************************/
 // extra constant definitions
@@ -320,7 +321,6 @@ public let formRelativePosition: OSType = 0x72656C65
 public let formTest: OSType = 0x74657374
 public let formUniqueID: OSType = 0x49442020
 public let formUserPropertyID: OSType = 0x75737270
-public let formWhose: OSType = 0x77686F73
 
 public let kAEAND: OSType = 0x414E4420
 public let kAEAbout: OSType = 0x61626F75

@@ -23,23 +23,22 @@ public struct ScalarDescriptor: Descriptor, Scalar {
 }
 
 
-protocol Scalar: Descriptor {}
+public protocol Scalar: Descriptor {}
 
-extension Scalar {
+public extension Scalar {
 
-    public func flatten() -> Data {
+    func flatten() -> Data {
         var result = Data([0x64, 0x6c, 0x65, 0x32,    // format 'dle2'
                            0, 0, 0, 0])               // align
-        result += packUInt32(self.type)               // descriptor type
-        result += packUInt32(UInt32(self.data.count)) // remaining bytes
-        result += self.data                           // descriptor data
+        self.appendTo(containerData: &result)
         return result
     }
     
-    public func appendTo(containerData result: inout Data) {
-        result += packUInt32(self.type)               // descriptor type
-        result += packUInt32(UInt32(self.data.count)) // remaining bytes
-        result += self.data                           // descriptor data
+    func appendTo(containerData result: inout Data) {
+        let data = self.data
+        result += packUInt32(self.type)          // descriptor type
+        result += packUInt32(UInt32(data.count)) // remaining bytes
+        result += data                           // descriptor data
     }
 }
 
@@ -50,6 +49,8 @@ let nullDescriptor = ScalarDescriptor(type: typeNull, data: nullData)
 let trueDescriptor = ScalarDescriptor(type: typeTrue, data: nullData)
 let falseDescriptor = ScalarDescriptor(type: typeFalse, data: nullData)
 
+// TO DO: bridge Swift nil/cMissingValue? (cMissingValue is another AS/AE wart: it'd be much simpler and saner had original designers used typeNull as their "no-value" value, but backwards-compatibility with existing AS/AE/App ecosystem requires using `missing value`; SwiftAutomation seems to have found a reasonable compromise)
+let missingValueDescriptor = ScalarDescriptor(type: typeType, data: Data([0x6D, 0x73, 0x6E, 0x67])) // cMissingValue
 
 
 

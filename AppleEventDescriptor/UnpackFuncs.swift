@@ -1,8 +1,11 @@
 //
-//  PackUnpack.swift
+//  Unpack.swift
 //
 // standard unpack functions for converting AE descriptors to specified Swift types, coercing as needed (or throwing if the given descriptor can't be coerced to the required type)
 //
+
+// TO DO: what about packAsDescriptor/unpackAsDescriptor? (for use in packAsArray/unpackAsArray/packAsDictionary/etc for shallow packing/unpacking); also need to decide on packAsAny/unpackAsAny, and packAs<T>/unpackAs<T> (currently SwiftAutomation implements these, with support for App-specific Symbols and Specifiers)
+
 
 import Foundation
 
@@ -199,6 +202,7 @@ public func unpackAsFileURL(_ descriptor: Descriptor) throws -> URL {
 
 
 public func unpackAsType(_ descriptor: Descriptor) throws -> OSType {
+    // TO DO: how should cMissingValue be handled? (there is an argument for special-casing it, throwing a coercion error which `unpackAsOptional(_:using:)`) can intercept to return nil instead
     switch descriptor.type {
     case typeType, typeProperty, typeKeyword:
         return try unpackUInt32(descriptor.data)
@@ -228,6 +232,7 @@ public func unpackAsArray<T>(_ descriptor: Descriptor, using unpackFunc: (Descri
     if let listDescriptor = descriptor as? ListDescriptor { // any non-list value is coerced to single-item list
         return try listDescriptor.array(using: unpackFunc)
     } else {
+        // TO DO: typeQDPoint, typeQDRectangle, typeRGBColor (legacy support as various Carbon-based apps still use these types)
         return [try unpackFunc(descriptor)]
     }
 }
