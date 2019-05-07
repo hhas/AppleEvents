@@ -34,8 +34,8 @@ private let dle2Offsets = Offsets(type: 8, count: 32)
 private let defaultOffsets = Offsets(type: 0, count: 8)
 
 
-// TO DO: pass startOffset here, avoiding extra slicing
-private func unflatten(data: Data, offsets: Offsets) -> (descriptor: Descriptor, endOffset: Int) {
+private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Descriptor, endOffset: Int) {
+    // TO DO: Descriptor.unflatten() calls should probably return end offset for sanity checking
     let type = data.readUInt32(at: offsets.type) // type
     let remainingBytesOffset = offsets.type + 4
     // data section's start index varies according to descriptor type
@@ -44,24 +44,31 @@ private func unflatten(data: Data, offsets: Offsets) -> (descriptor: Descriptor,
     switch type {
     case typeAEList:
         // [format, align,] type, bytes, [16-byte reserved,] count, align, DATA
-        let dataStart = offsets.count + 8
-        result = ListDescriptor(count: data.readUInt32(at: 32), data: data[dataStart..<dataEnd])
+        result = ListDescriptor(count: data.readUInt32(at: 32), data: data[(offsets.count + 8)..<dataEnd])
     case typeAERecord:
         // [format, align,] type, bytes, [16-byte reserved,] count, align, DATA
-        let dataStart = offsets.count + 8
-        result = RecordDescriptor(type: type, count: data.readUInt32(at: 32), data: data[dataStart..<dataEnd])
+        result = RecordDescriptor(type: type, count: data.readUInt32(at: 32), data: data[(offsets.count + 8)..<dataEnd])
+    case typeObjectSpecifier:
+        // [format, align,] type (=typeObjectSpecifier), bytes, count (=4), align, DATA
+        result = try ObjectSpecifier.unflatten(data, startingAt: offsets.type)
+    case typeInsertionLoc:
+        result = try InsertionLocation.unflatten(data, startingAt: offsets.type)
+    case typeRangeDescriptor:
+        result = try ObjectSpecifier.RangeDescriptor.unflatten(data, startingAt: offsets.type)
+    case typeCompDescriptor:
+        result = try ComparisonDescriptor.unflatten(data, startingAt: offsets.type)
+    case typeLogicalDescriptor:
+        result = try LogicalDescriptor.unflatten(data, startingAt: offsets.type)
     case typeAppleEvent:
-        // TO DO
-        result = AppleEventDescriptor.unflatten(data)
+        // TO DO: AppleEventDescriptor.unflatten() currently expects full AE descriptor including dle2 header, and doesn't accept non-zero start index; need to check how nested AEs are laid out
+        result = try AppleEventDescriptor.unflatten(data, startingAt: 0)
     case typeProcessSerialNumber, typeKernelProcessID, typeApplicationBundleID, typeApplicationURL:
         // [format, align,] type, size, DATA
-        let dataStart = offsets.type + 8
-        result = ScalarDescriptor(type: type, data: data[dataStart..<dataEnd])
+        result = ScalarDescriptor(type: type, data: data[(offsets.type + 8)..<dataEnd])
     default: // scalar
         // TO DO: how to reimplement AEIsRecord()? right now, any flattened record with non-reco type is structurally indistinguishable from scalar
         // [format, align,] type, size, DATA
-        let dataStart = offsets.type + 8
-        result = ScalarDescriptor(type: type, data: data[dataStart..<dataEnd])
+        result = ScalarDescriptor(type: type, data: data[(offsets.type + 8)..<dataEnd])
     }
     return (result, dataEnd)
 }
@@ -71,7 +78,7 @@ public func unflattenDescriptor(_ data: Data) -> Descriptor { // analogous to AE
     if data[0..<4] != formatMarker {
         fatalError("'dle2' mark not found.") // TO DO: how to deal with malformed data? (check what AEUnflattenDesc does; if it accepts either then switch offsets)
     }
-    let (result, endOffset) = unflatten(data: data, offsets: dle2Offsets)
+    let (result, endOffset) = try! unflatten(data: data, offsets: dle2Offsets)
     if endOffset != data.count { fatalError("Bad data length.") } // TO DO: ditto
     return result
 }
@@ -83,6 +90,6 @@ internal func unflattenFirstDescriptor(in data: Data, startingAt startOffset: In
     if data[startOffset..<(startOffset+4)] == formatMarker {
         fatalError("Unexpected 'dle2' mark found (expected descriptor type instead).")
     }
-    return unflatten(data: data, offsets: defaultOffsets.add(startOffset))
+    return try! unflatten(data: data, offsets: defaultOffsets.add(startOffset))
 }
 

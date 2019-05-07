@@ -13,6 +13,25 @@ import Foundation
 
 // simplest way to test our descriptors is to flatten them, then pass to AEUnflattenDesc() and wrap as NSAppleEventDescriptor and see how they compare
 
+
+func dumpFourCharData(_ data: Data) {
+    print("/*")
+    for i in 0..<(data.count / 4) {
+        print(" * ", literalFourCharCode(data.readUInt32(at: i * 4)))
+    }
+    let rem = data.count % 4
+    if rem != 0 {
+        var n = "0x"; var s: String! = ""
+        for c in data[(data.count - rem)..<(data.count)] {
+            if c < 0x20 || c == 0x27 || c == 0x5C || c > 0x7E { s = nil }
+            n += String(format: "%02x", c)
+            if s != nil { s += String(format: "%c", c) }
+        }
+        print(" * ", s != nil ? "\"\(s!)\"" : n)
+    }
+    print(" */")
+}
+
 @discardableResult func flattenNSDesc(_ desc: NSAppleEventDescriptor) -> Data {
     print("Flattening:", desc)
     var aeDesc = desc.aeDesc!.pointee
@@ -28,7 +47,9 @@ import Foundation
 @discardableResult func unflattenAsNSDesc(_ data: Data) -> NSAppleEventDescriptor? {
     var data = data
     var result = AEDesc(descriptorType: typeNull, dataHandle: nil)
-    let err = data.withUnsafeMutableBytes { Int(AEUnflattenDesc($0, &result)) }
+    let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
+        return Int(AEUnflattenDesc(ptr.baseAddress, &result))
+    }
     if err != 0 {
         print("Unflatten error \(err). \(descriptionForError[err] ?? "")")
         return nil
@@ -38,7 +59,7 @@ import Foundation
         return nsDesc
     }
 }
-    
+
 
 // pack/unpack functions are composable and reusable:
 let unpackAsArrayOfInt = newUnpackArrayFunc(using: unpackAsInt)
@@ -69,7 +90,7 @@ do {
     print(try unpackAsArrayOfString(desc)) // ["32", "4"]
 }
 */
-
+/*
 do {
     
     let query = applicationRoot.elements(cDocument).byIndex(packAsInt(1)).property(pName)
@@ -81,3 +102,74 @@ do {
     unflattenAsNSDesc(d)
     
 }
+*/
+/*
+do {
+    //let query = applicationRoot.elements(cDocument).byIndex(packAsInt(1)).property(pName)
+
+    let query = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
+    query.setParam(NSAppleEventDescriptor(typeCode: cProperty), forKeyword: keyAEDesiredClass)
+    query.setParam(NSAppleEventDescriptor(enumCode: formPropertyID), forKeyword: keyAEKeyForm)
+    query.setParam(NSAppleEventDescriptor(typeCode: 0x686f6d65), forKeyword: keyAEKeyData) // 'home'
+    query.setParam(NSAppleEventDescriptor.null(), forKeyword: keyAEContainer)
+    
+    let ae = NSAppleEventDescriptor(eventClass: kAECoreSuite, eventID: kAEGetData, targetDescriptor: NSAppleEventDescriptor(bundleIdentifier: "com.apple.finder"), returnID: -1, transactionID: 0)
+    
+    ae.setParam(query, forKeyword: keyDirectObject)
+    do {
+        let result = try ae.sendEvent(options: [], timeout: 10)
+        print(result)
+    } catch {
+        print(error)
+    }
+    print(ae)
+    flattenNSDesc(ae)
+}
+*/
+
+
+// temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
+func sendEvent(_ event: AppleEventDescriptor) throws -> ReplyEventDescriptor? {
+    var data = event.flatten()
+    var reply = AEDesc(descriptorType: typeNull, dataHandle: nil)
+    let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
+        var event = AEDesc(descriptorType: typeNull, dataHandle: nil)
+        let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
+        if err != 0 {
+            print("Unflatten error \(err). \(descriptionForError[err] ?? "")")
+            return err
+        }
+        return Int(AESendMessage(&event, &reply, 0x73, 120))
+    }
+    if err != 0 { throw AppleEventError(code: err, message: descriptionForError[err]) }
+    let size = AESizeOfFlattenedDesc(&reply)
+    let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
+    let err2 = Int(AEFlattenDesc(&reply, ptr, size, nil))
+    if err2 != 0 { throw AppleEventError(code: err, message: "AEFlatten failed. \(descriptionForError[err] ?? "")") }
+    let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
+    //dumpFourCharData(data2)
+    if reply.descriptorType == typeNull { return nil } // TO DO: if kAENoReply is used then null descriptor is returned
+    return try ReplyEventDescriptor.unflatten(data2, startingAt:0)
+}
+
+
+
+do {
+    var ae = AppleEventDescriptor(code: (UInt64(kAECoreSuite) << 32) + UInt64(kAEGetData),
+                                  target: try AddressDescriptor(bundleIdentifier: "com.apple.finder"))
+    
+    let query = applicationRoot.property(0x686f6d65) // 'home'
+    ae.setParameter(keyDirectObject, to: query)
+    if let reply = try sendEvent(ae) {
+        print(reply, (reply.parameter(keyErrorNumber) ?? "<no-error>"), (reply.parameter(keyAEResult) ?? "<no-result>"))
+        if let result = reply.parameter(keyAEResult) {
+            dumpFourCharData(result.flatten()) // messy output, as string values aren't guaranteed to be 4-bytes, but there should be enough readable lines to confirm it's an object specifier of form `folder "NAME" of folder "Users" of startup disk`
+        }
+    } else {
+        print("<no-reply>")
+    }
+    
+} catch {
+    print("Apple event failed:", error)
+}
+

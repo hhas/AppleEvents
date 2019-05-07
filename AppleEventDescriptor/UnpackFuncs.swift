@@ -246,3 +246,51 @@ public func unpackAsDictionary<T>(_ descriptor: Descriptor, using unpackFunc: (D
     return try recordDescriptor.dictionary(using: unpackFunc)
 }
 
+
+// Q. how to represent 'missing value' when unpacking as Any?
+
+internal func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
+    let result: Any
+    switch descriptor.type {
+    case typeTrue:
+        result = true
+    case typeFalse:
+        result = false
+    case typeBoolean:
+        result = descriptor.data != Data([0])
+    case typeSInt64:
+        let n = Int64(bigEndian: try unpackFixedSize(descriptor.data))
+        result = Int(exactly: n) ?? n // on 32-bit machines, return Int64 if out-of-range for 32-bit Int
+    case typeSInt32:
+        result = Int(Int32(bigEndian: try unpackFixedSize(descriptor.data)))
+    case typeSInt16:
+        result = Int(Int16(bigEndian: try unpackFixedSize(descriptor.data)))
+    case typeUInt64:
+        let n = UInt64(bigEndian: try unpackFixedSize(descriptor.data))
+        result = UInt(exactly: n) ?? n // ditto
+    case typeUInt32:
+        result = UInt(UInt32(bigEndian: try unpackFixedSize(descriptor.data)))
+    case typeUInt16:
+        result = UInt(UInt16(bigEndian: try unpackFixedSize(descriptor.data)))
+    case typeIEEE32BitFloatingPoint:
+        result = try unpackAsDouble(descriptor)
+    case typeIEEE64BitFloatingPoint: // Q. what about typeIEEE128BitFloatingPoint?
+        result = try unpackFixedSize(descriptor.data) as Double
+    case typeUTF8Text:
+        result = try unpackUTF8String(descriptor.data)
+    case typeUTF16ExternalRepresentation, typeUnicodeText: // TO DO: do we care about non-Unicode strings (typeText? typeStyledText? etc) or are they sufficiently long-deprecated to ignore now (i.e. what, if any, macOS apps still use them?)
+        result = try unpackAsString(descriptor) // result is nil if non-numeric string // TO DO: any difference in how AEM converts string to integer?
+    case typeLongDateTime:
+        result = try unpackAsDate(descriptor)
+    case typeFileURL:
+        result = try unpackAsFileURL(descriptor)
+    case typeAEList:
+        result = try unpackAsArray(descriptor, using: unpackAsAny)
+    case typeAERecord:
+        result = try unpackAsDictionary(descriptor, using: unpackAsAny)
+    default:
+        result = descriptor
+    }
+    return result
+}
+

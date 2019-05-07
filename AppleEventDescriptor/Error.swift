@@ -102,6 +102,7 @@ internal let descriptionForError: [Int:String] = [
 
 
 // base class for all SwiftAutomation-raised errors (not including NSErrors raised by underlying Cocoa APIs)
+// TO DO: use struct?
 public class AppleEventError: Error, CustomStringConvertible {
     public let domain = "SwiftAutomation"
     public let _code: Int // the OSStatus if known, or generic error code if not

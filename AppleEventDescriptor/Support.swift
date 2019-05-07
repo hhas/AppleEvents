@@ -41,23 +41,18 @@ func literalFourCharCode(_ code: OSType) -> String {
     return "\"\(result)\""
 }
 
-
-func dumpFourCharData(_ data: Data) {
-    print("/*")
-    for i in 0..<(data.count / 4) {
-        print(" * ", literalFourCharCode(data.readUInt32(at: i * 4)))
-    }
-    let rem = data.count % 4
-    if rem != 0 {
-        var n = "0x"; var s: String! = ""
-        for c in data[(data.count - rem)..<(data.count)] {
-            if c < 0x20 || c == 0x27 || c == 0x5C || c > 0x7E { s = nil }
-            n += String(format: "%02x", c)
-            if s != nil { s += String(format: "%c", c) }
+func literalEightCharCode(_ code: UInt64) -> String {
+    var bigCode = UInt64(bigEndian: code)
+    var result = ""
+    for _ in 0..<MemoryLayout.size(ofValue: code) {
+        let c = bigCode % 256
+        if c < 0x20 || c == 0x27 || c == 0x5C || c > 0x7E { // found a non-printing, backslash, single quote, or non-ASCII character
+            return String(format: "0x%08x", code)
         }
-        print(" * ", s != nil ? "\"\(s!)\"" : n)
+        result += String(format: "%c", c)
+        bigCode >>= 8
     }
-    print(" */")
+    return "\"\(result)\""
 }
 
 
@@ -79,6 +74,9 @@ internal func packInteger<T: FixedWidthInteger>(_ value: T) -> Data {
 }
 internal func packUInt32(_ value: UInt32) -> Data {
     return packFixedSize(UInt32(bigEndian: value))
+}
+internal func packInt16(_ value: Int16) -> Data {
+    return packFixedSize(Int16(bigEndian: value))
 }
 
 internal func unpackUInt32(_ data: Data) throws -> UInt32 {
