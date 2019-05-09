@@ -18,10 +18,8 @@ internal var isLittleEndianHost: Bool { let n: UInt16 = 1; return n.littleEndian
 
 
 extension Data {
-    func readUInt32(at offset: Int) -> UInt32 { // read desc type, bytes remaining, count, etc; caution: this does not perform bounds checks
-//        assert(offset >= 0)
-//        assert(offset+4 <= self.count)
-        return try! unpackUInt32(self[offset..<(offset+4)])
+    func readUInt32(at offset: Int) -> UInt32 { // read desc type, bytes remaining, count, etc; caution: this does not perform bounds checks // important: Data slices may not start at 0; use `data.readUInt32(at:data.startIndex+offset)`
+        return try! unpackUInt32(self[offset..<(offset + 4)])
     }
 }
 
@@ -104,3 +102,23 @@ internal func unpackUTF8String(_ data: Data) throws -> String {
     return result
 }
 
+
+
+public func dumpFourCharData(_ data: Data) { // DEBUG
+    let data = Data(data)
+    print("/*")
+    for i in 0..<(data.count / 4) {
+        print(" * ", literalFourCharCode(data.readUInt32(at: i * 4)))
+    }
+    let rem = data.count % 4
+    if rem != 0 {
+        var n = "0x"; var s: String! = ""
+        for c in data[(data.count - rem)..<(data.count)] {
+            if c < 0x20 || c == 0x27 || c == 0x5C || c > 0x7E { s = nil }
+            n += String(format: "%02x", c)
+            if s != nil { s += String(format: "%c", c) }
+        }
+        print(" * ", s != nil ? "\"\(s!)\"" : n)
+    }
+    print(" */")
+}

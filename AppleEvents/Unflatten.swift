@@ -30,11 +30,13 @@ private struct Offsets {
 }
 
 
+// offsets of descriptorType and [in AEList/AERecord only] numberOfItems fields
 private let dle2Offsets = Offsets(type: 8, count: 32)
 private let defaultOffsets = Offsets(type: 0, count: 8)
 
 
 // used by unflattenDescriptor(), unflattenFirstDescriptor() below
+// CAUTION: offsets are absolute to underlying data buffer // TO DO: how best to manage this? safest would be to wrap data in our own DataReader struct that mediates all access, adjusting offsets relative to underlying data buffer; or should we copy Data prior to instantiating new Descriptor (right now descriptors will hang onto shared underlying buffer)
 private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Descriptor, endOffset: Int) {
     // TO DO: Descriptor.unflatten() calls should probably return end offset for sanity checking
     let type = data.readUInt32(at: offsets.type) // type
@@ -42,15 +44,15 @@ private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Desc
     // data section's start index varies according to descriptor type
     let dataEnd = Int(data.readUInt32(at: remainingBytesOffset)) + remainingBytesOffset + 4 // remaining bytes
     let result: Descriptor
-    switch type {
+    switch type { // fields in brackets are only included in top-level structures flattened as dle2
     case typeAEList:
-        // [format, align,] type, bytes, [16-byte reserved,] count, align, DATA
-        result = ListDescriptor(count: data.readUInt32(at: 32), data: data[(offsets.count + 8)..<dataEnd])
+        // [format='dle2', align,] type='list', bytes, [16-byte reserved,] count, align, DATA
+        result = ListDescriptor(count: data.readUInt32(at: offsets.count), data: data[(offsets.count + 8)..<dataEnd])
     case typeAERecord:
-        // [format, align,] type, bytes, [16-byte reserved,] count, align, DATA
-        result = RecordDescriptor(type: type, count: data.readUInt32(at: 32), data: data[(offsets.count + 8)..<dataEnd])
+        // [format='dle2', align,] type='reco', bytes, [16-byte reserved,] count, align, DATA
+        result = RecordDescriptor(type: type, count: data.readUInt32(at: offsets.count), data: data[(offsets.count + 8)..<dataEnd])
     case typeObjectSpecifier:
-        // [format, align,] type (=typeObjectSpecifier), bytes, count (=4), align, DATA
+        // [format='dle2', align,] type='obj ', bytes, count=4, align, DATA
         result = try ObjectSpecifier.unflatten(data, startingAt: offsets.type)
     case typeInsertionLoc:
         result = try InsertionLocation.unflatten(data, startingAt: offsets.type)
@@ -64,7 +66,7 @@ private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Desc
         // TO DO: AppleEventDescriptor.unflatten() currently expects full AE descriptor including dle2 header, and doesn't accept non-zero start index; need to check how nested AEs are laid out
         result = try AppleEventDescriptor.unflatten(data, startingAt: 0)
     case typeProcessSerialNumber, typeKernelProcessID, typeApplicationBundleID, typeApplicationURL:
-        // [format, align,] type, size, DATA
+        // [format (dle2), align,] type, size, DATA
         result = ScalarDescriptor(type: type, data: data[(offsets.type + 8)..<dataEnd])
     default: // scalar
         // TO DO: how to reimplement AEIsRecord()? right now, any flattened record with non-reco type is structurally indistinguishable from scalar
@@ -76,7 +78,7 @@ private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Desc
 
 
 public func unflattenDescriptor(_ data: Data) -> Descriptor { // analogous to AEUnflattenDesc()
-    if data[0..<4] != formatMarker {
+    if data[data.startIndex..<(data.startIndex + 4)] != formatMarker {
         fatalError("'dle2' mark not found.") // TO DO: how to deal with malformed data? (check what AEUnflattenDesc does; if it accepts either then switch offsets)
     }
     let (result, endOffset) = try! unflatten(data: data, offsets: dle2Offsets)
@@ -87,10 +89,13 @@ public func unflattenDescriptor(_ data: Data) -> Descriptor { // analogous to AE
 
 // used by list/record/etc to unpack items
 
+// note: startOffset/endOffset is relative to start of data/data slice
 internal func unflattenFirstDescriptor(in data: Data, startingAt startOffset: Int = 0) -> (descriptor: Descriptor, endOffset: Int) {
-    if data[startOffset..<(startOffset+4)] == formatMarker {
+    let startOffset = startOffset + data.startIndex
+    if data[startOffset..<(startOffset + 4)] == formatMarker {
         fatalError("Unexpected 'dle2' mark found (expected descriptor type instead).")
     }
-    return try! unflatten(data: data, offsets: defaultOffsets.add(startOffset))
+    let (desc, endOffset) = try! unflatten(data: data, offsets: defaultOffsets.add(startOffset))
+    return (desc, endOffset - data.startIndex)
 }
 

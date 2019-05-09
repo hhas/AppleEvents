@@ -13,25 +13,6 @@ import Foundation
 
 // simplest way to test our descriptors is to flatten them, then pass to AEUnflattenDesc() and wrap as NSAppleEventDescriptor and see how they compare
 
-/*
-func dumpFourCharData(_ data: Data) {
-    print("/*")
-    for i in 0..<(data.count / 4) {
-        print(" * ", literalFourCharCode(data.readUInt32(at: i * 4)))
-    }
-    let rem = data.count % 4
-    if rem != 0 {
-        var n = "0x"; var s: String! = ""
-        for c in data[(data.count - rem)..<(data.count)] {
-            if c < 0x20 || c == 0x27 || c == 0x5C || c > 0x7E { s = nil }
-            n += String(format: "%02x", c)
-            if s != nil { s += String(format: "%c", c) }
-        }
-        print(" * ", s != nil ? "\"\(s!)\"" : n)
-    }
-    print(" */")
-}
-*/
 
 @discardableResult func flattenNSDesc(_ desc: NSAppleEventDescriptor) -> Data {
     print("Flattening:", desc)

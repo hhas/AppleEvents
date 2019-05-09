@@ -142,20 +142,19 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
             encoding = .utf16BigEndian
         case 0xFFFE:
             encoding = .utf16LittleEndian
-        default: // no BOM; if typeUnicodeText use platform endianness, else it's big-endian typeUTF16ExternalRepresentation
-            encoding = (descriptor.type == typeUnicodeText && isLittleEndianHost) ? .utf16LittleEndian : .utf16BigEndian
+        default: // no BOM
+            // TO DO: according to AEDataModel.h, typeUnicodeText uses "native byte ordering, optional BOM"; however, the raw data in descriptors returned by Carbon/Cocoa apps appears to be big-endian UTF16, so use UTF16BE for now and figure out later
+            // no BOM; if typeUnicodeText use platform endianness, else it's big-endian typeUTF16ExternalRepresentation
+            //encoding = (descriptor.type == typeUnicodeText && isLittleEndianHost) ? .utf16LittleEndian : .utf16BigEndian
+            encoding = .utf16BigEndian
         }
         // TO DO: FIX; endianness bug when decoding typeUnicodeText
-        //print("ENCODING:", encoding)
-        //print(descriptor.data[0..<4])
         /*
-         
          public var typeStyledUnicodeText: DescType { get } /* Not implemented */
          public var typeEncodedString: DescType { get } /* Not implemented */
          public var typeUnicodeText: DescType { get } /* native byte ordering, optional BOM */
          public var typeCString: DescType { get } /* MacRoman characters followed by a NULL byte */
          public var typePString: DescType { get } /* Unsigned length byte followed by MacRoman characters */
-         
          /*
          * The preferred unicode text types.  In both cases, there is no explicit null termination or length byte.
          */

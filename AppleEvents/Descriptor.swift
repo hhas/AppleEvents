@@ -12,7 +12,7 @@ import Foundation
 public protocol Descriptor: CustomDebugStringConvertible {
     
     var type: DescType { get } // AEDesc.descriptorType
-    var data: Data { get } // TO DO: make this private?
+    var data: Data { get } // TO DO: make this private? (caution: this may be a slice view into a larger underlying buffer, so do not assume it starts on index 0; use data.startIndex)
     
     func flatten() -> Data
     func appendTo(containerData: inout Data)
@@ -57,7 +57,7 @@ public protocol IterableDescriptor: Descriptor, Sequence { // AEList/AERecord; n
 
 public struct DescriptorIterator<D: IterableDescriptor>: IteratorProtocol {
     
-    private var index = 0
+    private var count = 0
     private var offset = 0
     private var descriptor: D
     
@@ -68,9 +68,9 @@ public struct DescriptorIterator<D: IterableDescriptor>: IteratorProtocol {
     }
     
     public mutating func next() -> Element? {
-        if self.index >= self.descriptor.count { return nil }
+        if self.count >= self.descriptor.count { return nil }
         let (result, endOffset) = self.descriptor.element(at: self.offset)
-        self.index += 1
+        self.count += 1
         self.offset = endOffset
         return result
     }

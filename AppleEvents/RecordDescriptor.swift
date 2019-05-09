@@ -104,7 +104,7 @@ public struct RecordDescriptor: IterableDescriptor {
         result += packUInt32(UInt32(self.count))      // number of items
         result += Data([0, 0, 0, 0])                  // align
         result += self.data                           // zero or more key-value pairs
-        result[12..<16] = packUInt32(UInt32(result.count - 16)) // calculate and set remaining bytes
+        result[(result.startIndex + 12)..<(result.startIndex + 16)] = packUInt32(UInt32(result.count - 16)) // calculate and set remaining bytes
         return result
     }
     

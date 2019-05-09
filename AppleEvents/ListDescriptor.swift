@@ -44,7 +44,7 @@ public struct ListDescriptor: IterableDescriptor {
         result += packUInt32(self.count)            // number of items
         result += Data([0, 0, 0, 0])                // align
         result += self.data
-        result[12..<16] = packUInt32(UInt32(result.count - 16)) // set remaining bytes
+        result[(result.startIndex + 12)..<(result.startIndex + 16)] = packUInt32(UInt32(result.count - 16)) // set remaining bytes
         return result
     }
     

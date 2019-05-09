@@ -235,12 +235,12 @@ public struct AppleEventDescriptor: Descriptor {
             value.appendTo(containerData: &result)
         }
         result += Data([0x3b, 0x3b, 0x3b, 0x3b])            // end of attributes ';;;;'
-        result[16..<20] = packUInt32(UInt32(result.count - 20)) // set offset to parameters
+        result[(result.startIndex + 16)..<(result.startIndex + 20)] = packUInt32(UInt32(result.count - 20)) // set offset to parameters
         for (key, value) in parameters {                    // append parameters
             result += packUInt32(key)
             value.appendTo(containerData: &result)
         }
-        result[4..<8] = packUInt32(UInt32(result.count - 8)) // set remaining bytes
+        result[(result.startIndex + 4)..<(result.startIndex + 8)] = packUInt32(UInt32(result.count - 8)) // set remaining bytes
         return result
     }
     
@@ -256,32 +256,32 @@ public struct AppleEventDescriptor: Descriptor {
     // TO DO: how best to implement this? also, is it worth implementing separate ReplyEventDescriptor specifically for working with reply events (which normally contain a fixed set of result/error/no parameters)?
     internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> AppleEventDescriptor { // TO DO: should this throw? (how else to deal with malformed AEDescs in general)
         if descStart != 0 { fatalError("TO DO") }
-        if data[0..<8] != Data([0x64, 0x6c, 0x65, 0x32,         // format 'dle2'
+        if data[descStart..<(descStart + 8)] != Data([0x64, 0x6c, 0x65, 0x32,         // format 'dle2'
                                 0, 0, 0, 0]) {                  // align
             throw AppleEventError(code: -1702, message: "dle2 header not found")
         }
-        if data[8..<12] != Data([0x61, 0x65, 0x76, 0x74]) {     // type 'aevt'
+        if data[(descStart + 8)..<(descStart + 12)] != Data([0x61, 0x65, 0x76, 0x74]) {     // type 'aevt'
             throw AppleEventError(code: -1703, message: "not an apple event")
         }
-        let _ = data.readUInt32(at: 12)                         // bytes remaining, then 8-bytes reserved
-        let _ = data.readUInt32(at: 24)                         // offset to parameters
-        if data[28..<32] != Data([0x00, 0x00, 0x00, 0x04]) {    // reserved (4)
+       // let _ = data.readUInt32(at: descStart + 12)                         // bytes remaining, then 8-bytes reserved
+       // let _ = data.readUInt32(at: descStart + 24)                         // offset to parameters
+        if data[(descStart + 28)..<(descStart + 32)] != Data([0x00, 0x00, 0x00, 0x04]) {    // reserved (4)
             throw AppleEventError(code: -1702, message: "unexpected bytes 28-32")
         }
-        let parameterCount = data.readUInt32(at: 32)            // parameter count, then 12-bytes reserved
-        let eventClass = data.readUInt32(at: 48)                // event class
-        let eventID = data.readUInt32(at: 52)                   // event ID, then 2-bytes unused
-        let returnID = try unpackInt16(data[58..<60])           // return ID, then 84-bytes unused
+        let parameterCount = data.readUInt32(at: descStart + 32)            // parameter count, then 12-bytes reserved
+        let eventClass = data.readUInt32(at: descStart + 48)                // event class
+        let eventID = data.readUInt32(at: descStart + 52)                   // event ID, then 2-bytes unused
+        let returnID = try unpackInt16(data[(descStart + 58)..<(descStart + 60)])           // return ID, then 84-bytes unused
         print(literalFourCharCode(eventClass), literalFourCharCode(eventID))
-        if data[144..<148] != Data([0x61, 0x65, 0x76, 0x74]) {  // type 'aevt'
+        if data[(descStart + 144)..<(descStart + 148)] != Data([0x61, 0x65, 0x76, 0x74]) {  // type 'aevt'
             throw AppleEventError(code: -1702, message: "unexpected bytes 132-136: \(literalFourCharCode(data.readUInt32(at: 132)))")
         }
-        if data[148..<152] != Data([0x00, 0x01, 0x00, 0x01]) {  // version marker
+        if data[(descStart + 148)..<(descStart + 152)] != Data([0x00, 0x01, 0x00, 0x01]) {  // version marker
             throw AppleEventError(code: -1706, message: "unexpected version marker")
         }
         var event = AppleEventDescriptor(code: (UInt64(eventClass) << 32) | UInt64(eventID), returnID: returnID)
         // iterate attributes and parameters to unpack them
-        var offset = 152
+        var offset = 152 // unflattenFirstDescriptor will add startIndex
         while true { // read up to end-of-attributes marker ';;;;'
             let key = data.readUInt32(at: offset)
             if key == 0x3b3b3b3b { break }
