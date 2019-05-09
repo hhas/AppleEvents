@@ -112,7 +112,7 @@
 import Foundation
 
 
-typealias ReplyEventDescriptor = AppleEventDescriptor // TO DO: define a dedicated struct for representing reply events (typeAppleEvent with event identifier 'aevtansr')
+public typealias ReplyEventDescriptor = AppleEventDescriptor // TO DO: define a dedicated struct for representing reply events (typeAppleEvent with event identifier 'aevtansr')
 
 
 public typealias AEReturnID = Int16
@@ -165,10 +165,10 @@ public struct AppleEventDescriptor: Descriptor {
     let returnID: AEReturnID
     
     
-    init(code: EventType, target: AddressDescriptor? = nil) {
+    public init(code: EventType, target: AddressDescriptor? = nil) { // create a new outgoing event
         self.code = code
         self.target = target
-        self.returnID = newReturnID()
+        self.returnID = newReturnID() // TO DO: always set this, or only when sending to another process with wantsReply=true?
     }
     
     internal init(code: EventType, returnID: AEReturnID) { // used by unflatten() below
@@ -223,8 +223,13 @@ public struct AppleEventDescriptor: Descriptor {
                         0x6C, 0x6F, 0x6E, 0x67,             // typeSInt32
                         0x00, 0x00, 0x00, 0x04,
                         0x00, 0x00, 0x00, self.wantsReply ? 1 : 0]) // kAEWaitForReply/kAEQueueReply = true; kAENoReply = false
-        // keyTimeoutAttr = 0x74696D6F // TO DO: implement
-        // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: Query?`? or left in misc attributes for parent code to deal with
+        
+        // TO DO: should timeout attr be included here? (if so, need to ensure the same value is passed to send)
+        result += Data([0x74, 0x69, 0x6D, 0x6F,             // keyTimeoutAttr
+                        0x6C, 0x6F, 0x6E, 0x67,             // typeSInt32
+                        0x00, 0x00, 0x00, 0x04])
+        result += packInt32(120 * 60)                       // TO DO
+        // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: Query?`? or left in misc attributes for parent code to deal with (it's arguably an [AppleScript-induced?] design wart: when an AppleScript command has a direct parameter AND an enclosing `tell` block, it can't pack the `tell` target as the direct parameter [its default behavior] as that's already given, so it sticks it in the 'subj' attribute instead; in py-appscript, the high-level appscript API does this automatically while the lower-level aem API leaves client code to set the 'subj' attribute itself)
         for (key, value) in attributes {                    // append any other attributes
             result += packUInt32(key)
             value.appendTo(containerData: &result)
@@ -249,7 +254,7 @@ public struct AppleEventDescriptor: Descriptor {
     }
     
     // TO DO: how best to implement this? also, is it worth implementing separate ReplyEventDescriptor specifically for working with reply events (which normally contain a fixed set of result/error/no parameters)?
-    static public func unflatten(_ data: Data, startingAt descStart: Int) throws -> AppleEventDescriptor { // TO DO: should this throw? (how else to deal with malformed AEDescs in general)
+    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> AppleEventDescriptor { // TO DO: should this throw? (how else to deal with malformed AEDescs in general)
         if descStart != 0 { fatalError("TO DO") }
         if data[0..<8] != Data([0x64, 0x6c, 0x65, 0x32,         // format 'dle2'
                                 0, 0, 0, 0]) {                  // align
@@ -349,29 +354,41 @@ public extension AppleEventDescriptor {
     // TO DO: possible/practical to implement sendAsync method that takes completion callback? (this'll need more research; presumably we can create our own mach port to listen on if app doesn't already have a main event loop on which to receive incoming AEs [e.g. see keyReplyPortAttr usage in AESendThreadSafe.c, although that still invokes AESendMessage to dispatch outgoing event and return reply event, so doesn't give us any clues on how to implement our own sendSync/sendAsync methods])
     
     
-    func send() -> (reply: AppleEventDescriptor?, code: Int) {
+    func send() -> (reply: ReplyEventDescriptor?, code: Int) {
         
         // TO DO: Mach magic goes here…
         
         // TO DO: return `([AppleEvent]Descriptor[?],OSStatus)` or throw? Boxing the AEM status code as an Error and throwing it seems a bit like make-work, as client code will be expected to rethrow it with a more detailed error description anyway, alongside throwing errors returned by the app itself. AEM errors indicate communication problems: e.g. target process not found, timeout occurred while waiting for reply; app errors indicate the event was received okay, but app could not perform the requested operation, e.g. invalid parameter, reference not found. While `send()` method could deal with application-returned errors as well, that might be considered overreach (it also limits possible use-cases; e.g. if client code wants to perform its own reply event processing, or even forward that event on to another process to deal with; OTOH, being more prescriptive reduces the number of "clever" ways in which devs may stretch the system in ways that make it difficult/impossible to nail down as a clean, simple formal specification; e.g. Final Cut's non-standard reply events store return values under custom parameter keys, making them unavailable in AppleScript; locking down the correct behavior in this new API would avoid any future uncertainty, and simplify send methods so that they return result or error only); Q. are there any known use-cases where an AE client process would want to inspect the reply event's attributes? (e.g. debugging tools/event sniffers?)
         return (nil, 0)
     }
-    
+}
+
+
+public extension ReplyEventDescriptor {
     // TO DO: implement a separate ReplyEventDescriptor? reply events are purely one-way, and *should* only contain standard result/error properties (if any)
     
     // TO DO: implement reply(withResult:Descriptor?=nil)/reply(withError:Int,message:String?,etc) methods on AppleEventDescriptor that build and dispatch the reply (aevt/ansr) event as an atomic operation, minimizing opportunities for parent code to break things (we still have to trust client code to call these methods only on events it's received, not on events it's built itself, but given that this is still a relatively low-level API that may be a reasonable compromise)
+    
     /*
      
      public let kCoreEventClass: OSType = 0x61657674
      public let kAEAnswer: OSType = 0x616E7372
 
+     */
      
     var errorNumber: Int {
-        return 0
+        if let desc = self.parameter(keyErrorNumber) {
+            return (try? unpackAsInt(desc)) ?? -1
+        } else {
+            return 0
+        }
     }
     
     var errorMessage: String? {
-        return nil
+        if let desc = self.parameter(keyErrorString) {
+            return try? unpackAsString(desc)
+        } else {
+            return nil
+        }
     }
-    */
 }

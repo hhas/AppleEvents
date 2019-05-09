@@ -140,7 +140,7 @@ public class AppleEventError: Error, CustomStringConvertible {
     }
 }
 
-extension AppleEventError {
+public extension AppleEventError {
     // TO DO: check these names are correct; what other codes?
     static let unsupportedCoercion = AppleEventError(code: -1700) // TO DO: what about taking desc types as arguments?
     static let missingParameter = AppleEventError(code: -1701)

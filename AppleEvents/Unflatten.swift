@@ -34,6 +34,7 @@ private let dle2Offsets = Offsets(type: 8, count: 32)
 private let defaultOffsets = Offsets(type: 0, count: 8)
 
 
+// used by unflattenDescriptor(), unflattenFirstDescriptor() below
 private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Descriptor, endOffset: Int) {
     // TO DO: Descriptor.unflatten() calls should probably return end offset for sanity checking
     let type = data.readUInt32(at: offsets.type) // type

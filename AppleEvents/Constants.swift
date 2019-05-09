@@ -18,6 +18,7 @@ public let kAEIsIn: OSType            = 0x00000002 // will pack as kAEContains w
 /******************************************************************************/
 // TO DO: reorganize constants, discarding unwanted (obsolete, duplicative) definitions
 
+// TO DO: macro to avoid compiler throwing 'ambiguous definition' errors if Carbon definitions are already available? (importing AppKit/Foundation automatically pulls in various Carbon headers)
 
 
 public let KAEISHandleCGI: OSType = 0x73646F63

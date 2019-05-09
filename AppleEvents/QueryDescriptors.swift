@@ -33,6 +33,7 @@ import Foundation
 // note that query dispatcher needs to be able to distinguish between single-object and multiple-object specifiers (single-object dispatch is usually easy to implement over conventional DOM-style model, as it forwards the operation to the target object [e.g. `get`/`set`] or its container [e.g. `move`/`copy`/`delete`] to perform; similarly, multiple-object specifiers can be dispatched the same way IF they are non-mutating [e.g. `get`/`count`]; the main gotchas when implementing an AEOM are 1. manipulating 'virtual' objects, e.g. `character`/`word`/`paragraph`, efficiently; and 2. performing mutating operations on multiple objects whose container is implemented as an ordered collection, e.g. Array); given an IDL/interface implementation that can precisely describe the Model's capabilities, we can determine which command+objspec combinations can operate on multi-object specifiers and which must be restricted to single-object specifiers (ideally, the IDL should contain enough info to enable full direct Siri voice control of applications, though obviously there's a lot of R&D to do before getting to that level)
 
 
+// TO DO: make these AbsolutePosition, RelativePosition enums on ObjectSpecifier
 
 private let firstPosition   = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x66, 0x69, 0x72, 0x73])) // kAEFirst
 private let middlePosition  = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x6D, 0x69, 0x64, 0x64])) // kAEMiddle
@@ -45,21 +46,32 @@ private let nextElement     = ScalarDescriptor(type: typeEnumerated, data: Data(
 
 
 
+// base objects from which queries are constructed
 
+public struct RootSpecifier: Query { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifier.app.elements(cDocument)`, `RootSpecifier.its.property(pName)`
+    
+    public static let app = RootSpecifier(nullDescriptor)
+    public static let con = RootSpecifier(ScalarDescriptor(type: typeCurrentContainer, data: nullData))
+    public static let its = RootSpecifier(ScalarDescriptor(type: typeObjectBeingExamined, data: nullData))
 
-public struct RootSpecifier: Query { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `applicationRoot.elements(cDocument)`, `testSelectorRoot.property(pName)`
     
-    public var type: DescType { return self.from.type }
-    public var data: Data { return self.from.data }
+    public var type: DescType { return self.descriptor.type }
+    public var data: Data { return self.descriptor.data }
     
-    internal let from: Descriptor // while atypical, it is possible for an object specifier to have any 'from' value, e.g. `folders of alias "…"` is undocumented but legal in Finder; whether we continue to support this or start to lock down to a sensible spec is TBC (e.g. in Finder, that query can be rewritten as `folders of item (alias "…")`, which at least tickles a different bit of the spec); presumably this flexibility in legal chunk expressions is, in part, to permit constructing queries over AppleScript types (in which case the ability to serialize those queries as AEs is simply undocumented behavior left open), although it may also be deliberate precisely to allow more "English-like" phrasing when dealing with apps such as Finder that are capable of interpreting aliases and other primitive specifier types (i.e. 'folders of alias…' reads better than 'folders of item alias…', although it goes without saying that such 'magical' behaviors end up creating as much consistency/learnability hell)
+    public var from: Query { return self } // TO DO: rename `parent`?
+    
+    internal let descriptor: Descriptor // while atypical, it is possible for an object specifier to have any 'from' value, e.g. `folders of alias "…"` is undocumented but legal in Finder; whether we continue to support this or start to lock down to a sensible spec is TBC (e.g. in Finder, that query can be rewritten as `folders of item (alias "…")`, which at least tickles a different bit of the spec); presumably this flexibility in legal chunk expressions is, in part, to permit constructing queries over AppleScript types (in which case the ability to serialize those queries as AEs is simply undocumented behavior left open), although it may also be deliberate precisely to allow more "English-like" phrasing when dealing with apps such as Finder that are capable of interpreting aliases and other primitive specifier types (i.e. 'folders of alias…' reads better than 'folders of item alias…', although it goes without saying that such 'magical' behaviors end up creating as much consistency/learnability hell)
+    
+    public init(_ descriptor: Descriptor) {
+        self.descriptor = descriptor
+    }
     
     public func flatten() -> Data {
-        return self.from.flatten()
+        return self.descriptor.flatten()
     }
     
     public func appendTo(containerData result: inout Data) {
-        self.from.appendTo(containerData: &result)
+        self.descriptor.appendTo(containerData: &result)
     }
 }
 
@@ -80,16 +92,75 @@ public extension RootSpecifier {
 }
 
 
-let applicationRoot = RootSpecifier(from: nullDescriptor)
-let rangeSelectorRoot = RootSpecifier(from: ScalarDescriptor(type: typeCurrentContainer, data: nullData))
-let testSelectorRoot = RootSpecifier(from: ScalarDescriptor(type: typeObjectBeingExamined, data: nullData))
+// insertion location, e.g. `beginning of ELEMENTS`, `after ELEMENT`
+
+public struct InsertionLocation: Query {
+    
+    public enum Position: OSType {
+        case before     = 0x6265666F // kAEBefore
+        case after      = 0x61667465 // kAEAfter
+        case beginning  = 0x62676E67 // kAEBeginning
+        case end        = 0x656E6420 // kAEEnd
+    }
+    public let type: DescType = typeInsertionLoc
+    
+    public var data: Data {
+        var result = Data([0x00, 0x00, 0x00, 0x02,      // count (position, object)
+            0, 0, 0, 0,                  // align
+            0x6B, 0x70, 0x6F, 0x73,      // * keyAEPosition
+            0x65, 0x6E, 0x75, 0x6D,      //   typeEnumerated
+            0x00, 0x00, 0x00, 0x04])     //   size (4 bytes)
+        result += packUInt32(self.position.rawValue)    //   enum code
+        result += Data([0x6B, 0x6F, 0x62, 0x6A])        // * keyAEObject
+        self.from.appendTo(containerData: &result)      //   descriptor
+        return result
+    }
+    
+    public let position: Position
+    public let from: Query
+    
+    public init(position: Position, from: Query) {
+        self.position = position
+        self.from = from
+    }
+    
+    // called by Unflatten.swift
+    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> InsertionLocation {
+        // type, remaining bytes // TO DO: sanity check these?
+        var position: OSType? = nil, from: Query? = nil
+        let countOffset = descStart + 8
+        if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
+        var offset = countOffset + 8
+        for _ in 0..<2 {
+            let key = data[offset..<(offset+4)]
+            switch key {
+            case Data([0x6B, 0x70, 0x6F, 0x73])                                         // * keyAEPosition
+                where data[(offset+4)..<(offset+12)] == Data([0x65, 0x6E, 0x75, 0x6D,   //   typeEnumerated
+                    0x00, 0x00, 0x00, 0x04]): //   size (4 bytes)
+                position = data.readUInt32(at: offset+12)
+                offset += 16
+            case Data([0x6B, 0x6F, 0x62, 0x6A]):                                        // * keyAEObject
+                let desc: Descriptor                                                    //   Query
+                (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
+                // object specifier's parent is either an object specifier or its terminal [root] descriptor
+                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(desc)
+            default:
+                throw AppleEventError.invalidParameter
+            }
+        }
+        guard let position_ = position, let from_ = from, let position__ = Position(rawValue: position_) else {
+            throw AppleEventError.invalidParameter
+        }
+        return InsertionLocation(position: position__, from: from_)
+    }
+}
 
 
-
+// object specifier, e.g. `PROPERTY of …`, `every ELEMENT of …`, `ELEMENT INDEX of …`, `(ELEMENTS where TEST) of …`
 
 public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementation in MultipleObjectSpecifier
     
-    public enum Selector: OSType {
+    public enum Form: OSType {
         case property           = 0x70726F70
         case absolutePosition   = 0x696E6478
         case name               = 0x6E616D65
@@ -102,10 +173,18 @@ public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementati
     
     public let type: DescType = typeObjectSpecifier
     
+    // TO DO: naming?
     public let want: DescType
-    public let form: Selector
+    public let form: ObjectSpecifier.Form
     public let seld: Descriptor // may be anything
     public let from: Query // (objspec or root; technically it can be anything, but if we define a dedicated QueryRoot struct then we can put appropriate constructors on that)
+    
+    public init(want: DescType, form: ObjectSpecifier.Form, seld: Descriptor, from: Query) {
+        self.want = want
+        self.form = form
+        self.seld = seld
+        self.from = from
+    }
     
     public var data: Data {
         // flatten()/appendTo() will prefix type, remaining bytes
@@ -155,13 +234,13 @@ public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementati
                 let desc: Descriptor                                                    //   Query
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either another object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(from: desc)
+                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(desc)
             default:
                 throw AppleEventError.invalidParameter
             }
         }
         guard let want_ = want, let form_ = form, let seld_ = seld, let from_ = from,
-            let selform = Selector(rawValue: form_) else {
+            let selform = Form(rawValue: form_) else {
                 throw AppleEventError.invalidParameter
         }
         return ObjectSpecifier(want: want_, form: selform, seld: seld_, from: from_)
@@ -235,10 +314,15 @@ public extension MultipleObjectSpecifier {
             return result
         }
         
-        // TO DO: should initializers accept Int/String as shorthand for rangeSelectorRoot.elements(TYPE).byIndex(INT)/.byName(STRING), or should that be dealt with upstream? (probably upstream, as RangeDescriptor does not inherently know what the element TYPE is)
+        // TO DO: should initializers accept Int/String as shorthand for RootSpecifier.con.elements(TYPE).byIndex(INT)/.byName(STRING), or should that be dealt with upstream? (probably upstream, as RangeDescriptor does not inherently know what the element TYPE is)
         
         public let start: Query // should always be Query; root is either Con or App (con is standard; not sure we can discount absolute specifiers though)
         public let stop: Query // should always be Query
+        
+        public init(start: Query, stop: Query) {
+            self.start = start
+            self.stop = stop
+        }
         
         internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> RangeDescriptor {
             // type, remaining bytes // TO DO: sanity check these?
@@ -349,280 +433,3 @@ public extension ObjectSpecifier {
 }
 
 
-
-
-
-
-
-public struct InsertionLocation: Query {
-
-    public enum Position: OSType {
-        case before     = 0x6265666F // kAEBefore
-        case after      = 0x61667465 // kAEAfter
-        case beginning  = 0x62676E67 // kAEBeginning
-        case end        = 0x656E6420 // kAEEnd
-    }
-    public let type: DescType = typeInsertionLoc
-    
-    public var data: Data {
-        var result = Data([0x00, 0x00, 0x00, 0x02,      // count (position, object)
-                           0, 0, 0, 0,                  // align
-                           0x6B, 0x70, 0x6F, 0x73,      // * keyAEPosition
-                           0x65, 0x6E, 0x75, 0x6D,      //   typeEnumerated
-                           0x00, 0x00, 0x00, 0x04])     //   size (4 bytes)
-        result += packUInt32(self.position.rawValue)    //   enum code
-        result += Data([0x6B, 0x6F, 0x62, 0x6A])        // * keyAEObject
-        self.from.appendTo(containerData: &result)      //   descriptor
-        return result
-    }
-    
-    public let position: Position
-    public let from: Query
-    
-    // called by Unflatten.swift
-    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> InsertionLocation {
-        // type, remaining bytes // TO DO: sanity check these?
-        var position: OSType? = nil, from: Query? = nil
-        let countOffset = descStart + 8
-        if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
-        var offset = countOffset + 8
-        for _ in 0..<2 {
-            let key = data[offset..<(offset+4)]
-            switch key {
-            case Data([0x6B, 0x70, 0x6F, 0x73])                                         // * keyAEPosition
-                where data[(offset+4)..<(offset+12)] == Data([0x65, 0x6E, 0x75, 0x6D,   //   typeEnumerated
-                                                              0x00, 0x00, 0x00, 0x04]): //   size (4 bytes)
-                position = data.readUInt32(at: offset+12)
-                offset += 16
-            case Data([0x6B, 0x6F, 0x62, 0x6A]):                                        // * keyAEObject
-                let desc: Descriptor                                                    //   Query
-                (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
-                // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(from: desc)
-            default:
-                throw AppleEventError.invalidParameter
-            }
-        }
-        guard let position_ = position, let from_ = from, let position__ = Position(rawValue: position_) else {
-                throw AppleEventError.invalidParameter
-        }
-        return InsertionLocation(position: position__, from: from_)
-    }
-}
-
-
-
-public struct ComparisonDescriptor: Test {
-    
-    public enum Operator: OSType {
-        case lessThan           = 0x3C202020 // kAELessThan
-        case lessThanOrEqual    = 0x3C3D2020 // kAELessThanEquals
-        case equal              = 0x3D202020 // kAEEquals
-        case notEqual           = 0x00000001 // kAENotEquals // will pack as kAEEquals + kAENOT
-        case greaterThan        = 0x3E202020 // kAEGreaterThan
-        case greaterThanOrEqual = 0x3E3D2020 // kAEGreaterThanEquals
-        case beginsWith         = 0x62677774 // kAEBeginsWith
-        case endsWith           = 0x656E6473 // kAEEndsWith
-        case contains           = 0x636F6E74 // kAEContains
-        case isIn               = 0x00000002 // kAEIsIn // will pack as kAEContains with operands reversed
-    }
-    
-    public let type: DescType = typeCompDescriptor
-
-    public var data: Data { // caution: this returns an incomplete representation of .notEqual; see also appendTo(:)
-        let lhs: Descriptor, op: Operator, rhs: Descriptor
-        switch self.comparison {
-        case .notEqual: (lhs, op, rhs) = (self.object, .equal, self.value)    // convert 'A != B' to 'NOT (A == B)'
-        case .isIn:     (lhs, op, rhs) = (self.value, .contains, self.object) // convert 'A in B' to 'B contains A'
-        default:        (lhs, op, rhs) = (self.object, self.comparison, self.value)
-        }
-        var result = Data([0x00, 0x00, 0x00, 0x03,  // count (object1, operator, object2)
-                           0, 0, 0, 0,              // align
-                           0x6F, 0x62, 0x6A, 0x31]) // * keyAEObject1
-        lhs.appendTo(containerData: &result)        //   descriptor
-        result += Data([0x72, 0x65, 0x6C, 0x6F,     // * keyAECompOperator
-                        0x65, 0x6E, 0x75, 0x6D,     //   typeEnumerated
-                        0x00, 0x00, 0x00, 0x04])    //   size (4 bytes)
-        result += packUInt32(op.rawValue)           //   enum code
-        result += Data([0x6F, 0x62, 0x6A, 0x32])    // * keyAEObject2
-        rhs.appendTo(containerData: &result)        //   descriptor
-        return result
-    }
-    
-    public let object: Descriptor // this should always be Query
-    public let comparison: Operator
-    public let value: Descriptor // this may be a primitive value or another query
-    
-    public func appendTo(containerData result: inout Data) {
-        // an 'is not equal to' test is constructed by wrapping a kAEEquals comparison descriptor in a kAENOT logical descriptor
-        if self.comparison == .notEqual {
-            result += Data([0x6C, 0x6F, 0x67, 0x69])            // typeLogicalDescriptor
-            result += packUInt32(UInt32(self.data.count + 52))  // remaining bytes // TO DO: check this is correct
-            result += Data([0x00, 0x00, 0x00, 0x02,             // count (operator, operands list)
-                            0, 0, 0, 0,                         // align
-                            0x6C, 0x6F, 0x67, 0x63,             // * keyAELogicalOperator
-                            0x65, 0x6E, 0x75, 0x6D,             //   typeEnumerated
-                            0x00, 0x00, 0x00, 0x04,             //   size (4 bytes)
-                            0x4E, 0x4F, 0x54, 0x20,             //   kAENOT
-                            0x74, 0x65, 0x72, 0x6D,             // * keyAELogicalTerms // a single-item list containing this comparison
-                            0x6C, 0x69, 0x73, 0x74])            //   typeAEList
-            result += packUInt32(UInt32(self.data.count + 16))  //   remaining bytes // TO DO: ditto
-            result += Data([0x00, 0x00, 0x00, 0x01,             //   number of items
-                            0, 0, 0, 0])                        //   align
-        }
-        // append this comparison descriptor
-        result += packUInt32(self.type)                         // descriptor type
-        result += packUInt32(UInt32(self.data.count))           // remaining bytes
-        result += self.data                                     // descriptor data
-    }
-    
-    // called by Unflatten.swift
-    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> ComparisonDescriptor {
-        // type, remaining bytes // TO DO: sanity check these?
-        var object: Descriptor? = nil, comparison: OSType? = nil, value: Descriptor? = nil
-        let countOffset = descStart + 8
-        if data.readUInt32(at: countOffset) != 3 { throw AppleEventError.invalidParameterCount }
-        var offset = countOffset + 8
-        for _ in 0..<3 {
-            let key = data[offset..<(offset+4)]
-            switch key {
-            case Data([0x6F, 0x62, 0x6A, 0x31]):                                        // * keyAEObject1
-                let desc: Descriptor                                                    //   Query
-                (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
-                // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                object = desc
-            case Data([0x72, 0x65, 0x6C, 0x6F])                                         // * keyAECompOperator
-                where data[(offset+4)..<(offset+12)] == Data([0x65, 0x6E, 0x75, 0x6D,   //   typeEnumerated
-                                                              0x00, 0x00, 0x00, 0x04]): //   size (4 bytes)
-                comparison = data.readUInt32(at: offset+12)
-                offset += 16
-            case Data([0x6F, 0x62, 0x6A, 0x32]):                                        // * keyAEObject2
-                let desc: Descriptor                                                    //   Query
-                (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
-                // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                value = desc
-            default:
-                throw AppleEventError.invalidParameter
-            }
-        }
-        guard var object_ = object, let comparison_ = comparison, var value_ = value,
-            var comparison__ = Operator(rawValue: comparison_) else {
-            throw AppleEventError.invalidParameter
-        }
-        if comparison__ == .contains && !(object_ is Query) {
-            (object_, comparison__, value_) = (value_, .isIn, object_)
-        }
-        guard let object__ = object_ as? Query else { throw AppleEventError.invalidParameter }
-        return ComparisonDescriptor(object: object__, comparison: comparison__, value: value_)
-    }
-    
-}
-
-
-public struct LogicalDescriptor: Test {
-    
-    public enum Operator: OSType {
-        case AND    = 0x414E4420 // kAEAND
-        case OR     = 0x4F522020 // kAEOR
-        case NOT    = 0x4E4F5420 // kAENOT
-    }
-
-    public let type: DescType = typeLogicalDescriptor
-    
-    public var data: Data {
-        var result = Data([0x00, 0x00, 0x00, 0x02,      // count
-                           0, 0, 0, 0,                  // align
-                           0x6C, 0x6F, 0x67, 0x63,      // * keyAELogicalOperator
-                           0x65, 0x6E, 0x75, 0x6D,      //   typeEnumerated
-                           0x00, 0x00, 0x00, 0x04])     //   size (4 bytes)
-        result += packUInt32(self.logical.rawValue)     //   enum code
-        result += Data([0x74, 0x65, 0x72, 0x6D])        // * keyAELogicalTerms
-        self.operands.appendTo(containerData: &result)  //   descriptor
-        return result
-    }
-    
-    public let logical: Operator
-    public let operands: ListDescriptor // must contain logical and/or comparison descriptors; initializers must ensure correct no of operands (>=2 for AND/OR; ==1 for NOT)
-    
-    private init(logical: Operator, operands: [Test]) { // used by AND/OR initializers below
-        if operands.count < 2 { fatalError("Too few operands.") } // TO DO: how to deal with errors?
-        self.logical = logical
-        var result = Data()
-        for op in operands { op.appendTo(containerData: &result) }
-        self.operands = ListDescriptor(count: UInt32(operands.count), data: result)
-    }
-    
-    // TO DO: use varargs for following? that'd prevent too few args being passed (first two args would be explicit)
-    
-    public init(AND operands: [Test]) {
-        self.init(logical: .AND, operands: operands)
-    }
-    
-    public init(OR operands: [Test]) {
-        self.init(logical: .OR, operands: operands)
-    }
-    
-    public init(NOT operand: Test) {
-        self.logical = .NOT
-        var result = Data()
-        operand.appendTo(containerData: &result)
-        self.operands = ListDescriptor(count: 1, data: result)
-    }
-    
-    // called by Unflatten.swift
-    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> LogicalDescriptor {
-        // type, remaining bytes // TO DO: sanity check these?
-        var logical: OSType? = nil, operands: [Test]? = nil
-        let countOffset = descStart + 8
-        if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
-        var offset = countOffset + 8
-        for _ in 0..<2 {
-            let key = data[offset..<(offset+4)]
-            switch key {
-            case Data([0x6C, 0x6F, 0x67, 0x63])                                         // * keyAELogicalOperator
-                where data[(offset+4)..<(offset+12)] == Data([0x65, 0x6E, 0x75, 0x6D,   //   typeEnumerated
-                                                              0x00, 0x00, 0x00, 0x04]): //   size (4 bytes)
-                logical = data.readUInt32(at: offset+12)
-                offset += 16
-            case Data([0x74, 0x65, 0x72, 0x6D]):                                        // * keyAELogicalTerms
-                let desc: Descriptor                                                    //   Query
-                (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
-                // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                if desc.type != typeAEList { throw AppleEventError.invalidParameter }
-                operands = try unpackAsArray(desc, using: { (desc: Descriptor) throws -> Test in
-                    // TO DO: this is kludgy; would be better not to use -ve start indexes (probably be simpler just to iterate flattened list directly)
-                    switch desc.type {
-                    case typeLogicalDescriptor:
-                        return try LogicalDescriptor.unflatten(desc.data, startingAt: -8)
-                    case typeCompDescriptor:
-                        return try ComparisonDescriptor.unflatten(desc.data, startingAt: -8)
-                    default:
-                        throw AppleEventError.invalidParameter
-                    }
-                })
-            default:
-                throw AppleEventError.invalidParameter
-            }
-        }
-        guard let logical_ = logical, let operands_ = operands, let logical__ = Operator(rawValue: logical_),
-            ((logical__ == .NOT && operands_.count == 1) || operands_.count >= 2) else {
-            throw AppleEventError.invalidParameter
-        }
-        return LogicalDescriptor(logical: logical__, operands: operands_)
-    }
-
-}
-
-
-public extension Test {
-
-    static func &&(lhs: Test, rhs: Test) -> Test {
-        return LogicalDescriptor(AND: [lhs, rhs])
-    }
-    static func ||(lhs: Test, rhs: Test) -> Test {
-        return LogicalDescriptor(OR: [lhs, rhs])
-    }
-    static prefix func !(lhs: Test) -> Test {
-        return LogicalDescriptor(NOT: lhs)
-    }
-}

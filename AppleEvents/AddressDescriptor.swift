@@ -22,7 +22,7 @@ public extension AddressDescriptor {
     
     init(processIdentifier value: pid_t) {
         self.type = typeKernelProcessID
-        self.data = packFixedSize(value) // pid_t = Int32
+        self.data = packInt32(value) // pid_t = Int32
     }
     
     func processIdentifier() throws -> pid_t {

@@ -10,7 +10,7 @@
 import Foundation
 
 
-public func unpackAsBoolean(_ descriptor: Descriptor) throws -> Bool {
+public func unpackAsBool(_ descriptor: Descriptor) throws -> Bool {
     switch descriptor.type {
     case typeTrue:
         return true
@@ -42,7 +42,7 @@ public func unpackAsBoolean(_ descriptor: Descriptor) throws -> Bool {
 }
 
 
-internal func unpackAsInteger<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> T {
+private func unpackAsInteger<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> T {
     // caution: AEs are big-endian; unlike AEM's integer descriptors, which for historical reasons hold native-endian data and convert to big-endian later on, we immediately convert to/from big-endian
     var result: T? = nil
     switch descriptor.type {
@@ -60,7 +60,7 @@ internal func unpackAsInteger<T: FixedWidthInteger>(_ descriptor: Descriptor) th
         result = T(exactly: UInt16(bigEndian: try unpackFixedSize(descriptor.data)))
     // coercions
     case typeTrue, typeFalse, typeBoolean:
-        result = try unpackAsBoolean(descriptor) ? 1 : 0
+        result = try unpackAsBool(descriptor) ? 1 : 0
     case typeIEEE32BitFloatingPoint:
         result = T(exactly: try unpackFixedSize(descriptor.data) as Float)
     case typeIEEE64BitFloatingPoint: // Q. what about typeIEEE128BitFloatingPoint?
@@ -145,7 +145,27 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
         default: // no BOM; if typeUnicodeText use platform endianness, else it's big-endian typeUTF16ExternalRepresentation
             encoding = (descriptor.type == typeUnicodeText && isLittleEndianHost) ? .utf16LittleEndian : .utf16BigEndian
         }
+        // TO DO: FIX; endianness bug when decoding typeUnicodeText
+        //print("ENCODING:", encoding)
+        //print(descriptor.data[0..<4])
+        /*
+         
+         public var typeStyledUnicodeText: DescType { get } /* Not implemented */
+         public var typeEncodedString: DescType { get } /* Not implemented */
+         public var typeUnicodeText: DescType { get } /* native byte ordering, optional BOM */
+         public var typeCString: DescType { get } /* MacRoman characters followed by a NULL byte */
+         public var typePString: DescType { get } /* Unsigned length byte followed by MacRoman characters */
+         
+         /*
+         * The preferred unicode text types.  In both cases, there is no explicit null termination or length byte.
+         */
+         
+         public var typeUTF16ExternalRepresentation: DescType { get } /* big-endian 16 bit unicode with optional byte-order-mark, or little-endian 16 bit unicode with required byte-order-mark. */
+         public var typeUTF8Text: DescType { get } /* 8 bit unicode */
+
+         */
         guard let result = String(data: descriptor.data, encoding: encoding) else { throw AppleEventError.corruptData }
+       // print("STRING:", result)
         return result
     // TO DO: boolean, number
     case typeSInt64, typeSInt32, typeSInt16:
@@ -153,6 +173,8 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
     case typeUInt64, typeUInt32, typeUInt16:
         return String(try unpackAsInteger(descriptor) as UInt64)
     // TO DO: what about typeFileURL? AEM has unpleasant habit of coercing that to typeUnicodeText as HFS(!) path, which we don't want to do (AEM also fails to coerce it to typeUTF8Text)
+    // TO DO: typeVersion?
+    // TO DO: throw on legacy types? (typeChar, typeIntlText, typeStyledText)
     default:
         throw AppleEventError.unsupportedCoercion
     }
@@ -221,6 +243,18 @@ public func unpackAsEnum(_ descriptor: Descriptor) throws -> OSType {
     }
 }
 
+public func unpackAsFourCharCode(_ descriptor: Descriptor) throws -> OSType {
+    switch descriptor.type {
+    case typeEnumerated, typeAbsoluteOrdinal, typeType, typeProperty, typeKeyword:
+        return try unpackUInt32(descriptor.data)
+    default:
+        throw AppleEventError.unsupportedCoercion
+    }
+}
+
+public func unpackAsDescriptor(_ descriptor: Descriptor) -> Descriptor {
+    return descriptor
+}
 
 // TO DO: what about unpackAsSequence?
 
@@ -249,7 +283,7 @@ public func unpackAsDictionary<T>(_ descriptor: Descriptor, using unpackFunc: (D
 
 // Q. how to represent 'missing value' when unpacking as Any?
 
-internal func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
+public func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
     let result: Any
     switch descriptor.type {
     case typeTrue:
@@ -288,6 +322,8 @@ internal func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
         result = try unpackAsArray(descriptor, using: unpackAsAny)
     case typeAERecord:
         result = try unpackAsDictionary(descriptor, using: unpackAsAny)
+    case typeQDPoint, typeQDRectangle, typeRGBColor:
+        return try unpackAsArray(descriptor, using: unpackAsInt)
     default:
         result = descriptor
     }

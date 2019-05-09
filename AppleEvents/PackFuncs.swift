@@ -78,6 +78,10 @@ public func packAsEnum(_ value: OSType) -> ScalarDescriptor {
     return ScalarDescriptor(type: typeEnumerated, data: packUInt32(value))
 }
 
+public func packAsDescriptor(_ value: Descriptor) -> Descriptor {
+    return value
+}
+
 
 // TO DO: delete packAsArray?
 

@@ -7,6 +7,7 @@ import Foundation
 
 // TO DO: need an API to traverse nested descriptors in order to, e.g. print human-readable representation
 
+// TO DO: implement Comparable
 
 public protocol Descriptor: CustomDebugStringConvertible {
     
@@ -16,6 +17,7 @@ public protocol Descriptor: CustomDebugStringConvertible {
     func flatten() -> Data
     func appendTo(containerData: inout Data)
     
+    var isRecord: Bool { get }
 }
 
 public extension Descriptor {
@@ -23,14 +25,20 @@ public extension Descriptor {
     var debugDescription: String {
         return "<\(Swift.type(of: self)) \(literalFourCharCode(self.type))>"
     }
+    
+    var isRecord: Bool { return false } // TO DO: how to implement this? (Q. how does AEIsRecordDesc do it?)
 }
 
 
 // object specifiers
 
-public protocol Query: Scalar {}    // specifier root (wrapper), object specifier, insertion location
+public protocol Query: Scalar { // TO DO: rename `QueryDescriptor`? (need to avoid confusion between SwiftAutomation.Query)
+    
+    var from: Query { get }
+    
+}    // specifier root (wrapper), object specifier, insertion location
 
-public protocol Test: Scalar {}     // (aka 'whose' clauses) comparison descriptor, logical descriptor
+public protocol Test: Scalar {}     // (aka 'whose' clauses) comparison descriptor, logical descriptor // TO DO: rename `TestDescriptor`?
 
 
 // AEList/AERecord iterators are mostly used to unpack

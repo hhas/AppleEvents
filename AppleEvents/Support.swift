@@ -57,6 +57,7 @@ func literalEightCharCode(_ code: UInt64) -> String {
 
 
 // packing/unpacking primitives; these are used by pack/unpack funcs and flatten/unflatten methods
+// caution: these methods are NOT endian-safe; do not call directly to pack/unpack integers
 
 internal func packFixedSize<T>(_ value: T) -> Data {
     return Swift.withUnsafeBytes(of: value) { Data($0) }
@@ -64,7 +65,7 @@ internal func packFixedSize<T>(_ value: T) -> Data {
 
 internal func unpackFixedSize<T>(_ data: Data) throws -> T {
     if data.count != MemoryLayout<T>.size { throw AppleEventError.corruptData }
-    return data.withUnsafeBytes{ $0.baseAddress!.assumingMemoryBound(to: T.self).pointee }
+    return data.withUnsafeBytes{ $0.baseAddress!.assumingMemoryBound(to: T.self).pointee } // TO DO: use bindMemory(to:capacity:)?
 }
 
 // endian-safe integer pack/unpack (caution: these store numeric values as big-endian so are not binary-compatible with Carbon AEDescs' storage (numeric AEDescs use native-endian storage and only convert to big-endian when packed into a complex [list/record/event] descriptor)
@@ -74,6 +75,9 @@ internal func packInteger<T: FixedWidthInteger>(_ value: T) -> Data {
 }
 internal func packUInt32(_ value: UInt32) -> Data {
     return packFixedSize(UInt32(bigEndian: value))
+}
+internal func packInt32(_ value: Int32) -> Data {
+    return packFixedSize(Int32(bigEndian: value))
 }
 internal func packInt16(_ value: Int16) -> Data {
     return packFixedSize(Int16(bigEndian: value))
@@ -99,3 +103,4 @@ internal func unpackUTF8String(_ data: Data) throws -> String {
     guard let result = String(data: data, encoding: .utf8) else { throw AppleEventError.corruptData }
     return result
 }
+

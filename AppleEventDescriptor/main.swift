@@ -13,7 +13,7 @@ import Foundation
 
 // simplest way to test our descriptors is to flatten them, then pass to AEUnflattenDesc() and wrap as NSAppleEventDescriptor and see how they compare
 
-
+/*
 func dumpFourCharData(_ data: Data) {
     print("/*")
     for i in 0..<(data.count / 4) {
@@ -31,6 +31,7 @@ func dumpFourCharData(_ data: Data) {
     }
     print(" */")
 }
+*/
 
 @discardableResult func flattenNSDesc(_ desc: NSAppleEventDescriptor) -> Data {
     print("Flattening:", desc)
@@ -93,7 +94,7 @@ do {
 /*
 do {
     
-    let query = applicationRoot.elements(cDocument).byIndex(packAsInt(1)).property(pName)
+    let query = RootSpecifier.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
     print(query)
 
     let d = query.flatten()
@@ -105,7 +106,7 @@ do {
 */
 /*
 do {
-    //let query = applicationRoot.elements(cDocument).byIndex(packAsInt(1)).property(pName)
+    //let query = RootSpecifier.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
 
     let query = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
     query.setParam(NSAppleEventDescriptor(typeCode: cProperty), forKeyword: keyAEDesiredClass)
@@ -139,7 +140,7 @@ func sendEvent(_ event: AppleEventDescriptor) throws -> ReplyEventDescriptor? {
             print("Unflatten error \(err). \(descriptionForError[err] ?? "")")
             return err
         }
-        return Int(AESendMessage(&event, &reply, 0x73, 120))
+        return Int(AESendMessage(&event, &reply, 0x73, 10 * 60)) // use 10 sec timeout for now
     }
     if err != 0 { throw AppleEventError(code: err, message: descriptionForError[err]) }
     let size = AESizeOfFlattenedDesc(&reply)
@@ -158,7 +159,7 @@ do {
     var ae = AppleEventDescriptor(code: (UInt64(kAECoreSuite) << 32) + UInt64(kAEGetData),
                                   target: try AddressDescriptor(bundleIdentifier: "com.apple.finder"))
     
-    let query = applicationRoot.property(0x686f6d65) // 'home'
+    let query = RootSpecifier.app.property(0x686f6d65) // 'home'
     ae.setParameter(keyDirectObject, to: query)
     if let reply = try sendEvent(ae) {
         print(reply, (reply.parameter(keyErrorNumber) ?? "<no-error>"), (reply.parameter(keyAEResult) ?? "<no-result>"))
