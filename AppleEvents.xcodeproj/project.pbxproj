@@ -18,7 +18,7 @@
 		4F1EA9BB228351E9000E0A3A /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B4228351E9000E0A3A /* Descriptor.swift */; };
 		4F1EA9BC228351E9000E0A3A /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B5228351E9000E0A3A /* AppleEventDescriptor.swift */; };
 		4F1EA9BD228351E9000E0A3A /* RecordDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B6228351E9000E0A3A /* RecordDescriptor.swift */; };
-		4F1EA9C122835213000E0A3A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* Error.swift */; };
+		4F1EA9C122835213000E0A3A /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
 		4F1EA9C222835213000E0A3A /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
 		4F1EA9C322835213000E0A3A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 		4F1EA9CB22835239000E0A3A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9CA22835239000E0A3A /* main.swift */; };
@@ -36,6 +36,25 @@
 		4F1EA9DF22835276000E0A3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
 		4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
 		4F1EA9ED2283FC26000E0A3A /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
+		4F21AF2822861CB000A1B978 /* AppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1EA99E22835040000E0A3A /* AppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
+		4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
+		4F21AF2B22861CB000A1B978 /* UnpackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AC228351D8000E0A3A /* UnpackFuncs.swift */; };
+		4F21AF2C22861CB000A1B978 /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B4228351E9000E0A3A /* Descriptor.swift */; };
+		4F21AF2D22861CB000A1B978 /* ScalarDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B0228351E9000E0A3A /* ScalarDescriptor.swift */; };
+		4F21AF2E22861CB000A1B978 /* AddressDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B1228351E9000E0A3A /* AddressDescriptor.swift */; };
+		4F21AF2F22861CB000A1B978 /* ListDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B3228351E9000E0A3A /* ListDescriptor.swift */; };
+		4F21AF3022861CB000A1B978 /* RecordDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B6228351E9000E0A3A /* RecordDescriptor.swift */; };
+		4F21AF3122861CB000A1B978 /* QueryDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B2228351E9000E0A3A /* QueryDescriptors.swift */; };
+		4F21AF3222861CB000A1B978 /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
+		4F21AF3322861CB000A1B978 /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B5228351E9000E0A3A /* AppleEventDescriptor.swift */; };
+		4F21AF3422861CB000A1B978 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
+		4F21AF3522861CB000A1B978 /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
+		4F21AF3622861CB000A1B978 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
+		4F21AF3722861CC800A1B978 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
+		4F21AF652286213600A1B978 /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
+		4F21AF662286213600A1B978 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
+		4F21AF672286213600A1B978 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,13 +83,14 @@
 		4F1EA9B4228351E9000E0A3A /* Descriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Descriptor.swift; sourceTree = "<group>"; };
 		4F1EA9B5228351E9000E0A3A /* AppleEventDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventDescriptor.swift; sourceTree = "<group>"; };
 		4F1EA9B6228351E9000E0A3A /* RecordDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordDescriptor.swift; sourceTree = "<group>"; };
-		4F1EA9BE22835212000E0A3A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		4F1EA9BE22835212000E0A3A /* AppleEventError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventError.swift; sourceTree = "<group>"; };
 		4F1EA9BF22835212000E0A3A /* Support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		4F1EA9C022835213000E0A3A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		4F1EA9C822835239000E0A3A /* AppleEventDescriptor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AppleEventDescriptor; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F1EA9C822835239000E0A3A /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F1EA9CA22835239000E0A3A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F1EA9DD22835260000E0A3A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDescriptors.swift; sourceTree = "<group>"; };
+		4F21AF1F22861C7500A1B978 /* libAppleEvents.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppleEvents.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +110,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4F21AF1D22861C7500A1B978 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F21AF3722861CC800A1B978 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -97,7 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				4F1EA99D22835040000E0A3A /* AppleEvents */,
-				4F1EA9C922835239000E0A3A /* AppleEventDescriptor */,
+				4F1EA9C922835239000E0A3A /* test */,
 				4F1EA9DC22835260000E0A3A /* Frameworks */,
 				4F1EA99C22835040000E0A3A /* Products */,
 			);
@@ -107,7 +135,8 @@
 			isa = PBXGroup;
 			children = (
 				4F1EA99B22835040000E0A3A /* AppleEvents.framework */,
-				4F1EA9C822835239000E0A3A /* AppleEventDescriptor */,
+				4F1EA9C822835239000E0A3A /* test */,
+				4F21AF1F22861C7500A1B978 /* libAppleEvents.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,8 +148,8 @@
 				4F1EA99F22835040000E0A3A /* Info.plist */,
 				4F1EA9A8228351AD000E0A3A /* codecs */,
 				4F1EA9A9228351B5000E0A3A /* descriptors */,
+				4F1EA9BE22835212000E0A3A /* AppleEventError.swift */,
 				4F1EA9BF22835212000E0A3A /* Support.swift */,
-				4F1EA9BE22835212000E0A3A /* Error.swift */,
 				4F1EA9C022835213000E0A3A /* Constants.swift */,
 			);
 			path = AppleEvents;
@@ -151,12 +180,12 @@
 			name = descriptors;
 			sourceTree = "<group>";
 		};
-		4F1EA9C922835239000E0A3A /* AppleEventDescriptor */ = {
+		4F1EA9C922835239000E0A3A /* test */ = {
 			isa = PBXGroup;
 			children = (
 				4F1EA9CA22835239000E0A3A /* main.swift */,
 			);
-			path = AppleEventDescriptor;
+			path = test;
 			sourceTree = "<group>";
 		};
 		4F1EA9DC22835260000E0A3A /* Frameworks */ = {
@@ -175,6 +204,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F1EA9A022835040000E0A3A /* AppleEvents.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F21AF1B22861C7500A1B978 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F21AF2822861CB000A1B978 /* AppleEvents.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,9 +236,9 @@
 			productReference = 4F1EA99B22835040000E0A3A /* AppleEvents.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		4F1EA9C722835239000E0A3A /* AppleEventDescriptor */ = {
+		4F1EA9C722835239000E0A3A /* test */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "AppleEventDescriptor" */;
+			buildConfigurationList = 4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test" */;
 			buildPhases = (
 				4F1EA9C422835239000E0A3A /* Sources */,
 				4F1EA9C522835239000E0A3A /* Frameworks */,
@@ -211,10 +248,27 @@
 			);
 			dependencies = (
 			);
-			name = AppleEventDescriptor;
+			name = test;
 			productName = AppleEventDescriptor;
-			productReference = 4F1EA9C822835239000E0A3A /* AppleEventDescriptor */;
+			productReference = 4F1EA9C822835239000E0A3A /* test */;
 			productType = "com.apple.product-type.tool";
+		};
+		4F21AF1E22861C7500A1B978 /* libAppleEvents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F21AF2522861C7500A1B978 /* Build configuration list for PBXNativeTarget "libAppleEvents" */;
+			buildPhases = (
+				4F21AF1B22861C7500A1B978 /* Headers */,
+				4F21AF1C22861C7500A1B978 /* Sources */,
+				4F21AF1D22861C7500A1B978 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libAppleEvents;
+			productName = appleeventslib;
+			productReference = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -232,6 +286,9 @@
 					4F1EA9C722835239000E0A3A = {
 						CreatedOnToolsVersion = 10.2.1;
 					};
+					4F21AF1E22861C7500A1B978 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
 				};
 			};
 			buildConfigurationList = 4F1EA99522835040000E0A3A /* Build configuration list for PBXProject "AppleEvents" */;
@@ -247,7 +304,8 @@
 			projectRoot = "";
 			targets = (
 				4F1EA99A22835040000E0A3A /* AppleEvents */,
-				4F1EA9C722835239000E0A3A /* AppleEventDescriptor */,
+				4F21AF1E22861C7500A1B978 /* libAppleEvents */,
+				4F1EA9C722835239000E0A3A /* test */,
 			);
 		};
 /* End PBXProject section */
@@ -275,11 +333,11 @@
 				4F1EA9B8228351E9000E0A3A /* AddressDescriptor.swift in Sources */,
 				4F1EA9BA228351E9000E0A3A /* ListDescriptor.swift in Sources */,
 				4F1EA9BD228351E9000E0A3A /* RecordDescriptor.swift in Sources */,
-				4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
 				4F1EA9B9228351E9000E0A3A /* QueryDescriptors.swift in Sources */,
+				4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
 				4F1EA9BC228351E9000E0A3A /* AppleEventDescriptor.swift in Sources */,
+				4F1EA9C122835213000E0A3A /* AppleEventError.swift in Sources */,
 				4F1EA9C222835213000E0A3A /* Support.swift in Sources */,
-				4F1EA9C122835213000E0A3A /* Error.swift in Sources */,
 				4F1EA9C322835213000E0A3A /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,18 +346,42 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F1EA9CF22835258000E0A3A /* PackFuncs.swift in Sources */,
 				4F1EA9D022835258000E0A3A /* Unflatten.swift in Sources */,
-				4F1EA9ED2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
+				4F1EA9CF22835258000E0A3A /* PackFuncs.swift in Sources */,
 				4F1EA9D122835258000E0A3A /* UnpackFuncs.swift in Sources */,
-				4F1EA9D222835258000E0A3A /* AddressDescriptor.swift in Sources */,
-				4F1EA9D322835258000E0A3A /* AppleEventDescriptor.swift in Sources */,
 				4F1EA9D422835258000E0A3A /* Descriptor.swift in Sources */,
-				4F1EA9D522835258000E0A3A /* ListDescriptor.swift in Sources */,
-				4F1EA9D622835258000E0A3A /* QueryDescriptors.swift in Sources */,
-				4F1EA9D722835258000E0A3A /* RecordDescriptor.swift in Sources */,
 				4F1EA9D822835258000E0A3A /* ScalarDescriptor.swift in Sources */,
+				4F1EA9D222835258000E0A3A /* AddressDescriptor.swift in Sources */,
+				4F1EA9D522835258000E0A3A /* ListDescriptor.swift in Sources */,
+				4F1EA9D722835258000E0A3A /* RecordDescriptor.swift in Sources */,
+				4F1EA9D622835258000E0A3A /* QueryDescriptors.swift in Sources */,
+				4F1EA9ED2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
+				4F1EA9D322835258000E0A3A /* AppleEventDescriptor.swift in Sources */,
+				4F21AF652286213600A1B978 /* AppleEventError.swift in Sources */,
+				4F21AF662286213600A1B978 /* Support.swift in Sources */,
+				4F21AF672286213600A1B978 /* Constants.swift in Sources */,
 				4F1EA9CB22835239000E0A3A /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F21AF1C22861C7500A1B978 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */,
+				4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */,
+				4F21AF2B22861CB000A1B978 /* UnpackFuncs.swift in Sources */,
+				4F21AF2C22861CB000A1B978 /* Descriptor.swift in Sources */,
+				4F21AF2D22861CB000A1B978 /* ScalarDescriptor.swift in Sources */,
+				4F21AF2E22861CB000A1B978 /* AddressDescriptor.swift in Sources */,
+				4F21AF2F22861CB000A1B978 /* ListDescriptor.swift in Sources */,
+				4F21AF3022861CB000A1B978 /* RecordDescriptor.swift in Sources */,
+				4F21AF3122861CB000A1B978 /* QueryDescriptors.swift in Sources */,
+				4F21AF3222861CB000A1B978 /* TestDescriptors.swift in Sources */,
+				4F21AF3322861CB000A1B978 /* AppleEventDescriptor.swift in Sources */,
+				4F21AF3422861CB000A1B978 /* Support.swift in Sources */,
+				4F21AF3522861CB000A1B978 /* AppleEventError.swift in Sources */,
+				4F21AF3622861CB000A1B978 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +447,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -422,6 +505,7 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -502,6 +586,30 @@
 			};
 			name = Release;
 		};
+		4F21AF2622861C7500A1B978 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				EXECUTABLE_PREFIX = lib;
+				INFOPLIST_FILE = lib;
+				PRODUCT_NAME = AppleEvents;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		4F21AF2722861C7500A1B978 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				EXECUTABLE_PREFIX = lib;
+				INFOPLIST_FILE = lib;
+				PRODUCT_NAME = AppleEvents;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -523,11 +631,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "AppleEventDescriptor" */ = {
+		4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4F1EA9CD22835239000E0A3A /* Debug */,
 				4F1EA9CE22835239000E0A3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F21AF2522861C7500A1B978 /* Build configuration list for PBXNativeTarget "libAppleEvents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F21AF2622861C7500A1B978 /* Debug */,
+				4F21AF2722861C7500A1B978 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

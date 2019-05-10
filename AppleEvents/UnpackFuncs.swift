@@ -17,7 +17,7 @@ public func unpackAsBool(_ descriptor: Descriptor) throws -> Bool {
     case typeFalse:
         return false
     case typeBoolean:
-        return try unpackFixedSize(descriptor.data)
+        return try decodeFixedWidthValue(descriptor.data)
     case typeSInt64, typeSInt32, typeSInt16:
         switch try unpackAsInteger(descriptor) as Int {
         case 1: return true
@@ -47,24 +47,24 @@ private func unpackAsInteger<T: FixedWidthInteger>(_ descriptor: Descriptor) thr
     var result: T? = nil
     switch descriptor.type {
     case typeSInt64:
-        result = T(exactly: Int64(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: Int64(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeSInt32:
-        result = T(exactly: Int32(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: Int32(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeSInt16:
-        result = T(exactly: Int16(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: Int16(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeUInt64:
-        result = T(exactly: UInt64(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: UInt64(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeUInt32:
-        result = T(exactly: UInt32(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: UInt32(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeUInt16:
-        result = T(exactly: UInt16(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = T(exactly: UInt16(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     // coercions
     case typeTrue, typeFalse, typeBoolean:
         result = try unpackAsBool(descriptor) ? 1 : 0
     case typeIEEE32BitFloatingPoint:
-        result = T(exactly: try unpackFixedSize(descriptor.data) as Float)
+        result = T(exactly: try decodeFixedWidthValue(descriptor.data) as Float)
     case typeIEEE64BitFloatingPoint: // Q. what about typeIEEE128BitFloatingPoint?
-        result = T(exactly: try unpackFixedSize(descriptor.data) as Double)
+        result = T(exactly: try decodeFixedWidthValue(descriptor.data) as Double)
     case typeUTF8Text, typeUTF16ExternalRepresentation, typeUnicodeText: // TO DO: do we care about non-Unicode strings (typeText? typeStyledText? etc) or are they sufficiently long-deprecated to ignore now (i.e. what, if any, macOS apps still use them?)
         result = T(try unpackAsString(descriptor)) // result is nil if non-numeric string // TO DO: any difference in how AEM converts string to integer?
     default:
@@ -104,9 +104,9 @@ public func unpackAsUInt64(_ descriptor: Descriptor) throws -> UInt64 {
 public func unpackAsDouble(_ descriptor: Descriptor) throws -> Double { // coerces as needed
     switch descriptor.type {
     case typeIEEE64BitFloatingPoint:
-        return try unpackFixedSize(descriptor.data)
+        return try decodeFixedWidthValue(descriptor.data)
     case typeIEEE32BitFloatingPoint:
-        return Double(try unpackFixedSize(descriptor.data) as Float)
+        return Double(try decodeFixedWidthValue(descriptor.data) as Float)
     case typeSInt64, typeSInt32, typeSInt16:
         return Double(try unpackAsInteger(descriptor) as Int)
     case typeUInt64, typeUInt32, typeUInt16:
@@ -128,7 +128,7 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
         // typeUTF16ExternalRepresentation: big-endian 16 bit unicode with optional byte-order-mark,
     //                                  or little-endian 16 bit unicode with required byte-order-mark
     case typeUTF8Text:
-        return try unpackUTF8String(descriptor.data)
+        return try decodeUTF8String(descriptor.data)
     case typeUTF16ExternalRepresentation, typeUnicodeText: // UTF-16 BE/LE
         if descriptor.data.count < 2 {
             if descriptor.data.count > 0 { throw AppleEventError.corruptData }
@@ -226,7 +226,7 @@ public func unpackAsType(_ descriptor: Descriptor) throws -> OSType {
     // TO DO: how should cMissingValue be handled? (there is an argument for special-casing it, throwing a coercion error which `unpackAsOptional(_:using:)`) can intercept to return nil instead
     switch descriptor.type {
     case typeType, typeProperty, typeKeyword:
-        return try unpackUInt32(descriptor.data)
+        return try decodeUInt32(descriptor.data)
     default:
         throw AppleEventError.unsupportedCoercion
     }
@@ -236,7 +236,7 @@ public func unpackAsType(_ descriptor: Descriptor) throws -> OSType {
 public func unpackAsEnum(_ descriptor: Descriptor) throws -> OSType {
     switch descriptor.type {
     case typeEnumerated, typeAbsoluteOrdinal:
-        return try unpackUInt32(descriptor.data)
+        return try decodeUInt32(descriptor.data)
     default:
         throw AppleEventError.unsupportedCoercion
     }
@@ -245,7 +245,7 @@ public func unpackAsEnum(_ descriptor: Descriptor) throws -> OSType {
 public func unpackAsFourCharCode(_ descriptor: Descriptor) throws -> OSType {
     switch descriptor.type {
     case typeEnumerated, typeAbsoluteOrdinal, typeType, typeProperty, typeKeyword:
-        return try unpackUInt32(descriptor.data)
+        return try decodeUInt32(descriptor.data)
     default:
         throw AppleEventError.unsupportedCoercion
     }
@@ -292,25 +292,25 @@ public func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
     case typeBoolean:
         result = descriptor.data != Data([0])
     case typeSInt64:
-        let n = Int64(bigEndian: try unpackFixedSize(descriptor.data))
+        let n = Int64(bigEndian: try decodeFixedWidthValue(descriptor.data))
         result = Int(exactly: n) ?? n // on 32-bit machines, return Int64 if out-of-range for 32-bit Int
     case typeSInt32:
-        result = Int(Int32(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = Int(Int32(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeSInt16:
-        result = Int(Int16(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = Int(Int16(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeUInt64:
-        let n = UInt64(bigEndian: try unpackFixedSize(descriptor.data))
+        let n = UInt64(bigEndian: try decodeFixedWidthValue(descriptor.data))
         result = UInt(exactly: n) ?? n // ditto
     case typeUInt32:
-        result = UInt(UInt32(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = UInt(UInt32(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeUInt16:
-        result = UInt(UInt16(bigEndian: try unpackFixedSize(descriptor.data)))
+        result = UInt(UInt16(bigEndian: try decodeFixedWidthValue(descriptor.data)))
     case typeIEEE32BitFloatingPoint:
         result = try unpackAsDouble(descriptor)
     case typeIEEE64BitFloatingPoint: // Q. what about typeIEEE128BitFloatingPoint?
-        result = try unpackFixedSize(descriptor.data) as Double
+        result = try decodeFixedWidthValue(descriptor.data) as Double
     case typeUTF8Text:
-        result = try unpackUTF8String(descriptor.data)
+        result = try decodeUTF8String(descriptor.data)
     case typeUTF16ExternalRepresentation, typeUnicodeText: // TO DO: do we care about non-Unicode strings (typeText? typeStyledText? etc) or are they sufficiently long-deprecated to ignore now (i.e. what, if any, macOS apps still use them?)
         result = try unpackAsString(descriptor) // result is nil if non-numeric string // TO DO: any difference in how AEM converts string to integer?
     case typeLongDateTime:

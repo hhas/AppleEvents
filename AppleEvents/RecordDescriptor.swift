@@ -93,26 +93,26 @@ public struct RecordDescriptor: IterableDescriptor {
     public func flatten() -> Data {
         var result = Data([0x64, 0x6c, 0x65, 0x32,    // 'dle2' format marker
                            0, 0, 0, 0])               // align
-        result += packUInt32(self.type)               // type
+        result += encodeUInt32(self.type)               // type
         result += Data([0, 0, 0, 0])                  // remaining bytes (TBC)
         if self.type == typeAERecord {                // reserved block ('dle2'-wrapped 'reco' only)
             result += Data([0, 0, 0, 0,
                             0, 0, 0, 0,
                             0, 0, 0, 0x18])
-            result += packUInt32(self.type)           // type (again)
+            result += encodeUInt32(self.type)           // type (again)
         }
-        result += packUInt32(UInt32(self.count))      // number of items
+        result += encodeUInt32(UInt32(self.count))      // number of items
         result += Data([0, 0, 0, 0])                  // align
         result += self.data                           // zero or more key-value pairs
-        result[(result.startIndex + 12)..<(result.startIndex + 16)] = packUInt32(UInt32(result.count - 16)) // calculate and set remaining bytes
+        result[(result.startIndex + 12)..<(result.startIndex + 16)] = encodeUInt32(UInt32(result.count - 16)) // calculate and set remaining bytes
         return result
     }
     
     public func appendTo(containerData result: inout Data) {
         // appends this record to a list (item), record (property value), or event (attribute/parameter value)
-        result += packUInt32(self.type)                     // type
-        result += packUInt32(UInt32(self.data.count + 8))   // remaining bytes (= count + align + self.data)
-        result += packUInt32(self.count)                    // number of items
+        result += encodeUInt32(self.type)                     // type
+        result += encodeUInt32(UInt32(self.data.count + 8))   // remaining bytes (= count + align + self.data)
+        result += encodeUInt32(self.count)                    // number of items
         result += Data([0, 0, 0, 0])                        // align
         result += self.data                                 // zero or more key-value pairs
     }

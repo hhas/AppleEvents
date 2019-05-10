@@ -19,9 +19,9 @@ import Foundation
 
 // the following descriptors are traditionally constructed as an AERecord of custom type containing type-specific properties (though not necessarily in a fixed order); while it'd be faster and simpler to build objspecs as simple scalar descriptors (fixed order struct; no need for count or property keys), we need to remain backwards-compatible with traditional Apple events (although future implementations could offer a choice, enabling clients and servers that can use the newer streamlined types to request them via content negotiation); for now, we split the difference and build the descriptors directly rather than via Record APIs, although we still need to unpack them the slow(er) way as we cannot assume the property order of descriptors received from other sources
 
-// ObjectSpecifier
-// MultipleObjectSpecifier (ObjectSpecifier with additional constructors)
-// InsertionLocation
+// ObjectSpecifierDescriptor
+// MultipleObjectSpecifierDescriptor (ObjectSpecifierDescriptor with additional constructors)
+// InsertionLocationDescriptor
 // RangeDescriptor
 // ComparisonDescriptor
 // LogicDescriptor
@@ -33,7 +33,7 @@ import Foundation
 // note that query dispatcher needs to be able to distinguish between single-object and multiple-object specifiers (single-object dispatch is usually easy to implement over conventional DOM-style model, as it forwards the operation to the target object [e.g. `get`/`set`] or its container [e.g. `move`/`copy`/`delete`] to perform; similarly, multiple-object specifiers can be dispatched the same way IF they are non-mutating [e.g. `get`/`count`]; the main gotchas when implementing an AEOM are 1. manipulating 'virtual' objects, e.g. `character`/`word`/`paragraph`, efficiently; and 2. performing mutating operations on multiple objects whose container is implemented as an ordered collection, e.g. Array); given an IDL/interface implementation that can precisely describe the Model's capabilities, we can determine which command+objspec combinations can operate on multi-object specifiers and which must be restricted to single-object specifiers (ideally, the IDL should contain enough info to enable full direct Siri voice control of applications, though obviously there's a lot of R&D to do before getting to that level)
 
 
-// TO DO: make these AbsolutePosition, RelativePosition enums on ObjectSpecifier
+// TO DO: make these AbsolutePosition, RelativePosition enums on ObjectSpecifierDescriptor
 
 private let firstPosition   = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x66, 0x69, 0x72, 0x73])) // kAEFirst
 private let middlePosition  = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x6D, 0x69, 0x64, 0x64])) // kAEMiddle
@@ -48,11 +48,11 @@ private let nextElement     = ScalarDescriptor(type: typeEnumerated, data: Data(
 
 // base objects from which queries are constructed
 
-public struct RootSpecifier: QueryDescriptor { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifier.app.elements(cDocument)`, `RootSpecifier.its.property(pName)`
+public struct RootSpecifierDescriptor: QueryDescriptor { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifierDescriptor.app.elements(cDocument)`, `RootSpecifierDescriptor.its.property(pName)`
     
-    public static let app = RootSpecifier(nullDescriptor)
-    public static let con = RootSpecifier(ScalarDescriptor(type: typeCurrentContainer, data: nullData))
-    public static let its = RootSpecifier(ScalarDescriptor(type: typeObjectBeingExamined, data: nullData))
+    public static let app = RootSpecifierDescriptor(nullDescriptor)
+    public static let con = RootSpecifierDescriptor(ScalarDescriptor(type: typeCurrentContainer, data: nullData))
+    public static let its = RootSpecifierDescriptor(ScalarDescriptor(type: typeObjectBeingExamined, data: nullData))
 
     
     public var type: DescType { return self.descriptor.type }
@@ -76,25 +76,25 @@ public struct RootSpecifier: QueryDescriptor { // abstract wrapper for the termi
 }
 
 
-public extension RootSpecifier {
+public extension RootSpecifierDescriptor {
     
-    func userProperty(_ name: String) -> ObjectSpecifier {
-        return ObjectSpecifier(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
+    func userProperty(_ name: String) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
     }
     
-    func property(_ code: OSType) -> ObjectSpecifier {
-        return ObjectSpecifier(want: typeProperty, form: .property, seld: packAsType(code), from: self)
+    func property(_ code: OSType) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .property, seld: packAsType(code), from: self)
     }
     
-    func elements(_ code: OSType) -> ObjectSpecifier { // TO DO: MultipleObjectSpecifier
-        return ObjectSpecifier(want: code, form: .absolutePosition, seld: allPosition, from: self)
+    func elements(_ code: OSType) -> ObjectSpecifierDescriptor { // TO DO: MultipleObjectSpecifierDescriptor
+        return ObjectSpecifierDescriptor(want: code, form: .absolutePosition, seld: allPosition, from: self)
     }
 }
 
 
 // insertion location, e.g. `beginning of ELEMENTS`, `after ELEMENT`
 
-public struct InsertionLocation: QueryDescriptor {
+public struct InsertionLocationDescriptor: QueryDescriptor {
     
     public enum Position: OSType {
         case before     = 0x6265666F // kAEBefore
@@ -110,7 +110,7 @@ public struct InsertionLocation: QueryDescriptor {
             0x6B, 0x70, 0x6F, 0x73,      // * keyAEPosition
             0x65, 0x6E, 0x75, 0x6D,      //   typeEnumerated
             0x00, 0x00, 0x00, 0x04])     //   size (4 bytes)
-        result += packUInt32(self.position.rawValue)    //   enum code
+        result += encodeUInt32(self.position.rawValue)    //   enum code
         result += Data([0x6B, 0x6F, 0x62, 0x6A])        // * keyAEObject
         self.from.appendTo(containerData: &result)      //   descriptor
         return result
@@ -125,7 +125,7 @@ public struct InsertionLocation: QueryDescriptor {
     }
     
     // called by Unflatten.swift
-    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> InsertionLocation {
+    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> InsertionLocationDescriptor {
         // type, remaining bytes // TO DO: sanity check these?
         var position: OSType? = nil, from: QueryDescriptor? = nil
         let countOffset = descStart + 8
@@ -143,7 +143,7 @@ public struct InsertionLocation: QueryDescriptor {
                 let desc: Descriptor                                                    //   QueryDescriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifier(desc) // TO DO: could do with utility functions that cast to expected type and return or throw 'corrupt data' or 'internal error' (i.e. bug); alternatively, might build this into unflattenFirstDescriptor(), with return type being Descriptor (the default) or the expected FOODescriptor type
+                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifierDescriptor(desc) // TO DO: could do with utility functions that cast to expected type and return or throw 'corrupt data' or 'internal error' (i.e. bug); alternatively, might build this into unflattenFirstDescriptor(), with return type being Descriptor (the default) or the expected FOODescriptor type
             default:
                 throw AppleEventError.invalidParameter
             }
@@ -151,14 +151,14 @@ public struct InsertionLocation: QueryDescriptor {
         guard let position_ = position, let from_ = from, let position__ = Position(rawValue: position_) else {
             throw AppleEventError.invalidParameter
         }
-        return InsertionLocation(position: position__, from: from_)
+        return InsertionLocationDescriptor(position: position__, from: from_)
     }
 }
 
 
 // object specifier, e.g. `PROPERTY of …`, `every ELEMENT of …`, `ELEMENT INDEX of …`, `(ELEMENTS where TEST) of …`
 
-public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifier
+public struct ObjectSpecifierDescriptor: QueryDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifierDescriptor
     
     public enum Form: OSType {
         case property           = 0x70726F70
@@ -175,11 +175,11 @@ public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this im
     
     // TO DO: naming?
     public let want: DescType
-    public let form: ObjectSpecifier.Form
+    public let form: ObjectSpecifierDescriptor.Form
     public let seld: Descriptor // may be anything
     public let from: QueryDescriptor // (objspec or root; technically it can be anything, but if we define a dedicated QueryRoot struct then we can put appropriate constructors on that)
     
-    public init(want: DescType, form: ObjectSpecifier.Form, seld: Descriptor, from: QueryDescriptor) {
+    public init(want: DescType, form: ObjectSpecifierDescriptor.Form, seld: Descriptor, from: QueryDescriptor) {
         self.want = want
         self.form = form
         self.seld = seld
@@ -193,11 +193,11 @@ public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this im
                            0x77, 0x61, 0x6E, 0x74,  // * keyAEDesiredClass
                            0x74, 0x79, 0x70, 0x65,  //   typeType
                            0x00, 0x00, 0x00, 0x04]) //   size (4 bytes)
-        result += packUInt32(self.want)             //   type code
+        result += encodeUInt32(self.want)             //   type code
         result += Data([0x66, 0x6F, 0x72, 0x6D,     // * keyAEKeyForm
                         0x65, 0x6E, 0x75, 0x6D,     //   typeEnumerated
                         0x00, 0x00, 0x00, 0x04])    //   size (4 bytes)
-        result += packUInt32(self.form.rawValue)    //   enum code
+        result += encodeUInt32(self.form.rawValue)    //   enum code
         result += Data([0x73, 0x65, 0x6C, 0x64])    // * keyAEKeyData
         self.seld.appendTo(containerData: &result)  //   descriptor
         result += Data([0x66, 0x72, 0x6F, 0x6D])    // * keyAEContainer
@@ -206,7 +206,7 @@ public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this im
     }
     
     // called by Unflatten.swift
-    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> ObjectSpecifier {
+    internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> ObjectSpecifierDescriptor {
         // type, remaining bytes // TO DO: sanity check these?
         var want: OSType? = nil, form: OSType? = nil, seld: Descriptor? = nil, from: QueryDescriptor? = nil
         let countOffset = descStart + 8 // while typeObjectSpecifier is nominally an AERecord, it lacks the extra padding between bytes remaining and number of items found in typeAERecord
@@ -230,11 +230,11 @@ public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this im
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 seld = desc
             case Data([0x66, 0x72, 0x6F, 0x6D]):                                        // * keyAEContainer
-                // TO DO: how best to implement lazy unpacking for client-side use? (i.e. when an app returns an obj spec, only the topmost specifier needs unwrapped in order to be used; the remainder can be left in an opaque wrapper similar to RootSpecifier and only fully unpacked when needed, e.g. when constructing specifier's display representation); this can measurably improve performance where an application command returns a large list of specifiers
+                // TO DO: how best to implement lazy unpacking for client-side use? (i.e. when an app returns an obj spec, only the topmost specifier needs unwrapped in order to be used; the remainder can be left in an opaque wrapper similar to RootSpecifierDescriptor and only fully unpacked when needed, e.g. when constructing specifier's display representation); this can measurably improve performance where an application command returns a large list of specifiers
                 let desc: Descriptor                                                    //   QueryDescriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either another object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifier(desc)
+                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifierDescriptor(desc)
             default:
                 throw AppleEventError.invalidParameter
             }
@@ -243,62 +243,62 @@ public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this im
             let selform = Form(rawValue: form_) else {
                 throw AppleEventError.invalidParameter
         }
-        return ObjectSpecifier(want: want_, form: selform, seld: seld_, from: from_)
+        return ObjectSpecifierDescriptor(want: want_, form: selform, seld: seld_, from: from_)
     }
 }
 
 
-public extension ObjectSpecifier {
+public extension ObjectSpecifierDescriptor {
     
     // the following are also implemented on Root specifier; Q. is it worth using protocols to mixin? (hardly seems worth it)
     
-    func userProperty(_ name: String) -> ObjectSpecifier {
-        return ObjectSpecifier(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
+    func userProperty(_ name: String) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
     }
     
     // note: an enhanced AEOM could easily allow multiple properties to be retrieved per query by packing as AEList of typeType (the main challenge is finding a client-side syntax that works); what other behaviors could be improved (e.g. unborking not-equals and is-in tests; simplified query descriptor layouts)
     
-    func property(_ code: OSType) -> ObjectSpecifier {
-        return ObjectSpecifier(want: typeProperty, form: .property, seld: packAsType(code), from: self)
+    func property(_ code: OSType) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .property, seld: packAsType(code), from: self)
     }
     
-    func elements(_ code: OSType) -> MultipleObjectSpecifier {
-        return MultipleObjectSpecifier(want: code, form: .absolutePosition, seld: allPosition, from: self)
+    func elements(_ code: OSType) -> MultipleObjectSpecifierDescriptor {
+        return MultipleObjectSpecifierDescriptor(want: code, form: .absolutePosition, seld: allPosition, from: self)
     }
     
     // TO DO: SA also exposes the following on Root specifiers
     
     // relative position selectors
-    func previous(_ code: OSType? = nil) -> ObjectSpecifier {
-        return ObjectSpecifier(want: code ?? self.want, form: .relativePosition, seld: previousElement, from: self)
+    func previous(_ code: OSType? = nil) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: code ?? self.want, form: .relativePosition, seld: previousElement, from: self)
     }
      
-    func next(_ code: OSType? = nil) -> ObjectSpecifier {
-        return ObjectSpecifier(want: code ?? self.want, form: .relativePosition, seld: nextElement, from: self)
+    func next(_ code: OSType? = nil) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: code ?? self.want, form: .relativePosition, seld: nextElement, from: self)
     }
     
     // insertion specifiers
-    // TO DO: AppleScript/CocoaScripting does allow `beginning/end/etc [of app]` as abbreviated `beginning/end/etc [of elements of app]` where element type can be inferred (e.g. `make new document at beginning with properties {…}`); for API equivalence the following would need to be exposed on RootSpecifier as well
+    // TO DO: AppleScript/CocoaScripting does allow `beginning/end/etc [of app]` as abbreviated `beginning/end/etc [of elements of app]` where element type can be inferred (e.g. `make new document at beginning with properties {…}`); for API equivalence the following would need to be exposed on RootSpecifierDescriptor as well
     
-    var beginning: InsertionLocation {
-        return InsertionLocation(position: .beginning, from: self)
+    var beginning: InsertionLocationDescriptor {
+        return InsertionLocationDescriptor(position: .beginning, from: self)
     }
-    var end: InsertionLocation {
-        return InsertionLocation(position: .end, from: self)
+    var end: InsertionLocationDescriptor {
+        return InsertionLocationDescriptor(position: .end, from: self)
     }
-    var before: InsertionLocation {
-        return InsertionLocation(position: .before, from: self)
+    var before: InsertionLocationDescriptor {
+        return InsertionLocationDescriptor(position: .before, from: self)
     }
-    var after: InsertionLocation {
-        return InsertionLocation(position: .after, from: self)
+    var after: InsertionLocationDescriptor {
+        return InsertionLocationDescriptor(position: .after, from: self)
     }
 }
 
 
-public typealias MultipleObjectSpecifier = ObjectSpecifier // TO DO: temporary, until we decide how best to 'subclass' ObjectSpecifier
+public typealias MultipleObjectSpecifierDescriptor = ObjectSpecifierDescriptor // TO DO: temporary, until we decide how best to 'subclass' ObjectSpecifierDescriptor
 
 
-public extension MultipleObjectSpecifier {
+public extension MultipleObjectSpecifierDescriptor {
     
     struct RangeDescriptor: Scalar {
         
@@ -314,7 +314,7 @@ public extension MultipleObjectSpecifier {
             return result
         }
         
-        // TO DO: should initializers accept Int/String as shorthand for RootSpecifier.con.elements(TYPE).byIndex(INT)/.byName(STRING), or should that be dealt with upstream? (probably upstream, as RangeDescriptor does not inherently know what the element TYPE is)
+        // TO DO: should initializers accept Int/String as shorthand for RootSpecifierDescriptor.con.elements(TYPE).byIndex(INT)/.byName(STRING), or should that be dealt with upstream? (probably upstream, as RangeDescriptor does not inherently know what the element TYPE is)
         
         public let start: QueryDescriptor // should always be QueryDescriptor; root is either Con or App (con is standard; not sure we can discount absolute specifiers though)
         public let stop: QueryDescriptor // should always be QueryDescriptor
@@ -358,59 +358,59 @@ public extension MultipleObjectSpecifier {
         return self.form == .absolutePosition && (try? unpackAsEnum(self.seld)) == kAEAll ? self.from : self
     }
     
-    func byIndex(_ index: Descriptor) -> ObjectSpecifier { // TO DO: also accept Int for convenience?
-        return ObjectSpecifier(want: self.want, form: .absolutePosition, seld: index, from: self.baseQuery)
+    func byIndex(_ index: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: also accept Int for convenience?
+        return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: index, from: self.baseQuery)
     }
-    func byName(_ name: Descriptor) -> ObjectSpecifier { // TO DO: take Descriptor instead of/as well as String?
-        return ObjectSpecifier(want: self.want, form: .name, seld: name, from: self.baseQuery)
+    func byName(_ name: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: take Descriptor instead of/as well as String?
+        return ObjectSpecifierDescriptor(want: self.want, form: .name, seld: name, from: self.baseQuery)
     }
-    func byID(_ id: Descriptor) -> ObjectSpecifier {
-        return ObjectSpecifier(want: self.want, form: .uniqueID, seld: id, from: self.baseQuery)
+    func byID(_ id: Descriptor) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: self.want, form: .uniqueID, seld: id, from: self.baseQuery)
     }
-    func byRange(from start: QueryDescriptor, to stop: QueryDescriptor) -> MultipleObjectSpecifier {
+    func byRange(from start: QueryDescriptor, to stop: QueryDescriptor) -> MultipleObjectSpecifierDescriptor {
         // TO DO: start/stop should always be absolute/container-based query; how best to implement? (if we allow passing Int/String descriptors here, RangeDescriptor needs to build the container specifiers)
-        return MultipleObjectSpecifier(want: self.want, form: .range,
+        return MultipleObjectSpecifierDescriptor(want: self.want, form: .range,
                                        seld: RangeDescriptor(start: start, stop: stop), from: self.baseQuery)
     }
-    func byTest(_ test: TestDescriptor) -> MultipleObjectSpecifier {
-        return MultipleObjectSpecifier(want: self.want, form: .test, seld: test, from: self.baseQuery)
+    func byTest(_ test: TestDescriptor) -> MultipleObjectSpecifierDescriptor {
+        return MultipleObjectSpecifierDescriptor(want: self.want, form: .test, seld: test, from: self.baseQuery)
     }
     
-    var first: ObjectSpecifier {
-        return ObjectSpecifier(want: self.want, form: .absolutePosition, seld: firstPosition, from: self.baseQuery)
+    var first: ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: firstPosition, from: self.baseQuery)
     }
-    var middle: ObjectSpecifier {
-        return ObjectSpecifier(want: self.want, form: .absolutePosition, seld: middlePosition, from: self.baseQuery)
+    var middle: ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: middlePosition, from: self.baseQuery)
     }
-    var last: ObjectSpecifier {
-        return ObjectSpecifier(want: self.want, form: .absolutePosition, seld: lastPosition, from: self.baseQuery)
+    var last: ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: lastPosition, from: self.baseQuery)
     }
-    var any: ObjectSpecifier {
-        return ObjectSpecifier(want: self.want, form: .absolutePosition, seld: anyPosition, from: self.baseQuery)
+    var any: ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: anyPosition, from: self.baseQuery)
     }
 }
 
 
-public extension ObjectSpecifier {
+public extension ObjectSpecifierDescriptor {
 
     // Comparison test constructors
     
-    static func <(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func <(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .lessThan, value: rhs)
     }
-    static func <=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func <=(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .lessThanOrEqual, value: rhs)
     }
-    static func ==(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func ==(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .equal, value: rhs)
     }
-    static func !=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func !=(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .notEqual, value: rhs)
     }
-    static func >(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func >(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .greaterThan, value: rhs)
     }
-    static func >=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
+    static func >=(lhs: ObjectSpecifierDescriptor, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .greaterThanOrEqual, value: rhs)
     }
     

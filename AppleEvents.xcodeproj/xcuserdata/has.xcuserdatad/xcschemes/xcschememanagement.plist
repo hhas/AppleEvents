@@ -7,12 +7,34 @@
 		<key>AppleEvents.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>7</integer>
+			<integer>0</integer>
+		</dict>
+		<key>libAppleEvents.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
+		<key>test.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>4</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4F1EA99A22835040000E0A3A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4F1EA9C722835239000E0A3A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4F21AF1E22861C7500A1B978</key>
 		<dict>
 			<key>primary</key>
 			<true/>

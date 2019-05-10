@@ -37,13 +37,13 @@ public struct ComparisonDescriptor: TestDescriptor {
         result += Data([0x72, 0x65, 0x6C, 0x6F,     // * keyAECompOperator
             0x65, 0x6E, 0x75, 0x6D,     //   typeEnumerated
             0x00, 0x00, 0x00, 0x04])    //   size (4 bytes)
-        result += packUInt32(op.rawValue)           //   enum code
+        result += encodeUInt32(op.rawValue)           //   enum code
         result += Data([0x6F, 0x62, 0x6A, 0x32])    // * keyAEObject2
         rhs.appendTo(containerData: &result)        //   descriptor
         return result
     }
     
-    public let object: QueryDescriptor // either RootSpecifier.its (e.g. `words where it begins with "a"`) or ObjectSpecifier (TO DO: SpecifierProtocol?)
+    public let object: QueryDescriptor // either RootSpecifierDescriptor.its (e.g. `words where it begins with "a"`) or InsertionLocationDescriptor (TO DO: SpecifierProtocol?)
     public let comparison: Operator
     public let value: Descriptor // this may be a primitive value or another query
     
@@ -58,7 +58,7 @@ public struct ComparisonDescriptor: TestDescriptor {
         // an 'is not equal to' test is constructed by wrapping a kAEEquals comparison descriptor in a kAENOT logical descriptor
         if self.comparison == .notEqual {
             result += Data([0x6C, 0x6F, 0x67, 0x69])            // typeLogicalDescriptor
-            result += packUInt32(UInt32(self.data.count + 52))  // remaining bytes // TO DO: check this is correct
+            result += encodeUInt32(UInt32(self.data.count + 52))  // remaining bytes // TO DO: check this is correct
             result += Data([0x00, 0x00, 0x00, 0x02,             // count (operator, operands list)
                 0, 0, 0, 0,                         // align
                 0x6C, 0x6F, 0x67, 0x63,             // * keyAELogicalOperator
@@ -67,13 +67,13 @@ public struct ComparisonDescriptor: TestDescriptor {
                 0x4E, 0x4F, 0x54, 0x20,             //   kAENOT
                 0x74, 0x65, 0x72, 0x6D,             // * keyAELogicalTerms // a single-item list containing this comparison
                 0x6C, 0x69, 0x73, 0x74])            //   typeAEList
-            result += packUInt32(UInt32(self.data.count + 16))  //   remaining bytes // TO DO: ditto
+            result += encodeUInt32(UInt32(self.data.count + 16))  //   remaining bytes // TO DO: ditto
             result += Data([0x00, 0x00, 0x00, 0x01,             //   number of items
                 0, 0, 0, 0])                        //   align
         }
         // append this comparison descriptor
-        result += packUInt32(self.type)                         // descriptor type
-        result += packUInt32(UInt32(self.data.count))           // remaining bytes
+        result += encodeUInt32(self.type)                         // descriptor type
+        result += encodeUInt32(UInt32(self.data.count))           // remaining bytes
         result += self.data                                     // descriptor data
     }
     
@@ -138,7 +138,7 @@ public struct LogicalDescriptor: TestDescriptor {
             0x6C, 0x6F, 0x67, 0x63,      // * keyAELogicalOperator
             0x65, 0x6E, 0x75, 0x6D,      //   typeEnumerated
             0x00, 0x00, 0x00, 0x04])     //   size (4 bytes)
-        result += packUInt32(self.logical.rawValue)     //   enum code
+        result += encodeUInt32(self.logical.rawValue)     //   enum code
         result += Data([0x74, 0x65, 0x72, 0x6D])        // * keyAELogicalTerms
         self.operands.appendTo(containerData: &result)  //   descriptor
         return result

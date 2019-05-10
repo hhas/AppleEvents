@@ -22,13 +22,13 @@ public extension AddressDescriptor {
     
     init(processIdentifier value: pid_t) {
         self.type = typeKernelProcessID
-        self.data = packInt32(value) // pid_t = Int32
+        self.data = encodeInt32(value) // pid_t = Int32
     }
     
     func processIdentifier() throws -> pid_t {
         switch self.type {
         case typeKernelProcessID:
-            return try unpackInt32(self.data)
+            return try decodeInt32(self.data)
         default:
             throw AppleEventError(code: -1701)
         }
@@ -36,13 +36,13 @@ public extension AddressDescriptor {
     
     init(bundleIdentifier value: String) throws {
         self.type = typeApplicationBundleID
-        self.data = packUTF8String(value)
+        self.data = encodeUTF8String(value)
     }
     
     func bundleIdentifier() throws -> String {
         switch self.type {
         case typeApplicationBundleID:
-            return try unpackUTF8String(self.data)
+            return try decodeUTF8String(self.data)
         default:
             throw AppleEventError(code: -1701)
         }
@@ -51,13 +51,13 @@ public extension AddressDescriptor {
     init(applicationURL value: URL) throws {
         // TO DO: check URL is valid (file/eppc) and throw if not
         self.type = typeApplicationURL
-        self.data = packUTF8String(value.absoluteString)
+        self.data = encodeUTF8String(value.absoluteString)
     }
     
     func applicationURL() throws -> URL {
         switch self.type {
         case typeApplicationURL:
-            guard let result = URL(string: try unpackUTF8String(self.data)) else {
+            guard let result = URL(string: try decodeUTF8String(self.data)) else {
                 throw AppleEventError(code: -1702)
             }
             return result

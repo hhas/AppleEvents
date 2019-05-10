@@ -37,8 +37,8 @@ public extension Scalar {
     
     func appendTo(containerData result: inout Data) {
         let data = self.data
-        result += packUInt32(self.type)          // descriptor type
-        result += packUInt32(UInt32(data.count)) // remaining bytes
+        result += encodeUInt32(self.type)          // descriptor type
+        result += encodeUInt32(UInt32(data.count)) // remaining bytes
         result += data                           // descriptor data
     }
 }

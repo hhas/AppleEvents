@@ -53,11 +53,11 @@ private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Desc
         result = RecordDescriptor(type: type, count: data.readUInt32(at: offsets.count), data: data[(offsets.count + 8)..<dataEnd])
     case typeObjectSpecifier:
         // [format='dle2', align,] type='obj ', bytes, count=4, align, DATA
-        result = try ObjectSpecifier.unflatten(data, startingAt: offsets.type)
+        result = try ObjectSpecifierDescriptor.unflatten(data, startingAt: offsets.type)
     case typeInsertionLoc:
-        result = try InsertionLocation.unflatten(data, startingAt: offsets.type)
+        result = try InsertionLocationDescriptor.unflatten(data, startingAt: offsets.type)
     case typeRangeDescriptor:
-        result = try ObjectSpecifier.RangeDescriptor.unflatten(data, startingAt: offsets.type)
+        result = try ObjectSpecifierDescriptor.RangeDescriptor.unflatten(data, startingAt: offsets.type)
     case typeCompDescriptor:
         result = try ComparisonDescriptor.unflatten(data, startingAt: offsets.type)
     case typeLogicalDescriptor:

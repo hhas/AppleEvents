@@ -75,7 +75,7 @@ do {
 /*
 do {
     
-    let query = RootSpecifier.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
+    let query = RootSpecifierDescriptor.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
     print(query)
 
     let d = query.flatten()
@@ -87,9 +87,9 @@ do {
 */
 /*
 do {
-    //let query = RootSpecifier.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
+    //let query = RootSpecifierDescriptor.app.elements(cDocument).byIndex(packAsInt(1)).property(pName)
 
-    let query = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
+    let query = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeInsertionLocation)!
     query.setParam(NSAppleEventDescriptor(typeCode: cProperty), forKeyword: keyAEDesiredClass)
     query.setParam(NSAppleEventDescriptor(enumCode: formPropertyID), forKeyword: keyAEKeyForm)
     query.setParam(NSAppleEventDescriptor(typeCode: 0x686f6d65), forKeyword: keyAEKeyData) // 'home'
@@ -137,10 +137,10 @@ func sendEvent(_ event: AppleEventDescriptor) throws -> ReplyEventDescriptor? {
 
 
 do {
-    var ae = AppleEventDescriptor(code: kCoreEventGetData,
+    var ae = AppleEventDescriptor(code: coreEventGetData,
                                   target: try AddressDescriptor(bundleIdentifier: "com.apple.finder"))
     
-    let query = RootSpecifier.app.property(0x686f6d65) // 'home'
+    let query = RootSpecifierDescriptor.app.property(0x686f6d65) // 'home'
     ae.setParameter(keyDirectObject, to: query)
     if let reply = try sendEvent(ae) {
         print(reply, (reply.parameter(keyErrorNumber) ?? "<no-error>"), (reply.parameter(keyAEResult) ?? "<no-result>"))

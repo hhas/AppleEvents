@@ -19,24 +19,24 @@ public func packAsBool(_ value: Bool) -> ScalarDescriptor {
 }
 
 public func packAsInt16(_ value: Int16) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeSInt16, data: packInteger(value))
+    return ScalarDescriptor(type: typeSInt16, data: encodeFixedWidthInteger(value))
 }
 public func packAsUInt16(_ value: UInt16) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeUInt16, data: packInteger(value))
+    return ScalarDescriptor(type: typeUInt16, data: encodeFixedWidthInteger(value))
 }
 
 public func packAsInt32(_ value: Int32) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeSInt32, data: packInteger(value))
+    return ScalarDescriptor(type: typeSInt32, data: encodeFixedWidthInteger(value))
 }
 public func packAsUInt32(_ value: UInt32) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeUInt32, data: packInteger(value))
+    return ScalarDescriptor(type: typeUInt32, data: encodeFixedWidthInteger(value))
 }
 
 public func packAsInt64(_ value: Int64) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeSInt64, data: packInteger(value))
+    return ScalarDescriptor(type: typeSInt64, data: encodeFixedWidthInteger(value))
 }
 public func packAsUInt64(_ value: UInt64) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeUInt64, data: packInteger(value))
+    return ScalarDescriptor(type: typeUInt64, data: encodeFixedWidthInteger(value))
 }
 
 public func packAsInt(_ value: Int) -> ScalarDescriptor { // caution: this always packs Int/UInt as typeSInt64/typeUInt64; this may break compatibility with poorly implemented apps that blindly expect typeSInt32 (because that's what AS gives them) instead of telling AEM that's what they need; while we could check if value falls within Int32.min…Int32.max and preferentially pack as typeSInt32, that's more work
@@ -47,37 +47,37 @@ public func packAsUInt(_ value: UInt) -> ScalarDescriptor { // ditto
 }
 
 public func packAsDouble(_ value: Double) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeIEEE64BitFloatingPoint, data: packFixedSize(value))
+    return ScalarDescriptor(type: typeIEEE64BitFloatingPoint, data: encodeFixedWidthValue(value))
 }
 
 public func packAsString(_ value: String) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeUTF8Text, data: packUTF8String(value))
+    return ScalarDescriptor(type: typeUTF8Text, data: encodeUTF8String(value))
 }
 
 public func packAsDate(_ value: Date) -> ScalarDescriptor {
     // caution: typeLongDateTime does not support sub-second precision; unfortunately, there isn't a desc type for TimeInterval (Double) since OSX epoch
     // TO DO: what about typeISO8601DateTime?
-    return ScalarDescriptor(type: typeLongDateTime, data: packInteger(Int64(value.timeIntervalSinceReferenceDate - epochDelta)))
+    return ScalarDescriptor(type: typeLongDateTime, data: encodeFixedWidthInteger(Int64(value.timeIntervalSinceReferenceDate - epochDelta)))
 }
 
 public func packAsFileURL(_ value: URL) throws -> ScalarDescriptor {
     // TO DO: option/initializer to create bookmark? (Q. how should bookmarks be supported?)
     // func bookmarkData(options: URL.BookmarkCreationOptions = [], includingResourceValuesForKeys keys: Set<URLResourceKey>? = nil, relativeTo url: URL? = nil) throws -> Data
     if !value.isFileURL { throw AppleEventError.unsupportedCoercion } // TO DO: what error?
-    return ScalarDescriptor(type: typeFileURL, data: packUTF8String(value.absoluteString))
+    return ScalarDescriptor(type: typeFileURL, data: encodeUTF8String(value.absoluteString))
 }
 
 public func packAsFourCharCode(type: DescType, code: OSType) -> ScalarDescriptor { // other four-char codes // TO DO: this is not ideal as caller can freely pass invalid types; safer to define dedicated initializers for all relevant types
-    return ScalarDescriptor(type: type, data: packUInt32(code))
+    return ScalarDescriptor(type: type, data: encodeUInt32(code))
 }
 
 public func packAsType(_ value: OSType) -> ScalarDescriptor {
     // TO DO: how should cMissingValue be handled?
-    return ScalarDescriptor(type: typeType, data: packUInt32(value))
+    return ScalarDescriptor(type: typeType, data: encodeUInt32(value))
 }
 
 public func packAsEnum(_ value: OSType) -> ScalarDescriptor {
-    return ScalarDescriptor(type: typeEnumerated, data: packUInt32(value))
+    return ScalarDescriptor(type: typeEnumerated, data: encodeUInt32(value))
 }
 
 public func packAsDescriptor(_ value: Descriptor) -> Descriptor {
@@ -122,7 +122,7 @@ public func packAsDictionary<S: Sequence, T>(_ items: S, using packFunc: (T) thr
                 if key == pClass, let cls = try? unpackAsType(desc) {
                     type = cls
                 } else {
-                    result += packUInt32(key)
+                    result += encodeUInt32(key)
                     desc.appendTo(containerData: &result)
                     count += 1
                 }

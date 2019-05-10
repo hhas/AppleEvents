@@ -195,15 +195,15 @@ public struct AppleEventDescriptor: Descriptor {
                            0, 0, 0, 0,                      // reserved
                            0, 0, 0, 0,                      // offset to parameters (TBC) [16..<20]
                            0x00, 0x00, 0x00, 0x04])         // reserved (4)
-        result += packUInt32(UInt32(parameters.count))      // parameter count
+        result += encodeUInt32(UInt32(parameters.count))      // parameter count
         result += Data([0, 0, 0, 0,                         // reserved
                         0, 0, 0, 0,                         // reserved
                         0, 0, 0, 0])                        // reserved
         let (eventClass, eventID) = eventIdentifier(self.code)
-        result += packUInt32(eventClass)                    // event class
-        result += packUInt32(eventID)                       // event ID
+        result += encodeUInt32(eventClass)                    // event class
+        result += encodeUInt32(eventID)                       // event ID
         result += Data([0, 0])                              // unused
-        result += packInt16(returnID)                       // return ID
+        result += encodeInt16(returnID)                       // return ID
         result += Data(repeating: 0, count: 84)             // unused
         result += Data([0x61, 0x65, 0x76, 0x74,             // type 'aevt'
                         0x00, 0x01, 0x00, 0x01])            // version marker
@@ -228,19 +228,19 @@ public struct AppleEventDescriptor: Descriptor {
         result += Data([0x74, 0x69, 0x6D, 0x6F,             // keyTimeoutAttr
                         0x6C, 0x6F, 0x6E, 0x67,             // typeSInt32
                         0x00, 0x00, 0x00, 0x04])
-        result += packInt32(120 * 60)                       // TO DO
+        result += encodeInt32(120 * 60)                       // TO DO
         // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: QueryDescriptor?`? or left in misc attributes for parent code to deal with (it's arguably an [AppleScript-induced?] design wart: when an AppleScript command has a direct parameter AND an enclosing `tell` block, it can't pack the `tell` target as the direct parameter [its default behavior] as that's already given, so it sticks it in the 'subj' attribute instead; in py-appscript, the high-level appscript API does this automatically while the lower-level aem API leaves client code to set the 'subj' attribute itself)
         for (key, value) in attributes {                    // append any other attributes
-            result += packUInt32(key)
+            result += encodeUInt32(key)
             value.appendTo(containerData: &result)
         }
         result += Data([0x3b, 0x3b, 0x3b, 0x3b])            // end of attributes ';;;;'
-        result[(result.startIndex + 16)..<(result.startIndex + 20)] = packUInt32(UInt32(result.count - 20)) // set offset to parameters
+        result[(result.startIndex + 16)..<(result.startIndex + 20)] = encodeUInt32(UInt32(result.count - 20)) // set offset to parameters
         for (key, value) in parameters {                    // append parameters
-            result += packUInt32(key)
+            result += encodeUInt32(key)
             value.appendTo(containerData: &result)
         }
-        result[(result.startIndex + 4)..<(result.startIndex + 8)] = packUInt32(UInt32(result.count - 8)) // set remaining bytes
+        result[(result.startIndex + 4)..<(result.startIndex + 8)] = encodeUInt32(UInt32(result.count - 8)) // set remaining bytes
         return result
     }
     
@@ -271,8 +271,7 @@ public struct AppleEventDescriptor: Descriptor {
         let parameterCount = data.readUInt32(at: descStart + 32)            // parameter count, then 12-bytes reserved
         let eventClass = data.readUInt32(at: descStart + 48)                // event class
         let eventID = data.readUInt32(at: descStart + 52)                   // event ID, then 2-bytes unused
-        let returnID = try unpackInt16(data[(descStart + 58)..<(descStart + 60)])           // return ID, then 84-bytes unused
-        print(literalFourCharCode(eventClass), literalFourCharCode(eventID))
+        let returnID = try decodeInt16(data[(descStart + 58)..<(descStart + 60)])           // return ID, then 84-bytes unused
         if data[(descStart + 144)..<(descStart + 148)] != Data([0x61, 0x65, 0x76, 0x74]) {  // type 'aevt'
             throw AppleEventError(code: -1702, message: "unexpected bytes 132-136: \(literalFourCharCode(data.readUInt32(at: 132)))")
         }
@@ -371,8 +370,7 @@ public extension ReplyEventDescriptor {
     
     /*
      
-     public let kCoreEventClass: OSType = 0x61657674
-     public let kAEAnswer: OSType = 0x616E7372
+     public let coreEventAnswer: EventIdentifier = 0x61657674_616E7372
 
      */
      

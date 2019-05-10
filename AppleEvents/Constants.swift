@@ -7,7 +7,7 @@
 /******************************************************************************/
 // extra constant definitions
 
-// kAEInheritedProperties isn't defined in OpenScripting.h for some reason
+// kAEInheritedProperties isn't defined in OpenScripting.h
 public let kAEInheritedProperties: OSType = 0x6340235e // 'c@#^'
 
 // AEM doesn't define codes for '!=' or 'in' operators in test clauses, so define pseudo-codes to represent these
@@ -20,31 +20,43 @@ public let kAEIsIn: OSType            = 0x00000002 // will pack as kAEContains w
 
 public typealias EventIdentifier = UInt64
 
-// kCoreEventClass ('aevt')
-public let kAppleEventOpenApplication: EventIdentifier = 0x61657674_6F617070
-public let kAppleEventOpenDocuments: EventIdentifier = 0x61657674_6F646F63
-public let kAppleEventPrintDocuments: EventIdentifier = 0x61657674_70646F63
-public let kAppleEventQuitApplication: EventIdentifier = 0x61657674_71756974
-public let kAppleEventReopenApplication: EventIdentifier = 0x61657674_72617070
+// TO DO: naming convention? e.g. `event CLASS ID`
 
-// kAEMiscStandards ('misc')
-public let kMiscEventActivate: EventIdentifier = 0x6D697363_61637476
+// coreEventClass ('aevt')
+public let eventOpenApplication: EventIdentifier = 0x61657674_6F617070
+public let eventOpenDocuments: EventIdentifier = 0x61657674_6F646F63
+public let eventPrintDocuments: EventIdentifier = 0x61657674_70646F63
+public let eventQuitApplication: EventIdentifier = 0x61657674_71756974
+public let eventReopenApplication: EventIdentifier = 0x61657674_72617070
 
-// kASAppleScriptSuite ('ascr')
-public let kMiscEventLaunch: EventIdentifier = 0x61736372_6E6F6F70
+public let eventAnswer: EventIdentifier = 0x61657674_616E7372
 
 // kAECoreSuite ('core')
-public let kCoreEventGetData: EventIdentifier = 0x636F7265_67657464
-public let kCoreEventSetData: EventIdentifier = 0x636F7265_73657464
-public let kCoreEventCreateElement: EventIdentifier = 0x636F7265_6372656C // make
-public let kCoreEventCountElements: EventIdentifier = 0x636F7265_636E7465
-public let kCoreEventMove: EventIdentifier = 0x636F7265_6D6F7665
-public let kCoreEventClone: EventIdentifier = 0x636F7265_636C6F6E // duplicate
-public let kCoreEventSave: EventIdentifier = 0x636F7265_73617665
-public let kCoreEventClose: EventIdentifier = 0x636F7265_636C6F73
-public let kCoreEventDelete: EventIdentifier = 0x636F7265_64656C6F
+public let coreEventGetData: EventIdentifier = 0x636F7265_67657464
+public let coreEventSetData: EventIdentifier = 0x636F7265_73657464
+public let coreEventCreateElement: EventIdentifier = 0x636F7265_6372656C // make
+public let coreEventCountElements: EventIdentifier = 0x636F7265_636E7465
+public let coreEventMove: EventIdentifier = 0x636F7265_6D6F7665
+public let coreEventClone: EventIdentifier = 0x636F7265_636C6F6E // duplicate
+public let coreEventSave: EventIdentifier = 0x636F7265_73617665
+public let coreEventClose: EventIdentifier = 0x636F7265_636C6F73
+public let coreEventDelete: EventIdentifier = 0x636F7265_64656C6F
 
-public let kURLEventGetURL: EventIdentifier = 0x4755524C_4755524C // GURL/GURL
+
+// kAEMiscStandards ('misc')
+public let miscEventActivate: EventIdentifier = 0x6D697363_61637476
+
+public let miscEventBeginTransaction: EventIdentifier = 0x6D697363_62656769
+public let miscEventTransactionTerminated: EventIdentifier = 0x6D697363_7474726D
+public let miscEventEndTransaction: EventIdentifier = 0x6D697363_656E6474
+
+// kASAppleScriptSuite ('ascr')
+public let miscEventLaunch: EventIdentifier = 0x61736372_6E6F6F70
+public let miscEventGetAETE: EventIdentifier = 0x61736372_67647465
+
+// ('GURL')
+public let miscEventGetURL: EventIdentifier = 0x4755524C_4755524C // GURL/GURL // TO DO: rename eventGetURL?
+
 
 
 
