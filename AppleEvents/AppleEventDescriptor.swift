@@ -152,7 +152,6 @@ public struct AppleEventDescriptor: Descriptor {
         case alwaysInteract = 0x30 // server should always interact with user where appropriate
     }
     
-    public typealias EventType = UInt64
     public typealias Attribute = (key: AEKeyword, value: Descriptor)
     public typealias Parameter = (key: AEKeyword, value: Descriptor)
     
@@ -160,18 +159,18 @@ public struct AppleEventDescriptor: Descriptor {
         return "<AppleEventDescriptor \(literalEightCharCode(self.code))>"
     }
     
-    public let code: EventType
+    public let code: EventIdentifier
     public var target: AddressDescriptor? // pack as keyAddressAttr
     let returnID: AEReturnID
     
     
-    public init(code: EventType, target: AddressDescriptor? = nil) { // create a new outgoing event
+    public init(code: EventIdentifier, target: AddressDescriptor? = nil) { // create a new outgoing event
         self.code = code
         self.target = target
         self.returnID = newReturnID() // TO DO: always set this, or only when sending to another process with wantsReply=true?
     }
     
-    internal init(code: EventType, returnID: AEReturnID) { // used by unflatten() below
+    internal init(code: EventIdentifier, returnID: AEReturnID) { // used by unflatten() below
         self.code = code
         self.returnID = returnID
     }
@@ -200,8 +199,9 @@ public struct AppleEventDescriptor: Descriptor {
         result += Data([0, 0, 0, 0,                         // reserved
                         0, 0, 0, 0,                         // reserved
                         0, 0, 0, 0])                        // reserved
-        result += packUInt32(UInt32(self.code >> 32))       // event class
-        result += packUInt32(UInt32(self.code % (1<<32)))   // event ID
+        let (eventClass, eventID) = eventIdentifier(self.code)
+        result += packUInt32(eventClass)                    // event class
+        result += packUInt32(eventID)                       // event ID
         result += Data([0, 0])                              // unused
         result += packInt16(returnID)                       // return ID
         result += Data(repeating: 0, count: 84)             // unused
@@ -229,7 +229,7 @@ public struct AppleEventDescriptor: Descriptor {
                         0x6C, 0x6F, 0x6E, 0x67,             // typeSInt32
                         0x00, 0x00, 0x00, 0x04])
         result += packInt32(120 * 60)                       // TO DO
-        // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: Query?`? or left in misc attributes for parent code to deal with (it's arguably an [AppleScript-induced?] design wart: when an AppleScript command has a direct parameter AND an enclosing `tell` block, it can't pack the `tell` target as the direct parameter [its default behavior] as that's already given, so it sticks it in the 'subj' attribute instead; in py-appscript, the high-level appscript API does this automatically while the lower-level aem API leaves client code to set the 'subj' attribute itself)
+        // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: QueryDescriptor?`? or left in misc attributes for parent code to deal with (it's arguably an [AppleScript-induced?] design wart: when an AppleScript command has a direct parameter AND an enclosing `tell` block, it can't pack the `tell` target as the direct parameter [its default behavior] as that's already given, so it sticks it in the 'subj' attribute instead; in py-appscript, the high-level appscript API does this automatically while the lower-level aem API leaves client code to set the 'subj' attribute itself)
         for (key, value) in attributes {                    // append any other attributes
             result += packUInt32(key)
             value.appendTo(containerData: &result)
@@ -279,7 +279,7 @@ public struct AppleEventDescriptor: Descriptor {
         if data[(descStart + 148)..<(descStart + 152)] != Data([0x00, 0x01, 0x00, 0x01]) {  // version marker
             throw AppleEventError(code: -1706, message: "unexpected version marker")
         }
-        var event = AppleEventDescriptor(code: (UInt64(eventClass) << 32) | UInt64(eventID), returnID: returnID)
+        var event = AppleEventDescriptor(code: eventIdentifier(eventClass, eventID), returnID: returnID)
         // iterate attributes and parameters to unpack them
         var offset = 152 // unflattenFirstDescriptor will add startIndex
         while true { // read up to end-of-attributes marker ';;;;'

@@ -16,10 +16,42 @@ public let kAEIsIn: OSType            = 0x00000002 // will pack as kAEContains w
 
 
 /******************************************************************************/
+// Apple event identifiers (= eventClass + eventID reformulated as eight-char codes)
+
+public typealias EventIdentifier = UInt64
+
+// kCoreEventClass ('aevt')
+public let kAppleEventOpenApplication: EventIdentifier = 0x61657674_6F617070
+public let kAppleEventOpenDocuments: EventIdentifier = 0x61657674_6F646F63
+public let kAppleEventPrintDocuments: EventIdentifier = 0x61657674_70646F63
+public let kAppleEventQuitApplication: EventIdentifier = 0x61657674_71756974
+public let kAppleEventReopenApplication: EventIdentifier = 0x61657674_72617070
+
+// kAEMiscStandards ('misc')
+public let kMiscEventActivate: EventIdentifier = 0x6D697363_61637476
+
+// kASAppleScriptSuite ('ascr')
+public let kMiscEventLaunch: EventIdentifier = 0x61736372_6E6F6F70
+
+// kAECoreSuite ('core')
+public let kCoreEventGetData: EventIdentifier = 0x636F7265_67657464
+public let kCoreEventSetData: EventIdentifier = 0x636F7265_73657464
+public let kCoreEventCreateElement: EventIdentifier = 0x636F7265_6372656C // make
+public let kCoreEventCountElements: EventIdentifier = 0x636F7265_636E7465
+public let kCoreEventMove: EventIdentifier = 0x636F7265_6D6F7665
+public let kCoreEventClone: EventIdentifier = 0x636F7265_636C6F6E // duplicate
+public let kCoreEventSave: EventIdentifier = 0x636F7265_73617665
+public let kCoreEventClose: EventIdentifier = 0x636F7265_636C6F73
+public let kCoreEventDelete: EventIdentifier = 0x636F7265_64656C6F
+
+public let kURLEventGetURL: EventIdentifier = 0x4755524C_4755524C // GURL/GURL
+
+
+
+/******************************************************************************/
 // TO DO: reorganize constants, discarding unwanted (obsolete, duplicative) definitions
 
 // TO DO: macro to avoid compiler throwing 'ambiguous definition' errors if Carbon definitions are already available? (importing AppKit/Foundation automatically pulls in various Carbon headers)
-
 
 public let KAEISHandleCGI: OSType = 0x73646F63
 

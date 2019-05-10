@@ -6,7 +6,7 @@ import Foundation
 
 
 
-public struct ComparisonDescriptor: Test {
+public struct ComparisonDescriptor: TestDescriptor {
     
     public enum Operator: OSType {
         case lessThan           = 0x3C202020 // kAELessThan
@@ -43,12 +43,12 @@ public struct ComparisonDescriptor: Test {
         return result
     }
     
-    public let object: Query // either RootSpecifier.its (e.g. `words where it begins with "a"`) or ObjectSpecifier (TO DO: SpecifierProtocol?)
+    public let object: QueryDescriptor // either RootSpecifier.its (e.g. `words where it begins with "a"`) or ObjectSpecifier (TO DO: SpecifierProtocol?)
     public let comparison: Operator
     public let value: Descriptor // this may be a primitive value or another query
     
     // TO DO: TEMPORARY; SwiftAutomation currently creates directly
-    public init(object: Query, comparison: Operator, value: Descriptor) {
+    public init(object: QueryDescriptor, comparison: Operator, value: Descriptor) {
         self.object = object
         self.comparison = comparison
         self.value = value
@@ -88,7 +88,7 @@ public struct ComparisonDescriptor: Test {
             let key = data[offset..<(offset+4)]
             switch key {
             case Data([0x6F, 0x62, 0x6A, 0x31]):                                        // * keyAEObject1
-                let desc: Descriptor                                                    //   Query
+                let desc: Descriptor                                                    //   QueryDescriptor/Descriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either an object specifier or its terminal [root] descriptor
                 object = desc
@@ -98,7 +98,7 @@ public struct ComparisonDescriptor: Test {
                 comparison = data.readUInt32(at: offset+12)
                 offset += 16
             case Data([0x6F, 0x62, 0x6A, 0x32]):                                        // * keyAEObject2
-                let desc: Descriptor                                                    //   Query
+                let desc: Descriptor                                                    //   QueryDescriptor/Descriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either an object specifier or its terminal [root] descriptor
                 value = desc
@@ -110,10 +110,10 @@ public struct ComparisonDescriptor: Test {
             var comparison__ = Operator(rawValue: comparison_) else {
                 throw AppleEventError.invalidParameter
         }
-        if comparison__ == .contains && !(object_ is Query) {
+        if comparison__ == .contains && !(object_ is QueryDescriptor) {
             (object_, comparison__, value_) = (value_, .isIn, object_)
         }
-        guard let object__ = object_ as? Query else { throw AppleEventError.invalidParameter }
+        guard let object__ = object_ as? QueryDescriptor else { throw AppleEventError.invalidParameter }
         return ComparisonDescriptor(object: object__, comparison: comparison__, value: value_)
     }
     
@@ -122,7 +122,7 @@ public struct ComparisonDescriptor: Test {
 
 // logical tests, e.g. `not TEST`, `TEST1 or TEST2`, `and(TEST1,TEST2,TEST3,…)`
 
-public struct LogicalDescriptor: Test {
+public struct LogicalDescriptor: TestDescriptor {
     
     public enum Operator: OSType {
         case AND    = 0x414E4420 // kAEAND
@@ -153,7 +153,7 @@ public struct LogicalDescriptor: Test {
         self.operands = operands
     }
     
-    private init(logical: Operator, operands: [Test]) { // used by AND/OR initializers below
+    private init(logical: Operator, operands: [TestDescriptor]) { // used by AND/OR initializers below
         if operands.count < 2 { fatalError("Too few operands.") } // TO DO: how to deal with errors?
         self.logical = logical
         var result = Data()
@@ -163,15 +163,15 @@ public struct LogicalDescriptor: Test {
     
     // TO DO: use varargs for following? that'd prevent too few args being passed (first two args would be explicit)
     
-    public init(AND operands: [Test]) {
+    public init(AND operands: [TestDescriptor]) {
         self.init(logical: .AND, operands: operands)
     }
     
-    public init(OR operands: [Test]) {
+    public init(OR operands: [TestDescriptor]) {
         self.init(logical: .OR, operands: operands)
     }
     
-    public init(NOT operand: Test) {
+    public init(NOT operand: TestDescriptor) {
         self.logical = .NOT
         var result = Data()
         operand.appendTo(containerData: &result)
@@ -181,7 +181,7 @@ public struct LogicalDescriptor: Test {
     // called by Unflatten.swift
     internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> LogicalDescriptor {
         // type, remaining bytes // TO DO: sanity check these?
-        var logical: OSType? = nil, operands: [Test]? = nil
+        var logical: OSType? = nil, operands: [TestDescriptor]? = nil
         let countOffset = descStart + 8
         if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
         var offset = countOffset + 8
@@ -194,11 +194,11 @@ public struct LogicalDescriptor: Test {
                 logical = data.readUInt32(at: offset+12)
                 offset += 16
             case Data([0x74, 0x65, 0x72, 0x6D]):                                        // * keyAELogicalTerms
-                let desc: Descriptor                                                    //   Query
+                let desc: Descriptor                                                    //   QueryDescriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either an object specifier or its terminal [root] descriptor
                 if desc.type != typeAEList { throw AppleEventError.invalidParameter }
-                operands = try unpackAsArray(desc, using: { (desc: Descriptor) throws -> Test in
+                operands = try unpackAsArray(desc, using: { (desc: Descriptor) throws -> TestDescriptor in
                     // TO DO: this is kludgy; would be better not to use -ve start indexes (probably be simpler just to iterate flattened list directly)
                     switch desc.type {
                     case typeLogicalDescriptor:
@@ -223,15 +223,15 @@ public struct LogicalDescriptor: Test {
 }
 
 
-public extension Test {
+public extension TestDescriptor {
     
-    static func &&(lhs: Test, rhs: Test) -> Test {
+    static func &&(lhs: TestDescriptor, rhs: TestDescriptor) -> TestDescriptor {
         return LogicalDescriptor(AND: [lhs, rhs])
     }
-    static func ||(lhs: Test, rhs: Test) -> Test {
+    static func ||(lhs: TestDescriptor, rhs: TestDescriptor) -> TestDescriptor {
         return LogicalDescriptor(OR: [lhs, rhs])
     }
-    static prefix func !(lhs: Test) -> Test {
+    static prefix func !(lhs: TestDescriptor) -> TestDescriptor {
         return LogicalDescriptor(NOT: lhs)
     }
 }

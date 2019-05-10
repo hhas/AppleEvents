@@ -137,7 +137,7 @@ func sendEvent(_ event: AppleEventDescriptor) throws -> ReplyEventDescriptor? {
 
 
 do {
-    var ae = AppleEventDescriptor(code: (UInt64(kAECoreSuite) << 32) + UInt64(kAEGetData),
+    var ae = AppleEventDescriptor(code: kCoreEventGetData,
                                   target: try AddressDescriptor(bundleIdentifier: "com.apple.finder"))
     
     let query = RootSpecifier.app.property(0x686f6d65) // 'home'

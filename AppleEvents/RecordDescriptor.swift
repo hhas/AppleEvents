@@ -68,7 +68,7 @@ public struct RecordDescriptor: IterableDescriptor {
     public let count: UInt32
     public let data: Data // caution: whereas AEGetDescData() returns complete flattened list/record (dle2), this contains list items only; use flatten()/appendTo() to get complete list data // note: client code may wish to define its own list unpacking routines, e.g. Point/Rectangle may be quicker parsing list themselves rather than unpacking as [Int] and converting from that, particularly when supporting legacy QD struct representations as well)
     
-    internal init(type: DescType, count: UInt32, data: Data) { // also called by unflattenFirstDescriptor
+    public init(type: DescType, count: UInt32, data: Data) { // also called by unflattenFirstDescriptor
         self.type = type
         self.count = count
         self.data = data // key-value pairs, where key is DescType and value is added via appendTo()
@@ -121,7 +121,7 @@ public struct RecordDescriptor: IterableDescriptor {
 
 
 
-extension RecordDescriptor {
+public extension RecordDescriptor {
     
     // note: when packing/unpacking as dictionaries, T is normally `Any` as typical record properties are mixed type
     
@@ -129,29 +129,7 @@ extension RecordDescriptor {
     
     // TO DO: optional keyFunc for mapping dictionary keys to/from AEKeyword (this'll also allow for better error messages, using dictionary keys instead of four-char codes when possible)
     
-    
-    init<T>(from items: [AEKeyword: T], using packFunc: (T) throws -> Descriptor) rethrows { // called by packAsArray
-        var result = Data()
-        var count: UInt32 = 0
-        var type = typeAERecord
-        for (key, value) in items {
-            if key == pClass, let cls = value as? DescType {
-                type = cls
-            } else {
-                do {
-                    result += packUInt32(key)
-                    try packFunc(value).appendTo(containerData: &result)
-                    count += 1
-                } catch {
-                    throw AppleEventError(message: "Can't pack item \(literalFourCharCode(key)) of record.", cause: error)
-                }
-            }
-        }
-        self.init(type: type, count: count, data: result)
-    }
-    
-    
-    func dictionary<T>(using unpackFunc: (Descriptor) throws -> T) rethrows -> [AEKeyword: T] {
+    func dictionary<T>(using unpackFunc: (Descriptor) throws -> T) rethrows -> [AEKeyword: T] { // TO DO: should unpack func take (AEKeyword,Descriptor) and return (K,V)?
         var result = [AEKeyword: T]()
         if self.type != typeAERecord, let cls = self.type as? T {
             result[pClass] = cls

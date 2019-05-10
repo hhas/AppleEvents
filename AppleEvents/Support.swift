@@ -53,6 +53,7 @@ func literalEightCharCode(_ code: UInt64) -> String {
     return "\"\(result)\""
 }
 
+// TO DO: rename the following flattenTYPE/unflattenTYPE; use pack/unpack for Descriptor only
 
 // packing/unpacking primitives; these are used by pack/unpack funcs and flatten/unflatten methods
 // caution: these methods are NOT endian-safe; do not call directly to pack/unpack integers
@@ -71,7 +72,7 @@ internal func unpackFixedSize<T>(_ data: Data) throws -> T {
 internal func packInteger<T: FixedWidthInteger>(_ value: T) -> Data {
     return packFixedSize(T(bigEndian: value))
 }
-internal func packUInt32(_ value: UInt32) -> Data {
+public func packUInt32(_ value: UInt32) -> Data { // e.g. OSType
     return packFixedSize(UInt32(bigEndian: value))
 }
 internal func packInt32(_ value: Int32) -> Data {
@@ -81,7 +82,7 @@ internal func packInt16(_ value: Int16) -> Data {
     return packFixedSize(Int16(bigEndian: value))
 }
 
-internal func unpackUInt32(_ data: Data) throws -> UInt32 {
+public func unpackUInt32(_ data: Data) throws -> UInt32 { // e.g. OSType
     return UInt32(bigEndian: try unpackFixedSize(data))
 }
 internal func unpackInt32(_ data: Data) throws -> Int32 { // e.g. pid_t
@@ -103,6 +104,18 @@ internal func unpackUTF8String(_ data: Data) throws -> String {
 }
 
 
+// utility functions for creating and splitting eight-char codes
+
+public func eventIdentifier(_ eventClass: AEEventClass, _ eventID: AEEventID) -> EventIdentifier {
+    return (UInt64(eventClass) << 32) | UInt64(eventID)
+}
+
+public func eventIdentifier(_ eventIdentifier: EventIdentifier) -> (AEEventClass, AEEventID) {
+    return (UInt32(eventIdentifier >> 32), UInt32(eventIdentifier % (1 << 32)))
+}
+
+
+//
 
 public func dumpFourCharData(_ data: Data) { // DEBUG
     let data = Data(data)

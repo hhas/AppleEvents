@@ -32,13 +32,17 @@ public extension Descriptor {
 
 // object specifiers
 
-public protocol Query: Scalar { // TO DO: rename `QueryDescriptor`? (need to avoid confusion between SwiftAutomation.Query)
+// specifier root (wrapper), object specifier, insertion location
+public protocol QueryDescriptor: Scalar {
     
-    var from: Query { get }
+    var from: QueryDescriptor { get }
     
-}    // specifier root (wrapper), object specifier, insertion location
+}
 
-public protocol Test: Scalar {}     // (aka 'whose' clauses) comparison descriptor, logical descriptor // TO DO: rename `TestDescriptor`?
+
+// (aka 'whose' clauses) comparison descriptor, logical descriptor
+public protocol TestDescriptor: Scalar {
+}
 
 
 // AEList/AERecord iterators are mostly used to unpack

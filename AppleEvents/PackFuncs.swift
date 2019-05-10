@@ -8,6 +8,8 @@ import Foundation
 // keeping these as standalone functions allows List/Record descriptors to provide optimized packing in common use cases (e.g. list of string); Q. can functions that take Data as argument operate on slices of an existing Data value? (i.e. we don't want to create an extra data copying step when iterating over a list desc); OTOH, we might want to wrap pairs of pack/unpack functions in 'Coercion' structs, as those can then provide additional features such as bounds checks and documentation generation (c.f. sylvia-lang; mostly it depends on how apps implement their server-side AE interfaces - if it's all code-generated then structs are redundant as the glue generator will produce both code and docs in parallel, and can just as easily generate introspection support; OTOH, if users write interface code directly then docs and introspection must driven by that; in an ideal world, the AE interface would be described in a sylvia-lang dialect, which then generates the Swift code, etc)
 
 
+// TO DO: this is problematic as it requires unflattenDescriptor() to recognize AERecords with non-reco type and return them as RecordDescriptor, not ScalarDescriptor; e.g. an AERecord of type cDocument has the same layout as non-collection AEDescs of typeInteger/typeUTF8Text/etc, so how does AEIsRecord() tell the difference?
+
 
 // public pack functions should always be of type `(T) -> Descriptor` (scalar); pack funcs that validate input values should also throw
 
@@ -94,10 +96,40 @@ public func newPackArrayFunc<T>(using packFunc: @escaping (T) throws -> Descript
 }
 
 
+// TO DO: how best to compose pack/unpack/validate behaviors for AERecords? Swift's type system gets a tad twitchy when attempting to nest generic functions (also, where should user-defined record keys be handled? here, or in higher-level client code?)
+
+/*
+    try packAsDictionary(self.lazy.map{ (key: Key, value: Value) -> (AEKeyword, Value) in
+            if let key = key as? Symbol, key.code != noOSType { return (key.code, value) }
+            throw AppleEventError.unsupportedCoercion
+        }, using: appData.pack)
+ */
 
 
-public func packAsDictionary<T>(_ items: [AEKeyword: T], using packFunc: (T) throws -> Descriptor) throws -> Descriptor {
-    // TO DO: this is problematic as it requires unflattenDescriptor() to recognize AERecords with non-reco type and return them as RecordDescriptor, not ScalarDescriptor; e.g. an AERecord of type cDocument has the same layout as non-collection AEDescs of typeInteger/typeUTF8Text/etc, so how does AEIsRecord() tell the difference?
-    return try RecordDescriptor(from: items, using: packFunc)
+public func packAsDictionary<S: Sequence, T>(_ items: S, using packFunc: (T) throws -> Descriptor) throws -> RecordDescriptor
+    where S.Element == (AEKeyword, T) {
+        var result = Data()
+        var count: UInt32 = 0
+        var type = typeAERecord
+        var keys = Set<AEKeyword>()
+        for (key, value) in items {
+            if keys.contains(key) {
+                throw AppleEventError(code: -1704, message: "Can't pack item \(literalFourCharCode(key)) of record: duplicate key.")
+            }
+            keys.insert(key)
+            do {
+                let desc = try packFunc(value)
+                if key == pClass, let cls = try? unpackAsType(desc) {
+                    type = cls
+                } else {
+                    result += packUInt32(key)
+                    desc.appendTo(containerData: &result)
+                    count += 1
+                }
+            } catch {
+                throw AppleEventError(message: "Can't pack item \(literalFourCharCode(key)) of record.", cause: error)
+            }
+        }
+        return RecordDescriptor(type: type, count: count, data: result)
 }
 

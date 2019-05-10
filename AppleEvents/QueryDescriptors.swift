@@ -48,7 +48,7 @@ private let nextElement     = ScalarDescriptor(type: typeEnumerated, data: Data(
 
 // base objects from which queries are constructed
 
-public struct RootSpecifier: Query { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifier.app.elements(cDocument)`, `RootSpecifier.its.property(pName)`
+public struct RootSpecifier: QueryDescriptor { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifier.app.elements(cDocument)`, `RootSpecifier.its.property(pName)`
     
     public static let app = RootSpecifier(nullDescriptor)
     public static let con = RootSpecifier(ScalarDescriptor(type: typeCurrentContainer, data: nullData))
@@ -58,7 +58,7 @@ public struct RootSpecifier: Query { // abstract wrapper for the terminal descri
     public var type: DescType { return self.descriptor.type }
     public var data: Data { return self.descriptor.data }
     
-    public var from: Query { return self } // TO DO: rename `parent`?
+    public var from: QueryDescriptor { return self } // TO DO: rename `parent`?
     
     internal let descriptor: Descriptor // while atypical, it is possible for an object specifier to have any 'from' value, e.g. `folders of alias "…"` is undocumented but legal in Finder; whether we continue to support this or start to lock down to a sensible spec is TBC (e.g. in Finder, that query can be rewritten as `folders of item (alias "…")`, which at least tickles a different bit of the spec); presumably this flexibility in legal chunk expressions is, in part, to permit constructing queries over AppleScript types (in which case the ability to serialize those queries as AEs is simply undocumented behavior left open), although it may also be deliberate precisely to allow more "English-like" phrasing when dealing with apps such as Finder that are capable of interpreting aliases and other primitive specifier types (i.e. 'folders of alias…' reads better than 'folders of item alias…', although it goes without saying that such 'magical' behaviors end up creating as much consistency/learnability hell)
     
@@ -94,7 +94,7 @@ public extension RootSpecifier {
 
 // insertion location, e.g. `beginning of ELEMENTS`, `after ELEMENT`
 
-public struct InsertionLocation: Query {
+public struct InsertionLocation: QueryDescriptor {
     
     public enum Position: OSType {
         case before     = 0x6265666F // kAEBefore
@@ -117,9 +117,9 @@ public struct InsertionLocation: Query {
     }
     
     public let position: Position
-    public let from: Query
+    public let from: QueryDescriptor
     
-    public init(position: Position, from: Query) {
+    public init(position: Position, from: QueryDescriptor) {
         self.position = position
         self.from = from
     }
@@ -127,7 +127,7 @@ public struct InsertionLocation: Query {
     // called by Unflatten.swift
     internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> InsertionLocation {
         // type, remaining bytes // TO DO: sanity check these?
-        var position: OSType? = nil, from: Query? = nil
+        var position: OSType? = nil, from: QueryDescriptor? = nil
         let countOffset = descStart + 8
         if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
         var offset = countOffset + 8
@@ -140,10 +140,10 @@ public struct InsertionLocation: Query {
                 position = data.readUInt32(at: offset+12)
                 offset += 16
             case Data([0x6B, 0x6F, 0x62, 0x6A]):                                        // * keyAEObject
-                let desc: Descriptor                                                    //   Query
+                let desc: Descriptor                                                    //   QueryDescriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(desc)
+                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifier(desc) // TO DO: could do with utility functions that cast to expected type and return or throw 'corrupt data' or 'internal error' (i.e. bug); alternatively, might build this into unflattenFirstDescriptor(), with return type being Descriptor (the default) or the expected FOODescriptor type
             default:
                 throw AppleEventError.invalidParameter
             }
@@ -158,7 +158,7 @@ public struct InsertionLocation: Query {
 
 // object specifier, e.g. `PROPERTY of …`, `every ELEMENT of …`, `ELEMENT INDEX of …`, `(ELEMENTS where TEST) of …`
 
-public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementation in MultipleObjectSpecifier
+public struct ObjectSpecifier: QueryDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifier
     
     public enum Form: OSType {
         case property           = 0x70726F70
@@ -177,9 +177,9 @@ public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementati
     public let want: DescType
     public let form: ObjectSpecifier.Form
     public let seld: Descriptor // may be anything
-    public let from: Query // (objspec or root; technically it can be anything, but if we define a dedicated QueryRoot struct then we can put appropriate constructors on that)
+    public let from: QueryDescriptor // (objspec or root; technically it can be anything, but if we define a dedicated QueryRoot struct then we can put appropriate constructors on that)
     
-    public init(want: DescType, form: ObjectSpecifier.Form, seld: Descriptor, from: Query) {
+    public init(want: DescType, form: ObjectSpecifier.Form, seld: Descriptor, from: QueryDescriptor) {
         self.want = want
         self.form = form
         self.seld = seld
@@ -208,7 +208,7 @@ public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementati
     // called by Unflatten.swift
     internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> ObjectSpecifier {
         // type, remaining bytes // TO DO: sanity check these?
-        var want: OSType? = nil, form: OSType? = nil, seld: Descriptor? = nil, from: Query? = nil
+        var want: OSType? = nil, form: OSType? = nil, seld: Descriptor? = nil, from: QueryDescriptor? = nil
         let countOffset = descStart + 8 // while typeObjectSpecifier is nominally an AERecord, it lacks the extra padding between bytes remaining and number of items found in typeAERecord
         if data.readUInt32(at: countOffset) != 4 { throw AppleEventError.invalidParameterCount }
         var offset = countOffset + 8
@@ -231,10 +231,10 @@ public struct ObjectSpecifier: Query { // TO DO: want to reuse this implementati
                 seld = desc
             case Data([0x66, 0x72, 0x6F, 0x6D]):                                        // * keyAEContainer
                 // TO DO: how best to implement lazy unpacking for client-side use? (i.e. when an app returns an obj spec, only the topmost specifier needs unwrapped in order to be used; the remainder can be left in an opaque wrapper similar to RootSpecifier and only fully unpacked when needed, e.g. when constructing specifier's display representation); this can measurably improve performance where an application command returns a large list of specifiers
-                let desc: Descriptor                                                    //   Query
+                let desc: Descriptor                                                    //   QueryDescriptor
                 (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                 // object specifier's parent is either another object specifier or its terminal [root] descriptor
-                from = (desc.type == typeObjectSpecifier) ? (desc as! Query) : RootSpecifier(desc)
+                from = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : RootSpecifier(desc)
             default:
                 throw AppleEventError.invalidParameter
             }
@@ -316,17 +316,17 @@ public extension MultipleObjectSpecifier {
         
         // TO DO: should initializers accept Int/String as shorthand for RootSpecifier.con.elements(TYPE).byIndex(INT)/.byName(STRING), or should that be dealt with upstream? (probably upstream, as RangeDescriptor does not inherently know what the element TYPE is)
         
-        public let start: Query // should always be Query; root is either Con or App (con is standard; not sure we can discount absolute specifiers though)
-        public let stop: Query // should always be Query
+        public let start: QueryDescriptor // should always be QueryDescriptor; root is either Con or App (con is standard; not sure we can discount absolute specifiers though)
+        public let stop: QueryDescriptor // should always be QueryDescriptor
         
-        public init(start: Query, stop: Query) {
+        public init(start: QueryDescriptor, stop: QueryDescriptor) {
             self.start = start
             self.stop = stop
         }
         
         internal static func unflatten(_ data: Data, startingAt descStart: Int) throws -> RangeDescriptor {
             // type, remaining bytes // TO DO: sanity check these?
-            var start: Query? = nil, stop: Query? = nil
+            var start: QueryDescriptor? = nil, stop: QueryDescriptor? = nil
             let countOffset = descStart + 8
             if data.readUInt32(at: countOffset) != 2 { throw AppleEventError.invalidParameterCount }
             var offset = countOffset + 8
@@ -334,15 +334,15 @@ public extension MultipleObjectSpecifier {
                 let key = data[offset..<(offset+4)]
                 switch key {
                 case Data([0x73, 0x74, 0x61, 0x72]):                                        // * keyAERangeStart
-                    let desc: Descriptor                                                    //   Query
+                    let desc: Descriptor                                                    //   QueryDescriptor
                     (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                     // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                    start = (desc.type == typeObjectSpecifier) ? (desc as! Query) : nil
+                    start = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : nil
                 case Data([0x73, 0x74, 0x6F, 0x70]):                                        // * keyAERangeStop
-                    let desc: Descriptor                                                    //   Query
+                    let desc: Descriptor                                                    //   QueryDescriptor
                     (desc, offset) = unflattenFirstDescriptor(in: data, startingAt: offset+4)
                     // object specifier's parent is either an object specifier or its terminal [root] descriptor
-                    stop = (desc.type == typeObjectSpecifier) ? (desc as! Query) : nil
+                    stop = (desc.type == typeObjectSpecifier) ? (desc as! QueryDescriptor) : nil
                 default:
                     throw AppleEventError.invalidParameter
                 }
@@ -354,7 +354,7 @@ public extension MultipleObjectSpecifier {
         }
     }
     
-    private var baseQuery: Query { // discards the default kAEAll selector when calling an element[s] selector on `elements(TYPE)`
+    private var baseQuery: QueryDescriptor { // discards the default kAEAll selector when calling an element[s] selector on `elements(TYPE)`
         return self.form == .absolutePosition && (try? unpackAsEnum(self.seld)) == kAEAll ? self.from : self
     }
     
@@ -367,12 +367,12 @@ public extension MultipleObjectSpecifier {
     func byID(_ id: Descriptor) -> ObjectSpecifier {
         return ObjectSpecifier(want: self.want, form: .uniqueID, seld: id, from: self.baseQuery)
     }
-    func byRange(from start: Query, to stop: Query) -> MultipleObjectSpecifier {
+    func byRange(from start: QueryDescriptor, to stop: QueryDescriptor) -> MultipleObjectSpecifier {
         // TO DO: start/stop should always be absolute/container-based query; how best to implement? (if we allow passing Int/String descriptors here, RangeDescriptor needs to build the container specifiers)
         return MultipleObjectSpecifier(want: self.want, form: .range,
                                        seld: RangeDescriptor(start: start, stop: stop), from: self.baseQuery)
     }
-    func byTest(_ test: Test) -> MultipleObjectSpecifier {
+    func byTest(_ test: TestDescriptor) -> MultipleObjectSpecifier {
         return MultipleObjectSpecifier(want: self.want, form: .test, seld: test, from: self.baseQuery)
     }
     
@@ -395,22 +395,22 @@ public extension ObjectSpecifier {
 
     // Comparison test constructors
     
-    static func <(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func <(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .lessThan, value: rhs)
     }
-    static func <=(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func <=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .lessThanOrEqual, value: rhs)
     }
-    static func ==(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func ==(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .equal, value: rhs)
     }
-    static func !=(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func !=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .notEqual, value: rhs)
     }
-    static func >(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func >(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .greaterThan, value: rhs)
     }
-    static func >=(lhs: ObjectSpecifier, rhs: Descriptor) -> Test {
+    static func >=(lhs: ObjectSpecifier, rhs: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: lhs, comparison: .greaterThanOrEqual, value: rhs)
     }
     
@@ -418,16 +418,16 @@ public extension ObjectSpecifier {
     
     // note: ideally the following would only appear on objects constructed from an Its root; however, this would complicate the implementation while failing to provide any real benefit to users, who are unlikely to make such a mistake in the first place
     
-    func beginsWith(_ value: Descriptor) -> Test {
+    func beginsWith(_ value: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: self, comparison: .beginsWith, value: value)
     }
-    func endsWith(_ value: Descriptor) -> Test {
+    func endsWith(_ value: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: self, comparison: .endsWith, value: value)
     }
-    func contains(_ value: Descriptor) -> Test {
+    func contains(_ value: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: self, comparison: .contains, value: value)
     }
-    func isIn(_ value: Descriptor) -> Test {
+    func isIn(_ value: Descriptor) -> TestDescriptor {
         return ComparisonDescriptor(object: self, comparison: .isIn, value: value)
     }
 }

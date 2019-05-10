@@ -15,7 +15,7 @@ public struct ListDescriptor: IterableDescriptor {
     public let count: UInt32
     public let data: Data // whereas AEGetDescData() returns a complete flattened list/record (dle2), `data` only contains payload (in this case, list items); use flatten()/appendTo() to get complete list data // note: client code may wish to define its own list unpacking routines, e.g. Point/Rectangle may be quicker parsing list themselves rather than unpacking as [Int] and converting from that, particularly when supporting legacy QD struct representations as well)
     
-    internal init(count: UInt32, data: Data) { // also called by unflattenFirstDescriptor
+    public init(count: UInt32, data: Data) { // also called by unflattenFirstDescriptor
         self.count = count
         self.data = data
     }
