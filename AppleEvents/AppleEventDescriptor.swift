@@ -348,17 +348,52 @@ public extension AppleEventDescriptor {
     func parameter(_ key: DescType) -> Descriptor? {
         return self.parameters.first{ $0.key == key }?.value
     }
+}
+
+
+
+// temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
+
+import Carbon
+
+
+
+
+public extension AppleEventDescriptor {
     
+    // TO DO: might hedge our bets by keeping 'low-level' send() that returns raw reply descriptor, while providing a higher-level API that unpacks standard result/error responses and returns Descriptor? result or throws AEM/application error
     
     // TO DO: possible/practical to implement sendAsync method that takes completion callback? (this'll need more research; presumably we can create our own mach port to listen on if app doesn't already have a main event loop on which to receive incoming AEs [e.g. see keyReplyPortAttr usage in AESendThreadSafe.c, although that still invokes AESendMessage to dispatch outgoing event and return reply event, so doesn't give us any clues on how to implement our own sendSync/sendAsync methods])
     
     
-    func send() -> (reply: ReplyEventDescriptor?, code: Int) {
+    func send() -> (code: Int, reply: ReplyEventDescriptor?) {
         
-        // TO DO: Mach magic goes here…
-        
-        // TO DO: return `([AppleEvent]Descriptor[?],OSStatus)` or throw? Boxing the AEM status code as an Error and throwing it seems a bit like make-work, as client code will be expected to rethrow it with a more detailed error description anyway, alongside throwing errors returned by the app itself. AEM errors indicate communication problems: e.g. target process not found, timeout occurred while waiting for reply; app errors indicate the event was received okay, but app could not perform the requested operation, e.g. invalid parameter, reference not found. While `send()` method could deal with application-returned errors as well, that might be considered overreach (it also limits possible use-cases; e.g. if client code wants to perform its own reply event processing, or even forward that event on to another process to deal with; OTOH, being more prescriptive reduces the number of "clever" ways in which devs may stretch the system in ways that make it difficult/impossible to nail down as a clean, simple formal specification; e.g. Final Cut's non-standard reply events store return values under custom parameter keys, making them unavailable in AppleScript; locking down the correct behavior in this new API would avoid any future uncertainty, and simplify send methods so that they return result or error only); Q. are there any known use-cases where an AE client process would want to inspect the reply event's attributes? (e.g. debugging tools/event sniffers?)
-        return (nil, 0)
+        var data = self.flatten()
+        var reply = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
+        let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
+            var event = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
+            let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
+            if err != 0 { fatalError("AEUnflattenDesc error \(err), presumably caused by malformed Descriptor.flatten() output.") }
+            let err2 = Int(AESendMessage(&event, &reply, 0x73, 120*60))
+            //        let nsdesc = NSAppleEventDescriptor(aeDescNoCopy: &event)
+            //        print("TO PROCESS:", nsdesc.attributeDescriptor(forKeyword: AppleEvents.keyAddressAttr) as Any)
+            //        print("SENT EVENT:", nsdesc)
+            return err2
+        }
+        if err != 0 {
+            print("AEM error: \(err)")
+            return (err, nil)
+        }
+        let size = AESizeOfFlattenedDesc(&reply)
+        let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
+        let err2 = Int(AEFlattenDesc(&reply, ptr, size, nil))
+        if err2 != 0 { fatalError("AEFlattenDesc should not fail") }
+        let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
+        //dumpFourCharData(data2)
+        if reply.descriptorType == AppleEvents.typeNull { return (0, nil) } // TO DO: if kAENoReply is used then null descriptor is returned
+        //    print("REPLY EVENT:", NSAppleEventDescriptor(aeDescNoCopy: &reply))
+        return (0, (AppleEvents.unflattenDescriptor(data2) as! ReplyEventDescriptor)) // unflattenDescriptor currently raises fatalError if it fails
+
     }
 }
 
