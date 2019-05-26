@@ -2,7 +2,10 @@
 //  Constants.swift
 //
 
-// TO DO: trim down constants list
+// TO DO: trim down constants list; TO DO: below constants should be macro-d out when already defined in Carbon/Foundation
+
+import Foundation
+
 
 /******************************************************************************/
 // extra constant definitions
@@ -18,9 +21,7 @@ public let kAEIsIn: OSType            = 0x00000002 // will pack as kAEContains w
 /******************************************************************************/
 // Apple event identifiers (= eventClass + eventID reformulated as eight-char codes)
 
-public typealias EventIdentifier = UInt64
-
-// TO DO: naming convention? e.g. `event CLASS ID`
+// TO DO: decide naming convention, e.g. `CLASS Event ID` vs `event CLASS ID` vs `event ID` vs `ID Event`?
 
 // coreEventClass ('aevt')
 public let eventOpenApplication: EventIdentifier = 0x61657674_6F617070
@@ -65,7 +66,31 @@ public let miscEventGetURL: EventIdentifier = 0x4755524C_4755524C // GURL/GURL /
 
 // TO DO: macro to avoid compiler throwing 'ambiguous definition' errors if Carbon definitions are already available? (importing AppKit/Foundation automatically pulls in various Carbon headers)
 
-public let KAEISHandleCGI: OSType = 0x73646F63
+public let kAEISHandleCGI: OSType = 0x73646F63 // 'sdoc' // where is this from? where is it used?
+
+
+#if !canImport(Carbon)
+
+// Swift incorrectly defines the following as Int
+public let formAbsolutePosition: OSType = 0x696E6478
+public let formName: OSType = 0x6E616D65
+public let formPropertyID: OSType = 0x70726F70
+public let formRange: OSType = 0x72616E67
+public let formRelativePosition: OSType = 0x72656C65
+public let formTest: OSType = 0x74657374
+public let formUniqueID: OSType = 0x49442020
+public let formUserPropertyID: OSType = 0x75737270
+
+public let kAEAND: OSType = 0x414E4420
+public let kAEOR: OSType = 0x4F522020
+public let kAENOT: OSType = 0x4E4F5420
+
+public let kAEFirst: OSType = 0x66697273
+public let kAEMiddle: OSType = 0x6D696464
+public let kAELast: OSType = 0x6C617374
+public let kAEAny: OSType = 0x616E7920
+public let kAEAll: OSType = 0x616C6C20
+
 
 public let cADBAddress: OSType = 0x63616462
 public let cAEList: OSType = 0x6C697374
@@ -358,24 +383,12 @@ public let eurlSNews: OSType = 0x736E7773
 public let eurlTelnet: OSType = 0x746C6E74
 public let eurlUnknown: OSType = 0x75726C3F
 
-public let formAbsolutePosition: OSType = 0x696E6478
-public let formName: OSType = 0x6E616D65
-public let formPropertyID: OSType = 0x70726F70
-public let formRange: OSType = 0x72616E67
-public let formRelativePosition: OSType = 0x72656C65
-public let formTest: OSType = 0x74657374
-public let formUniqueID: OSType = 0x49442020
-public let formUserPropertyID: OSType = 0x75737270
-
-public let kAEAND: OSType = 0x414E4420
 public let kAEAbout: OSType = 0x61626F75
 public let kAEActivate: OSType = 0x61637476
 public let kAEAfter: OSType = 0x61667465
 public let kAEAliasSelection: OSType = 0x73616C69
-public let kAEAll: OSType = 0x616C6C20
 public let kAEAllCaps: OSType = 0x616C6370
 public let kAEAnswer: OSType = 0x616E7372
-public let kAEAny: OSType = 0x616E7920
 
 public let kAEApplicationClass: OSType = 0x6170706C
 public let kAEApplicationDied: OSType = 0x6F626974
@@ -417,14 +430,11 @@ public let kAEEditGraphic: OSType = 0x65646974
 public let kAEEmptyTrash: OSType = 0x656D7074
 public let kAEEnd: OSType = 0x656E6420
 public let kAEEndTransaction: OSType = 0x656E6474
-public let kAEEndsWith: OSType = 0x656E6473
-public let kAEEquals: OSType = 0x3D202020
 public let kAEExpanded: OSType = 0x70657870
 public let kAEExpansion: OSType = 0x65787061
 public let kAEFalse: OSType = 0x66616C73
 public let kAEFast: OSType = 0x66617374
 public let kAEFinderEvents: OSType = 0x464E4452
-public let kAEFirst: OSType = 0x66697273
 public let kAEFormulaProtect: OSType = 0x6670726F
 public let kAEFullyJustified: OSType = 0x66756C6C
 public let kAEGetClassInfo: OSType = 0x716F626A
@@ -469,7 +479,6 @@ public let kAEItalic: OSType = 0x6974616C
 public let kAEKataHiragana: OSType = 0x68696B61
 public let kAEKeyClass: OSType = 0x6B657963
 public let kAEKeyDown: OSType = 0x6B64776E
-public let kAELast: OSType = 0x6C617374
 public let kAELeftJustified: OSType = 0x6C656674
 public let kAELessThan: OSType = 0x3C202020
 public let kAELessThanEquals: OSType = 0x3C3D2020
@@ -478,7 +487,6 @@ public let kAELowercase: OSType = 0x6C6F7763
 public let kAEMakeObjectsVisible: OSType = 0x6D766973
 public let kAEMenuClass: OSType = 0x6D656E75
 public let kAEMenuSelect: OSType = 0x6D686974
-public let kAEMiddle: OSType = 0x6D696464
 public let kAEMiscStandards: OSType = 0x6D697363
 public let kAEModifiable: OSType = 0x6D6F6466
 public let kAEMouseClass: OSType = 0x6D6F7573
@@ -486,7 +494,6 @@ public let kAEMouseDown: OSType = 0x6D64776E
 public let kAEMouseDownInBack: OSType = 0x6D64626B
 public let kAEMove: OSType = 0x6D6F7665
 public let kAEMoved: OSType = 0x6D6F7665
-public let kAENOT: OSType = 0x4E4F5420
 public let kAENavigationKey: OSType = 0x6E617665
 public let kAENext: OSType = 0x6E657874
 public let kAENo: OSType = 0x6E6F2020
@@ -496,7 +503,6 @@ public let kAENotifyRecording: OSType = 0x72656372
 public let kAENotifyStartRecording: OSType = 0x72656331
 public let kAENotifyStopRecording: OSType = 0x72656330
 public let kAENullEvent: OSType = 0x6E756C6C
-public let kAEOR: OSType = 0x4F522020
 public let kAEOSAXSizeResource: OSType = 0x6F73697A
 public let kAEOpen: OSType = 0x6F646F63
 public let kAEOpenApplication: OSType = 0x6F617070
@@ -1280,3 +1286,6 @@ public let typeWhoseDescriptor: OSType = 0x77686F73
 public let typeWhoseRange: OSType = 0x77726E67
 public let typeWildCard: OSType = 0x2A2A2A2A
 public let typeYards: OSType = 0x79617264
+
+#endif
+

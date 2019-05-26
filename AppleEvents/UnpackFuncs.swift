@@ -128,7 +128,8 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
         // typeUTF16ExternalRepresentation: big-endian 16 bit unicode with optional byte-order-mark,
     //                                  or little-endian 16 bit unicode with required byte-order-mark
     case typeUTF8Text:
-        return try decodeUTF8String(descriptor.data)
+        guard let result = decodeUTF8String(descriptor.data) else { throw AppleEventError.corruptData }
+        return result
     case typeUTF16ExternalRepresentation, typeUnicodeText: // UTF-16 BE/LE
         if descriptor.data.count < 2 {
             if descriptor.data.count > 0 { throw AppleEventError.corruptData }
@@ -171,7 +172,12 @@ public func unpackAsString(_ descriptor: Descriptor) throws -> String { // coerc
         return String(try unpackAsInteger(descriptor) as Int64)
     case typeUInt64, typeUInt32, typeUInt16:
         return String(try unpackAsInteger(descriptor) as UInt64)
-    // TO DO: what about typeFileURL? AEM has unpleasant habit of coercing that to typeUnicodeText as HFS(!) path, which we don't want to do (AEM also fails to coerce it to typeUTF8Text)
+    case typeFileURL:
+        // note that AEM's typeFileURL->typeUnicodeText antiquated coercion handler returns an HFS(!) path (AEM also fails to support typeFileURL->typeUTF8Text), but we're going to be sensible and stick to POSIX paths throughout
+        return try unpackAsFileURL(descriptor).path
+    case typeLongDateTime, typeISO8601DateTime:
+        // note that while ISO8601 data is ASCII string, we still unpack as Date first to ensure it's valid
+        return ISO8601DateFormatter().string(from: try unpackAsDate(descriptor))
     // TO DO: typeVersion?
     // TO DO: throw on legacy types? (typeChar, typeIntlText, typeStyledText)
     default:
@@ -185,6 +191,12 @@ public func unpackAsDate(_ descriptor: Descriptor) throws -> Date {
     switch descriptor.type {
     case typeLongDateTime: // assumes data handle is valid for descriptor type
         delta = TimeInterval(try unpackAsInteger(descriptor) as Int64)
+    case typeISO8601DateTime:
+        guard let result = try? decodeISO8601Date(descriptor.data) else { throw AppleEventError.corruptData }
+        return result
+    case typeUTF8Text, typeUTF16ExternalRepresentation, typeUnicodeText:
+        guard let result = try? decodeISO8601Date(descriptor.data) else { throw AppleEventError.unsupportedCoercion }
+        return result
     default:
         throw AppleEventError.unsupportedCoercion
     }
@@ -211,9 +223,7 @@ public func unpackAsFileURL(_ descriptor: Descriptor) throws -> URL {
          */
     case typeUTF8Text, typeUTF16ExternalRepresentation, typeUnicodeText:
         // TO DO: relative paths?
-        guard let path = try? unpackAsString(descriptor), path.hasPrefix("/") else {
-            throw AppleEventError.unsupportedCoercion
-        }
+        guard let path = try? unpackAsString(descriptor), path.hasPrefix("/") else { throw AppleEventError.unsupportedCoercion }
         return URL(fileURLWithPath: path)
     // TO DO: what other cases? typeAlias, typeFSRef are deprecated (typeAlias is still commonly used by AS, but would require use of deprecated APIs to coerce/unpack)
     default:
@@ -235,11 +245,27 @@ public func unpackAsType(_ descriptor: Descriptor) throws -> OSType {
 
 public func unpackAsEnum(_ descriptor: Descriptor) throws -> OSType {
     switch descriptor.type {
-    case typeEnumerated, typeAbsoluteOrdinal:
+    case typeEnumerated, typeAbsoluteOrdinal: // TO DO: decide where to accept typeAbsoluteOrdinal (it's an odd quirk of Carbon AEM, as all other standard enums used in specifiers - e.g. relative position, comparison and logic operators - are defined as typeEnumerated)
         return try decodeUInt32(descriptor.data)
     default:
         throw AppleEventError.unsupportedCoercion
     }
+}
+
+private let absoluteOrdinals: Set<OSType> = [OSType(kAEFirst), OSType(kAEMiddle), OSType(kAELast), OSType(kAEAny), OSType(kAEAll)]
+private let relativeOrdinals: Set<OSType> = [OSType(kAEPrevious), OSType(kAENext)]
+
+
+public func unpackAsAbsoluteOrdinal(_ descriptor: Descriptor) throws -> OSType {
+    guard descriptor.type == typeAbsoluteOrdinal, let code = try? decodeUInt32(descriptor.data), // TO DO: also accept typeEnumerated?
+        absoluteOrdinals.contains(code) else { throw AppleEventError.unsupportedCoercion }
+    return code
+}
+
+public func unpackAsRelativeOrdinal(_ descriptor: Descriptor) throws -> OSType {
+    guard descriptor.type == typeEnumerated, let code = try? decodeUInt32(descriptor.data),
+        relativeOrdinals.contains(code) else { throw AppleEventError.unsupportedCoercion }
+    return code
 }
 
 public func unpackAsFourCharCode(_ descriptor: Descriptor) throws -> OSType {
@@ -265,7 +291,7 @@ public func unpackAsArray<T>(_ descriptor: Descriptor, using unpackFunc: (Descri
     if let listDescriptor = descriptor as? ListDescriptor { // any non-list value is coerced to single-item list
         return try listDescriptor.array(using: unpackFunc)
     } else {
-        // TO DO: typeQDPoint, typeQDRectangle, typeRGBColor (legacy support as various Carbon-based apps still use these types)
+        // TO DO: typeQDPoint, typeQDRectangle, typeRGBColor (legacy support as various Carbon-based apps still use these types; typeRGBColor is also used by CocoaScripting)
         return [try unpackFunc(descriptor)]
     }
 }
@@ -281,6 +307,8 @@ public func unpackAsDictionary<T>(_ descriptor: Descriptor, using unpackFunc: (D
 
 
 // Q. how to represent 'missing value' when unpacking as Any?
+
+// TO DO: is Swift smart enough to compile `switch` down to O(1)-ish jump? if it's O(n) we may want to reorder cases so that commonest types (typeSInt32, typeUnicodeText, etc) appear first
 
 public func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
     let result: Any
@@ -310,7 +338,8 @@ public func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
     case typeIEEE64BitFloatingPoint: // Q. what about typeIEEE128BitFloatingPoint?
         result = try decodeFixedWidthValue(descriptor.data) as Double
     case typeUTF8Text:
-        result = try decodeUTF8String(descriptor.data)
+        guard let string = decodeUTF8String(descriptor.data) else { throw AppleEventError.corruptData }
+        result = string as Any
     case typeUTF16ExternalRepresentation, typeUnicodeText: // TO DO: do we care about non-Unicode strings (typeText? typeStyledText? etc) or are they sufficiently long-deprecated to ignore now (i.e. what, if any, macOS apps still use them?)
         result = try unpackAsString(descriptor) // result is nil if non-numeric string // TO DO: any difference in how AEM converts string to integer?
     case typeLongDateTime:

@@ -72,11 +72,12 @@ public func packAsFourCharCode(type: DescType, code: OSType) -> ScalarDescriptor
 }
 
 public func packAsType(_ value: OSType) -> ScalarDescriptor {
-    // TO DO: how should cMissingValue be handled?
+    // TO DO: how should cMissingValue be handled? (not much we can do about it here, as it must pack)
     return ScalarDescriptor(type: typeType, data: encodeUInt32(value))
 }
 
 public func packAsEnum(_ value: OSType) -> ScalarDescriptor {
+    // TO DO: should we check for absolute ordinal values and pack as typeAbsoluteOrdinal as special case? (mostly depends on whether they've any possible use cases outside of by-index specifiers, e.g. in introspection APIs [TBH, it shouldn't matter what type they are as long as by-index specifiers continue to be built using typeAbsoluteOrdinal]); TBH, we probably want to treat both typeType and typeEnumerated as interchangeable (there was never any obvious reason not to have a single AE desc type cover all OSTypes, and might well have avoided various bugs and other confusion when mapping human-readable names to and from four-char codes)
     return ScalarDescriptor(type: typeEnumerated, data: encodeUInt32(value))
 }
 

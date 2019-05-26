@@ -22,20 +22,9 @@
 		4F1EA9C222835213000E0A3A /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
 		4F1EA9C322835213000E0A3A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 		4F1EA9CB22835239000E0A3A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9CA22835239000E0A3A /* main.swift */; };
-		4F1EA9CF22835258000E0A3A /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
-		4F1EA9D022835258000E0A3A /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
-		4F1EA9D122835258000E0A3A /* UnpackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AC228351D8000E0A3A /* UnpackFuncs.swift */; };
-		4F1EA9D222835258000E0A3A /* AddressDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B1228351E9000E0A3A /* AddressDescriptor.swift */; };
-		4F1EA9D322835258000E0A3A /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B5228351E9000E0A3A /* AppleEventDescriptor.swift */; };
-		4F1EA9D422835258000E0A3A /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B4228351E9000E0A3A /* Descriptor.swift */; };
-		4F1EA9D522835258000E0A3A /* ListDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B3228351E9000E0A3A /* ListDescriptor.swift */; };
-		4F1EA9D622835258000E0A3A /* QueryDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B2228351E9000E0A3A /* QueryDescriptors.swift */; };
-		4F1EA9D722835258000E0A3A /* RecordDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B6228351E9000E0A3A /* RecordDescriptor.swift */; };
-		4F1EA9D822835258000E0A3A /* ScalarDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B0228351E9000E0A3A /* ScalarDescriptor.swift */; };
 		4F1EA9DE22835260000E0A3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
 		4F1EA9DF22835276000E0A3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
 		4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
-		4F1EA9ED2283FC26000E0A3A /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
 		4F21AF2822861CB000A1B978 /* AppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1EA99E22835040000E0A3A /* AppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
 		4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
@@ -52,10 +41,32 @@
 		4F21AF3522861CB000A1B978 /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
 		4F21AF3622861CB000A1B978 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 		4F21AF3722861CC800A1B978 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
-		4F21AF652286213600A1B978 /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
-		4F21AF662286213600A1B978 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
-		4F21AF672286213600A1B978 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
+		4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */; };
+		4FD23EAD229965E3006792A7 /* AppleEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */; };
+		4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
+		4FD23EB022997BD6006792A7 /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
+		4FD23EB9229A8770006792A7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EB8229A8770006792A7 /* main.swift */; };
+		4FD23EBF229A879C006792A7 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */; };
+		4FD23EC2229A87F0006792A7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */; };
+		4FD23EC5229AC73D006792A7 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4FD23EBD229A877A006792A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F1EA99222835040000E0A3A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F21AF1E22861C7500A1B978;
+			remoteInfo = libAppleEvents;
+		};
+		4FD23EC3229AC72F006792A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F1EA99222835040000E0A3A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F21AF1E22861C7500A1B978;
+			remoteInfo = libAppleEvents;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		4F1EA9C622835239000E0A3A /* CopyFiles */ = {
@@ -67,9 +78,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		4FD23EB4229A8770006792A7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F081B56229AE1A800B2004B /* test-ae.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "test-ae.py"; sourceTree = "<group>"; };
 		4F1EA99B22835040000E0A3A /* AppleEvents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleEvents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F1EA99E22835040000E0A3A /* AppleEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleEvents.h; sourceTree = "<group>"; };
 		4F1EA99F22835040000E0A3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -86,11 +107,16 @@
 		4F1EA9BE22835212000E0A3A /* AppleEventError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventError.swift; sourceTree = "<group>"; };
 		4F1EA9BF22835212000E0A3A /* Support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		4F1EA9C022835213000E0A3A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		4F1EA9C822835239000E0A3A /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F1EA9C822835239000E0A3A /* test-send */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-send"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F1EA9CA22835239000E0A3A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F1EA9DD22835260000E0A3A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDescriptors.swift; sourceTree = "<group>"; };
 		4F21AF1F22861C7500A1B978 /* libAppleEvents.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppleEvents.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventHandler.swift; sourceTree = "<group>"; };
+		4FD23EAE22997BD6006792A7 /* CarbonShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonShim.swift; sourceTree = "<group>"; };
+		4FD23EB6229A8770006792A7 /* test-receive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-receive"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4FD23EB8229A8770006792A7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F1EA9DE22835260000E0A3A /* Foundation.framework in Frameworks */,
+				4FD23EC5229AC73D006792A7 /* libAppleEvents.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +145,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4FD23EB3229A8770006792A7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FD23EC2229A87F0006792A7 /* CoreFoundation.framework in Frameworks */,
+				4FD23EBF229A879C006792A7 /* libAppleEvents.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -125,7 +161,8 @@
 			isa = PBXGroup;
 			children = (
 				4F1EA99D22835040000E0A3A /* AppleEvents */,
-				4F1EA9C922835239000E0A3A /* test */,
+				4F1EA9C922835239000E0A3A /* test-send */,
+				4FD23EB7229A8770006792A7 /* test-receive */,
 				4F1EA9DC22835260000E0A3A /* Frameworks */,
 				4F1EA99C22835040000E0A3A /* Products */,
 			);
@@ -135,8 +172,9 @@
 			isa = PBXGroup;
 			children = (
 				4F1EA99B22835040000E0A3A /* AppleEvents.framework */,
-				4F1EA9C822835239000E0A3A /* test */,
+				4F1EA9C822835239000E0A3A /* test-send */,
 				4F21AF1F22861C7500A1B978 /* libAppleEvents.a */,
+				4FD23EB6229A8770006792A7 /* test-receive */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -148,9 +186,11 @@
 				4F1EA99F22835040000E0A3A /* Info.plist */,
 				4F1EA9A8228351AD000E0A3A /* codecs */,
 				4F1EA9A9228351B5000E0A3A /* descriptors */,
+				4FD23EB12299927B006792A7 /* handlers */,
 				4F1EA9BE22835212000E0A3A /* AppleEventError.swift */,
 				4F1EA9BF22835212000E0A3A /* Support.swift */,
 				4F1EA9C022835213000E0A3A /* Constants.swift */,
+				4FD23EAE22997BD6006792A7 /* CarbonShim.swift */,
 			);
 			path = AppleEvents;
 			sourceTree = "<group>";
@@ -180,20 +220,38 @@
 			name = descriptors;
 			sourceTree = "<group>";
 		};
-		4F1EA9C922835239000E0A3A /* test */ = {
+		4F1EA9C922835239000E0A3A /* test-send */ = {
 			isa = PBXGroup;
 			children = (
 				4F1EA9CA22835239000E0A3A /* main.swift */,
 			);
-			path = test;
+			path = "test-send";
 			sourceTree = "<group>";
 		};
 		4F1EA9DC22835260000E0A3A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */,
 				4F1EA9DD22835260000E0A3A /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4FD23EB12299927B006792A7 /* handlers */ = {
+			isa = PBXGroup;
+			children = (
+				4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */,
+			);
+			name = handlers;
+			sourceTree = "<group>";
+		};
+		4FD23EB7229A8770006792A7 /* test-receive */ = {
+			isa = PBXGroup;
+			children = (
+				4FD23EB8229A8770006792A7 /* main.swift */,
+				4F081B56229AE1A800B2004B /* test-ae.py */,
+			);
+			path = "test-receive";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,9 +294,9 @@
 			productReference = 4F1EA99B22835040000E0A3A /* AppleEvents.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		4F1EA9C722835239000E0A3A /* test */ = {
+		4F1EA9C722835239000E0A3A /* test-send */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test" */;
+			buildConfigurationList = 4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test-send" */;
 			buildPhases = (
 				4F1EA9C422835239000E0A3A /* Sources */,
 				4F1EA9C522835239000E0A3A /* Frameworks */,
@@ -247,10 +305,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				4FD23EC4229AC72F006792A7 /* PBXTargetDependency */,
 			);
-			name = test;
+			name = "test-send";
 			productName = AppleEventDescriptor;
-			productReference = 4F1EA9C822835239000E0A3A /* test */;
+			productReference = 4F1EA9C822835239000E0A3A /* test-send */;
 			productType = "com.apple.product-type.tool";
 		};
 		4F21AF1E22861C7500A1B978 /* libAppleEvents */ = {
@@ -269,6 +328,24 @@
 			productName = appleeventslib;
 			productReference = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		4FD23EB5229A8770006792A7 /* test-receive */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4FD23EBA229A8770006792A7 /* Build configuration list for PBXNativeTarget "test-receive" */;
+			buildPhases = (
+				4FD23EB2229A8770006792A7 /* Sources */,
+				4FD23EB3229A8770006792A7 /* Frameworks */,
+				4FD23EB4229A8770006792A7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4FD23EBE229A877A006792A7 /* PBXTargetDependency */,
+			);
+			name = "test-receive";
+			productName = "test-handler";
+			productReference = 4FD23EB6229A8770006792A7 /* test-receive */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -289,6 +366,9 @@
 					4F21AF1E22861C7500A1B978 = {
 						CreatedOnToolsVersion = 10.2.1;
 					};
+					4FD23EB5229A8770006792A7 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
 				};
 			};
 			buildConfigurationList = 4F1EA99522835040000E0A3A /* Build configuration list for PBXProject "AppleEvents" */;
@@ -305,7 +385,8 @@
 			targets = (
 				4F1EA99A22835040000E0A3A /* AppleEvents */,
 				4F21AF1E22861C7500A1B978 /* libAppleEvents */,
-				4F1EA9C722835239000E0A3A /* test */,
+				4F1EA9C722835239000E0A3A /* test-send */,
+				4FD23EB5229A8770006792A7 /* test-receive */,
 			);
 		};
 /* End PBXProject section */
@@ -326,6 +407,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F1EA9AE228351D8000E0A3A /* Unflatten.swift in Sources */,
+				4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */,
+				4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */,
 				4F1EA9AD228351D8000E0A3A /* PackFuncs.swift in Sources */,
 				4F1EA9AF228351D8000E0A3A /* UnpackFuncs.swift in Sources */,
 				4F1EA9BB228351E9000E0A3A /* Descriptor.swift in Sources */,
@@ -346,20 +429,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F1EA9D022835258000E0A3A /* Unflatten.swift in Sources */,
-				4F1EA9CF22835258000E0A3A /* PackFuncs.swift in Sources */,
-				4F1EA9D122835258000E0A3A /* UnpackFuncs.swift in Sources */,
-				4F1EA9D422835258000E0A3A /* Descriptor.swift in Sources */,
-				4F1EA9D822835258000E0A3A /* ScalarDescriptor.swift in Sources */,
-				4F1EA9D222835258000E0A3A /* AddressDescriptor.swift in Sources */,
-				4F1EA9D522835258000E0A3A /* ListDescriptor.swift in Sources */,
-				4F1EA9D722835258000E0A3A /* RecordDescriptor.swift in Sources */,
-				4F1EA9D622835258000E0A3A /* QueryDescriptors.swift in Sources */,
-				4F1EA9ED2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
-				4F1EA9D322835258000E0A3A /* AppleEventDescriptor.swift in Sources */,
-				4F21AF652286213600A1B978 /* AppleEventError.swift in Sources */,
-				4F21AF662286213600A1B978 /* Support.swift in Sources */,
-				4F21AF672286213600A1B978 /* Constants.swift in Sources */,
 				4F1EA9CB22835239000E0A3A /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,6 +438,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */,
+				4FD23EB022997BD6006792A7 /* CarbonShim.swift in Sources */,
+				4FD23EAD229965E3006792A7 /* AppleEventHandler.swift in Sources */,
 				4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */,
 				4F21AF2B22861CB000A1B978 /* UnpackFuncs.swift in Sources */,
 				4F21AF2C22861CB000A1B978 /* Descriptor.swift in Sources */,
@@ -385,7 +456,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4FD23EB2229A8770006792A7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FD23EB9229A8770006792A7 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4FD23EBE229A877A006792A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F21AF1E22861C7500A1B978 /* libAppleEvents */;
+			targetProxy = 4FD23EBD229A877A006792A7 /* PBXContainerItemProxy */;
+		};
+		4FD23EC4229AC72F006792A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F21AF1E22861C7500A1B978 /* libAppleEvents */;
+			targetProxy = 4FD23EC3229AC72F006792A7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4F1EA9A122835040000E0A3A /* Debug */ = {
@@ -610,6 +702,28 @@
 			};
 			name = Release;
 		};
+		4FD23EBB229A8770006792A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4FD23EBC229A8770006792A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -631,7 +745,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test" */ = {
+		4F1EA9CC22835239000E0A3A /* Build configuration list for PBXNativeTarget "test-send" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4F1EA9CD22835239000E0A3A /* Debug */,
@@ -645,6 +759,15 @@
 			buildConfigurations = (
 				4F21AF2622861C7500A1B978 /* Debug */,
 				4F21AF2722861C7500A1B978 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4FD23EBA229A8770006792A7 /* Build configuration list for PBXNativeTarget "test-receive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4FD23EBB229A8770006792A7 /* Debug */,
+				4FD23EBC229A8770006792A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

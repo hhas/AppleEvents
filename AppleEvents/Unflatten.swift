@@ -4,10 +4,9 @@
 
 import Foundation
 
+// TO DO: Mach messages use different layout to AEFlattenDesc
+
 // caution: this does not perform bounds/sanity checks for malformed/truncated data
-
-// TO DO: problem: how to tell if an AERecord with non-reco type is a record or a scalar? AEIsRecord() seems to know; does it pattern match data structure, or is there some hidden flag?
-
 
 
 private let formatMarker = Data([0x64, 0x6c, 0x65, 0x32]) // 'dle2'

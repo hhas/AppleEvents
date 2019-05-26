@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TO DO: ScalarDescriptor.toRecord() which attempts to read descriptor data as AERecord and throws if the numbers don't add up (this is how AEM does it)
 
 // TO DO: need an API to traverse nested descriptors in order to, e.g. print human-readable representation
 
@@ -16,8 +17,6 @@ public protocol Descriptor: CustomDebugStringConvertible {
     
     func flatten() -> Data
     func appendTo(containerData: inout Data)
-    
-    var isRecord: Bool { get }
 }
 
 public extension Descriptor {
@@ -25,8 +24,6 @@ public extension Descriptor {
     var debugDescription: String {
         return "<\(Swift.type(of: self)) \(literalFourCharCode(self.type))>"
     }
-    
-    var isRecord: Bool { return false } // TO DO: how to implement this? (Q. how does AEIsRecordDesc do it?)
 }
 
 

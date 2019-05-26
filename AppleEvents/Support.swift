@@ -2,11 +2,22 @@
 //  Support.swift
 //
 
+// TO DO: which utility funcs should be public?
+
 import Foundation
+
+
+#if !canImport(Carbon)
 
 public typealias OSType = UInt32
 public typealias DescType = OSType
 public typealias AEKeyword = OSType
+
+#endif
+
+
+public typealias EventIdentifier = UInt64 // combined eventClass and eventID
+
 
 public let noOSType: OSType = 0
 
@@ -107,9 +118,19 @@ internal func encodeUTF8String(_ value: String) -> Data { // confirm fileURL, bu
     return Data(value.utf8)
 }
 
-internal func decodeUTF8String(_ data: Data) throws -> String {
-    guard let result = String(data: data, encoding: .utf8) else { throw AppleEventError.corruptData }
-    return result
+internal func decodeUTF8String(_ data: Data) -> String? {
+    return String(data: data, encoding: .utf8)
+}
+
+// ditto for ISO8601 date strings (although AE dates are traditionally Int64)
+
+func encodeISO8601Date(_ value: Date) throws -> Data {
+    return encodeUTF8String(ISO8601DateFormatter().string(from: value))
+}
+
+func decodeISO8601Date(_ data: Data) throws -> Date? {
+    if let string = decodeUTF8String(data) { return ISO8601DateFormatter().date(from: string) }
+    return nil
 }
 
 
@@ -155,9 +176,12 @@ public func literalEightCharCode(_ code: EventIdentifier) -> String {
 }
 
 
-// misc
+// TO DO: functions for converting to/from four-char MacRoman strings
 
-public func dumpFourCharData(_ data: Data) { // DEBUG
+
+// development
+
+public func dumpFourCharData(_ data: Data) {
     let data = Data(data)
     print("/*")
     for i in 0..<(data.count / 4) {

@@ -341,6 +341,8 @@ public extension AppleEventDescriptor {
         self.parameters.append((key, value))
     }
     
+    // TO DO: would it be better for these to throw? (probably not, since higher-level API will want to generate human-readable error message, so won't benefit from error over nil)
+    
     func attribute(_ key: DescType) -> Descriptor? {
         return self.attributes.first{ $0.key == key }?.value
     }
@@ -354,10 +356,6 @@ public extension AppleEventDescriptor {
 
 // temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
 
-import Carbon
-
-
-
 
 public extension AppleEventDescriptor {
     
@@ -367,33 +365,7 @@ public extension AppleEventDescriptor {
     
     
     func send() -> (code: Int, reply: ReplyEventDescriptor?) {
-        
-        var data = self.flatten()
-        var reply = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
-        let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
-            var event = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
-            let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
-            if err != 0 { fatalError("AEUnflattenDesc error \(err), presumably caused by malformed Descriptor.flatten() output.") }
-            let err2 = Int(AESendMessage(&event, &reply, 0x73, 120*60))
-            //        let nsdesc = NSAppleEventDescriptor(aeDescNoCopy: &event)
-            //        print("TO PROCESS:", nsdesc.attributeDescriptor(forKeyword: AppleEvents.keyAddressAttr) as Any)
-            //        print("SENT EVENT:", nsdesc)
-            return err2
-        }
-        if err != 0 {
-            print("AEM error: \(err)")
-            return (err, nil)
-        }
-        let size = AESizeOfFlattenedDesc(&reply)
-        let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
-        let err2 = Int(AEFlattenDesc(&reply, ptr, size, nil))
-        if err2 != 0 { fatalError("AEFlattenDesc should not fail") }
-        let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
-        //dumpFourCharData(data2)
-        if reply.descriptorType == AppleEvents.typeNull { return (0, nil) } // TO DO: if kAENoReply is used then null descriptor is returned
-        //    print("REPLY EVENT:", NSAppleEventDescriptor(aeDescNoCopy: &reply))
-        return (0, (AppleEvents.unflattenDescriptor(data2) as! ReplyEventDescriptor)) // unflattenDescriptor currently raises fatalError if it fails
-
+        return carbonSend(event: self)
     }
 }
 

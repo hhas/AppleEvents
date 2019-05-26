@@ -42,7 +42,8 @@ public extension AddressDescriptor {
     func bundleIdentifier() throws -> String {
         switch self.type {
         case typeApplicationBundleID:
-            return try decodeUTF8String(self.data)
+            guard let result = decodeUTF8String(self.data) else { throw AppleEventError.corruptData }
+            return result
         default:
             throw AppleEventError(code: -1701)
         }
@@ -57,7 +58,7 @@ public extension AddressDescriptor {
     func applicationURL() throws -> URL {
         switch self.type {
         case typeApplicationURL:
-            guard let result = URL(string: try decodeUTF8String(self.data)) else {
+            guard let string = decodeUTF8String(self.data), let result = URL(string: string) else {
                 throw AppleEventError(code: -1702)
             }
             return result

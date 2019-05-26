@@ -355,7 +355,7 @@ public extension MultipleObjectSpecifierDescriptor {
     }
     
     private var baseQuery: QueryDescriptor { // discards the default kAEAll selector when calling an element[s] selector on `elements(TYPE)`
-        return self.form == .absolutePosition && (try? unpackAsEnum(self.seld)) == kAEAll ? self.from : self
+        return self.form == .absolutePosition && (try? unpackAsEnum(self.seld)) == OSType(kAEAll) ? self.from : self
     }
     
     func byIndex(_ index: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: also accept Int for convenience?

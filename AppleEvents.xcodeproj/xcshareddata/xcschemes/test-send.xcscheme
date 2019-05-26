@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-               BuildableName = "test"
-               BlueprintName = "test"
+               BuildableName = "test-send"
+               BlueprintName = "test-send"
                ReferencedContainer = "container:AppleEvents.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test"
-            BlueprintName = "test"
+            BuildableName = "test-send"
+            BlueprintName = "test-send"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -56,8 +56,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test"
-            BlueprintName = "test"
+            BuildableName = "test-send"
+            BlueprintName = "test-send"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -75,8 +75,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test"
-            BlueprintName = "test"
+            BuildableName = "test-send"
+            BlueprintName = "test-send"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

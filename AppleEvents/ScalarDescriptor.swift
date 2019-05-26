@@ -54,5 +54,3 @@ let falseDescriptor = ScalarDescriptor(type: typeFalse, data: nullData)
 public let missingValueDescriptor = ScalarDescriptor(type: typeType, data: Data([0x6D, 0x73, 0x6E, 0x67])) // cMissingValue
 
 
-
-

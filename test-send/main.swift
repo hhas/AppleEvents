@@ -10,6 +10,7 @@
 // TO DO: how to support default values? (in sylvia-lang, we distinguish between transient and permanent coercion errors; thus a 'missing value' coercion error that occurs on a list item can be intercepted by a 'use default item' function, but will not propagate beyond that point to inadvertently trigger a 'use default list' function)
 
 import Foundation
+import AppleEvents
 
 // simplest way to test our descriptors is to flatten them, then pass to AEUnflattenDesc() and wrap as NSAppleEventDescriptor and see how they compare
 
@@ -20,7 +21,7 @@ import Foundation
     let size = AESizeOfFlattenedDesc(&aeDesc)
     let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
     let err = Int(AEFlattenDesc(&aeDesc, ptr, size, nil))
-    if err != 0 { print("AEFlatten error \(err). \(descriptionForError[err] ?? "")") }
+    if err != 0 { print("AEFlatten error \(err).") }
     let dat = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
     dumpFourCharData(dat)
     return dat
@@ -33,7 +34,7 @@ import Foundation
         return Int(AEUnflattenDesc(ptr.baseAddress, &result))
     }
     if err != 0 {
-        print("Unflatten error \(err). \(descriptionForError[err] ?? "")")
+        print("Unflatten error \(err).")
         return nil
     } else {
         let nsDesc = NSAppleEventDescriptor(aeDescNoCopy: &result)
@@ -110,43 +111,22 @@ do {
 */
 
 
-// temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
-func sendEvent(_ event: AppleEventDescriptor) throws -> ReplyEventDescriptor? {
-    var data = event.flatten()
-    var reply = AEDesc(descriptorType: typeNull, dataHandle: nil)
-    let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
-        var event = AEDesc(descriptorType: typeNull, dataHandle: nil)
-        let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
-        if err != 0 {
-            print("Unflatten error \(err). \(descriptionForError[err] ?? "")")
-            return err
-        }
-        return Int(AESendMessage(&event, &reply, 0x73, 10 * 60)) // use 10 sec timeout for now
-    }
-    if err != 0 { throw AppleEventError(code: err, message: descriptionForError[err]) }
-    let size = AESizeOfFlattenedDesc(&reply)
-    let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
-    let err2 = Int(AEFlattenDesc(&reply, ptr, size, nil))
-    if err2 != 0 { throw AppleEventError(code: err, message: "AEFlatten failed. \(descriptionForError[err] ?? "")") }
-    let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
-    //dumpFourCharData(data2)
-    if reply.descriptorType == typeNull { return nil } // TO DO: if kAENoReply is used then null descriptor is returned
-    return try ReplyEventDescriptor.unflatten(data2, startingAt:0)
-}
-
 
 
 do {
+    // note: app must already be running
     var ae = AppleEventDescriptor(code: coreEventGetData,
-                                  target: try AddressDescriptor(bundleIdentifier: "com.apple.finder"))
+                                  target: try AddressDescriptor(bundleIdentifier: "com.apple.textedit"))
     
-    let query = RootSpecifierDescriptor.app.property(0x686f6d65) // 'home'
+    let query = RootSpecifierDescriptor.app.elements(cDocument)
     ae.setParameter(keyDirectObject, to: query)
-    if let reply = try sendEvent(ae) {
-        print(reply, (reply.parameter(keyErrorNumber) ?? "<no-error>"), (reply.parameter(keyAEResult) ?? "<no-result>"))
-        if let result = reply.parameter(keyAEResult) {
-            dumpFourCharData(result.flatten()) // messy output, as string values aren't guaranteed to be 4-bytes, but there should be enough readable lines to confirm it's an object specifier of form `folder "NAME" of folder "Users" of startup disk`
-        }
+    let (code, reply) = ae.send()
+    if code != 0 {
+        print("AE error: \(code)")
+    } else if let desc = reply?.parameter(keyErrorNumber) {
+        print("App error: \(try unpackAsInt(desc))")
+    } else if let result = reply?.parameter(keyAEResult) {
+        dumpFourCharData(result.flatten())
     } else {
         print("<no-reply>")
     }
