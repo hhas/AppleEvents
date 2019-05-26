@@ -8,6 +8,10 @@ import Foundation
 
 public struct ListDescriptor: IterableDescriptor {
     
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) [\(self.map{ $0.debugDescription }.joined(separator: ", "))]>"
+    }
+    
     public typealias Element = Descriptor
     public typealias Iterator = DescriptorIterator<ListDescriptor>
     

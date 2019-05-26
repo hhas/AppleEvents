@@ -16,7 +16,13 @@ import AppleEvents
 appleEventHandlers[eventOpenDocuments] = { (event: AppleEventDescriptor) throws -> Descriptor? in
     guard let desc = event.parameter(keyDirectObject) else { throw AppleEventError.missingParameter }
     print("open", try unpackAsArray(desc, using: unpackAsFileURL))
-    return nil
+    return RootSpecifierDescriptor.app.elements(cDocument).byIndex(packAsInt32(1)) // return [list of] specifier identifying opened document[s]
+}
+
+appleEventHandlers[coreEventGetData] = { (event: AppleEventDescriptor) throws -> Descriptor? in
+    guard let desc = event.parameter(keyDirectObject) else { throw AppleEventError.missingParameter }
+    print("get", desc)
+    return packAsString("Hello")
 }
 
 appleEventHandlers[coreEventClose] = { (event: AppleEventDescriptor) throws -> Descriptor? in
@@ -39,7 +45,7 @@ print("pid = \(getpid())")
 
 
 
-// TO DO: registered Mach port also receives non-AE messages; how should these be handled?
+// TO DO: registered Mach port also receives non-AE messages; how should these be handled? (e.g. when running test script, the received AEs are preceded by a non-AE message which AEDecodeMessage rejects with error -50)
 let source = CFMachPortCreateRunLoopSource(nil, AppleEvents.createMachPort(), 1)
 CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
 CFRunLoopRun()

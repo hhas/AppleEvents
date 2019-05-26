@@ -10,6 +10,18 @@ public struct AddressDescriptor: Descriptor, Scalar, CustomDebugStringConvertibl
     
     public let type: DescType
     public let data: Data
+    
+    public var debugDescription: String {
+        var value: Any? = nil
+        switch self.type {
+        case typeProcessSerialNumber:   value = try? decodeUInt64(self.data)
+        case typeKernelProcessID:       value = try? self.processIdentifier()
+        case typeApplicationBundleID:   value = try? self.bundleIdentifier().debugDescription
+        case typeApplicationURL:        value = try? self.applicationURL().debugDescription
+        default:                        ()
+        }
+        return "<\(Swift.type(of: self)) \(literalFourCharCode(self.type)) \(value ?? "...")>"
+    }
 }
 
 

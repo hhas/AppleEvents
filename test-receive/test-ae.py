@@ -2,7 +2,18 @@
 
 from aem import *
 
-pid = 86469 # update
 
-Application(pid=pid).event(b'aevtodoc', {b'----': "/Users"}).send(timeout=240)
+# update PID before running:
+pid = 90323
 
+
+
+p = Application(pid=pid)
+
+print(p.event(b'aevtodoc', {b'----': "/Users/foo/README.txt"}).send(timeout=240))
+
+print(p.event(b'coregetd', {b'----': app.elements(b'docu').byindex(1).property(b'ctxt')}).send(timeout=240))
+
+p.event(b'coreclos', {b'----': app.elements(b'docu')}).send(timeout=240)
+
+#p.event(b'aevtquit').send(timeout=240)

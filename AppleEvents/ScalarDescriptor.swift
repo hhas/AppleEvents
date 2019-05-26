@@ -14,6 +14,20 @@ import Foundation
 
 public struct ScalarDescriptor: Descriptor, Scalar {
     
+    public var debugDescription: String {
+        var value = try? unpackAsAny(self)
+        if let string = value as? String {
+            value = string.debugDescription
+        } else if value is Descriptor {
+            if let code = try? unpackAsFourCharCode(self) {
+                value = literalFourCharCode(code)
+            } else {
+                value = nil
+            }
+        }
+        return "<\(Swift.type(of: self)) \(literalFourCharCode(self.type)) \(value ?? "...")>"
+    }
+
     public let type: DescType
     public let data: Data
     

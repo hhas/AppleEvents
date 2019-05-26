@@ -96,12 +96,26 @@ public extension RootSpecifierDescriptor {
 
 public struct InsertionLocationDescriptor: QueryDescriptor {
     
-    public enum Position: OSType {
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) \(self.position) \(self.from)>"
+    }
+    
+    public enum Position: OSType, CustomDebugStringConvertible {
         case before     = 0x6265666F // kAEBefore
         case after      = 0x61667465 // kAEAfter
         case beginning  = 0x62676E67 // kAEBeginning
         case end        = 0x656E6420 // kAEEnd
+        
+        public var debugDescription: String {
+            switch self {
+            case .before:    return ".before"
+            case .after:     return ".after"
+            case .beginning: return ".beginning"
+            case .end:       return ".end"
+            }
+        }
     }
+    
     public let type: DescType = typeInsertionLoc
     
     public var data: Data {
@@ -160,7 +174,12 @@ public struct InsertionLocationDescriptor: QueryDescriptor {
 
 public struct ObjectSpecifierDescriptor: QueryDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifierDescriptor
     
-    public enum Form: OSType {
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) \(literalFourCharCode(self.want)) \(self.form) \(self.seld) \(self.from)>"
+    }
+    
+    // TO DO: combine form+seld? (in practice, this may be of limited value as a degree of sloppiness is necessary to ensure backwards compatibility with existing ecosystem, but it might help clarify usage)
+    public enum Form: OSType, CustomDebugStringConvertible {
         case property           = 0x70726F70
         case absolutePosition   = 0x696E6478
         case name               = 0x6E616D65
@@ -169,6 +188,19 @@ public struct ObjectSpecifierDescriptor: QueryDescriptor { // TO DO: want to reu
         case range              = 0x72616E67
         case test               = 0x74657374
         case userProperty       = 0x75737270
+        
+        public var debugDescription: String {
+            switch self {
+            case .property:         return ".property"
+            case .absolutePosition: return ".absolutePosition"
+            case .name:             return ".name"
+            case .uniqueID:         return ".uniqueID"
+            case .relativePosition: return ".relativePosition"
+            case .range:            return ".range"
+            case .test:             return ".test"
+            case .userProperty:     return ".userProperty"
+            }
+        }
     }
     
     public let type: DescType = typeObjectSpecifier

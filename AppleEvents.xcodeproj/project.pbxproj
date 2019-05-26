@@ -407,8 +407,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F1EA9AE228351D8000E0A3A /* Unflatten.swift in Sources */,
-				4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */,
-				4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */,
 				4F1EA9AD228351D8000E0A3A /* PackFuncs.swift in Sources */,
 				4F1EA9AF228351D8000E0A3A /* UnpackFuncs.swift in Sources */,
 				4F1EA9BB228351E9000E0A3A /* Descriptor.swift in Sources */,
@@ -419,9 +417,11 @@
 				4F1EA9B9228351E9000E0A3A /* QueryDescriptors.swift in Sources */,
 				4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
 				4F1EA9BC228351E9000E0A3A /* AppleEventDescriptor.swift in Sources */,
+				4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */,
 				4F1EA9C122835213000E0A3A /* AppleEventError.swift in Sources */,
 				4F1EA9C222835213000E0A3A /* Support.swift in Sources */,
 				4F1EA9C322835213000E0A3A /* Constants.swift in Sources */,
+				4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

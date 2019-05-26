@@ -4,7 +4,7 @@
 
 import Foundation
 
-// TO DO: the registered Mach port receives both AE and non-AE messages; what should we do with the latter?
+// TO DO: the registered Mach port receives both AE and non-AE messages; what should we do with the latter? (also, what about AppKit processes? installing our own Mach port source may conflict with that, in which case we should install a wildcard handler via Carbon/NSAppleEventManager that forwards unhandled AEs to our own dispatcher; Q. what about core event handlers?)
 
 // TO DO: how should next layer above AppleEventHandler look? presumably we need some sort of app-specific glue to map Swift functions with native parameter and return types onto AppleEventHandler callbacks; should Swift functions use standardized naming conventions, allowing them to be auto-detected by glue generator and signatures mapped to 'SDEF' definitions (note: we want to architect a new, comprehensive IDL dictionary format, with basic SDEFs generated for backwards compatibility; the IDL should, as much as possible, be auto-generated from the Swift implementation)
 
@@ -17,13 +17,27 @@ import Foundation
 
 
 private func handleEvent(port: CFMachPort?, message: UnsafeMutableRawPointer?, size: CFIndex, info: UnsafeMutableRawPointer?) {
+    if let message = message {
+        let header = message.bindMemory(to: UInt32.self, capacity: 6)
+        /*
+             public var msgh_bits: mach_msg_bits_t
+             public var msgh_size: mach_msg_size_t
+             public var msgh_remote_port: mach_port_t
+             public var msgh_local_port: mach_port_t
+             public var msgh_voucher_port: mach_port_name_t
+             public var msgh_id: mach_msg_id_t
+         */
+        print("handleEvent msgh_bits: \(String(format: "%08x", header[0])) msgh_size: \(header[1])")
+    }
     guard let message = message else { return }
     // carbonReceive will return (paramErr=-50) if not an AE; what other codes?
     let err = carbonReceive(message: message.bindMemory(to: mach_msg_header_t.self, capacity: 1)) {
         // errors raised here are automatically packed into reply event
         try (appleEventHandlers[$0.code] ?? defaultEventHandler)($0)
     }
-    if err != 0 { print("handleEvent error: \(err)") } // TO DO: delegate for non-AE messages? (Q. is there a source mode or other filter we can use to exclusively handle AEs?)
+    if err != 0 {
+        print("handleEvent error: \(err)")
+    } // TO DO: delegate for non-AE messages? (Q. is there a source mode or other filter we can use to exclusively handle AEs?)
 }
 
 

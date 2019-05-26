@@ -60,6 +60,10 @@ import Foundation
 
 
 public struct RecordDescriptor: IterableDescriptor {
+    
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) [\(self.map{ "\(literalFourCharCode($0)):\($1.debugDescription)" }.joined(separator: ", "))]>"
+    }
         
     public typealias Element = (key: AEKeyword, value: Descriptor)
     public typealias Iterator = DescriptorIterator<RecordDescriptor>

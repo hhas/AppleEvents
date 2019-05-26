@@ -10,6 +10,8 @@ import Foundation
 
 // TO DO: implement Comparable
 
+// TO DO: implement CustomStringConvertible (this should return literal representation, using unpackAsAny() to unroll lists and records; note that some Swift types, e.g. String, Date, should be shown as literal representation [even when not nested?])
+
 public protocol Descriptor: CustomDebugStringConvertible {
     
     var type: DescType { get } // AEDesc.descriptorType
