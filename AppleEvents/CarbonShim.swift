@@ -3,27 +3,18 @@
 //
 //  workaround until we have a pure Mach implementation
 //
-// AEDesc
-// AESizeOfFlattenedDesc
-// AEFlattenDesc
-// AEUnflattenDesc
-// AEDisposeDesc
-// AEPutParamDesc
-// AEDecodeMessage
-// AESendMessage
-// AEGetRegisteredMachPort
-
-import Carbon // TO DO: weak link Carbon
+//  TO DO: what about pushing this into an XPC service? (that won't work for server-side, as AEGetRegisteredMachPort needs to be called in main process)
+//
 
 
+#if canImport(Carbon)
+import Carbon
+#else
+import MZCarbonShim
+#endif
 
-let typeNull: OSType = 0x6E756C6C
-let typeAppleEvent: OSType = 0x61657674
-let keyAEResult: OSType = 0x2D2D2D2D
-let keyErrorNumber: OSType = 0x6572726E
 
-
-public func carbonDescriptor(from desc: Descriptor) -> AEDesc {
+func carbonDescriptor(from desc: Descriptor) -> AEDesc {
     var data = desc.flatten()
     var result = AEDesc(descriptorType: typeNull, dataHandle: nil)
     let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
@@ -33,7 +24,7 @@ public func carbonDescriptor(from desc: Descriptor) -> AEDesc {
     return result
 }
 
-public func nativeDescriptor(from aeDesc: AEDesc) -> Descriptor {
+func nativeDescriptor(from aeDesc: AEDesc) -> Descriptor {
     var aeDesc = aeDesc
     let size = AESizeOfFlattenedDesc(&aeDesc)
     let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)

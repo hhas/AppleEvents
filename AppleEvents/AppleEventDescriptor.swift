@@ -5,6 +5,9 @@
 // Q. how might a modern UIKit app implement recording? (best way to record is for GUI to communicate with Model via AEs, as that ensures accurate representation of actions [it also in theory would allow an app's Model to run as independent headless server process to which any number of client UI processes may subscribe]; however, AppKit/UIKit aren't built to work that way, in which case they best they could do is emit recordable AEs as a side-effect to user interactions, which doesn't guarantee such AEs will be comprehensive or correct [since the App itself if not being made to eat its own dogfood, so is under no obligation to make sure those AEs are correct or that it has the AE handlers/AEOM capabilities to handle them], but may be "good enough" nevertheless in that even limited recordability will be helpful to users, both in its own right and as a learning tools for AE client languages)
 
 
+// TO DO: should AppleEventDescriptor.send() automatically consolidate AE and App error codes, avoiding need for double checks? or should that be left to layer above?
+
+
 /*
  
  TO DO: how to support following SendOptions?

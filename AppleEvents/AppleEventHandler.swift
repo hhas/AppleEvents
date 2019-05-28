@@ -4,7 +4,9 @@
 
 import Foundation
 
-// TO DO: the registered Mach port receives both AE and non-AE messages; what should we do with the latter? (also, what about AppKit processes? installing our own Mach port source may conflict with that, in which case we should install a wildcard handler via Carbon/NSAppleEventManager that forwards unhandled AEs to our own dispatcher; Q. what about core event handlers?)
+// TO DO: the registered Mach port receives both AE and non-AE messages; what should we do with the latter? would help to know what the non-AE message does - it precedes the first AE sent by a client, implying some sort of preparation (e.g. getting server’s AE entitlements info, as defined in its SDEF?)
+
+// TO DO: what about AppKit-based processes? installing our own Mach port source may conflict with AppKit's standard AE hooks, in which case we should install a wildcard handler via Carbon/NSAppleEventManager that forwards unhandled AEs to our own dispatcher, although that smells kludgy and inefficient)
 
 // TO DO: how should next layer above AppleEventHandler look? presumably we need some sort of app-specific glue to map Swift functions with native parameter and return types onto AppleEventHandler callbacks; should Swift functions use standardized naming conventions, allowing them to be auto-detected by glue generator and signatures mapped to 'SDEF' definitions (note: we want to architect a new, comprehensive IDL dictionary format, with basic SDEFs generated for backwards compatibility; the IDL should, as much as possible, be auto-generated from the Swift implementation)
 
