@@ -10,7 +10,7 @@
 #define BIND(name) { if (!((ptr_##name) = CFBundleGetFunctionPointerForName(framework, CFSTR(#name)))) exit(5); }
 
 
-char *carbonPath = "/System/Library/Frameworks/Carbon.framework";
+char *carbonPath = "/System/Library/Frameworks/CoreServices.framework";
 
 
 

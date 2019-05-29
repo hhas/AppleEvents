@@ -108,6 +108,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		4F649F40229DE59900A0E8B9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4FD23EB4229A8770006792A7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -382,6 +391,7 @@
 				4F081B6E229BDD1A00B2004B /* Sources */,
 				4F081B6F229BDD1A00B2004B /* Frameworks */,
 				4F081B70229BDD1A00B2004B /* Resources */,
+				4F649F40229DE59900A0E8B9 /* CopyFiles */,
 			);
 			buildRules = (
 			);
