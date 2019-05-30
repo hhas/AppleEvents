@@ -22,6 +22,7 @@ static OSErr        (*ptr_AEPutParamDesc)(AppleEvent *theAppleEvent, AEKeyword t
 static mach_port_t  (*ptr_AEGetRegisteredMachPort)(void);
 static OSStatus     (*ptr_AEDecodeMessage)(mach_msg_header_t *header, AppleEvent *event, AppleEvent *reply);
 static OSStatus     (*ptr_AESendMessage)(const AppleEvent *event, AppleEvent *reply, AESendMode sendMode, long timeOutInTicks);
+static OSStatus     (*ptr_AEPrintDescToHandle)(const AEDesc *desc, Handle *result);
 
 
 int shouldLoad = 1;
@@ -39,6 +40,7 @@ void loadCarbon(void) {
     BIND(AEGetRegisteredMachPort);
     BIND(AEDecodeMessage);
     BIND(AESendMessage);
+    BIND(AEPrintDescToHandle);
     CFRelease(framework);
 }
 
@@ -65,6 +67,16 @@ extern OSStatus AEDecodeMessage(mach_msg_header_t *header, AppleEvent *event, Ap
     LOAD; return (*ptr_AEDecodeMessage)(header, event, reply);
 }
 extern OSStatus AESendMessage(const AppleEvent *event, AppleEvent *reply, AESendMode sendMode, long timeOutInTicks) {
+    AEPrint(event, "AESendMessage event");
     LOAD; return (*ptr_AESendMessage)(event, reply, sendMode, timeOutInTicks);
+}
+
+
+extern OSStatus AEPrint(const AEDesc *desc, const char *msg) { // debugging use only (leaks memory)
+    LOAD;
+    Handle h = NULL; // DisposeHandle() is deprecated, so leak the returned char**
+    OSStatus err = (*ptr_AEPrintDescToHandle)(desc, &h);
+    if (!err) { NSLog(@"AEPrint %s: %s\n", msg, *h); }
+    return err;
 }
 

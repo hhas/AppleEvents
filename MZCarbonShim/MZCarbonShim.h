@@ -42,6 +42,7 @@ extern mach_port_t  AEGetRegisteredMachPort(void);
 extern OSStatus     AEDecodeMessage(mach_msg_header_t *header, AppleEvent *event, AppleEvent *reply);
 extern OSStatus     AESendMessage(const AppleEvent *event, AppleEvent *reply, AESendMode sendMode, long timeOutInTicks);
 
+extern OSStatus     AEPrint(const AEDesc *desc, const char *msg);
 
 CF_ENUM(DescType) {
     typeNull        = 'null',
