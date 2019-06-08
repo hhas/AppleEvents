@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F081B76229BDD1A00B2004B /* MZAppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F081B74229BDD1A00B2004B /* MZAppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F081B7C229BDD3B00B2004B /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
 		4F081B7D229BDD3B00B2004B /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
 		4F081B7E229BDD3B00B2004B /* UnpackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AC228351D8000E0A3A /* UnpackFuncs.swift */; };
@@ -23,31 +22,11 @@
 		4F081B88229BDD3B00B2004B /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
 		4F081B89229BDD3B00B2004B /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
 		4F081B8A229BDD3B00B2004B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
-		4F081B8B229BDD3B00B2004B /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
-		4F081BC0229BE6C500B2004B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BBF229BE6C500B2004B /* Foundation.framework */; };
-		4F081BEF229BEAB100B2004B /* MZCarbonShim.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F081BED229BEAB100B2004B /* MZCarbonShim.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4F081BF5229BEB7C00B2004B /* MZCarbonShim.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F081BF4229BEB7C00B2004B /* MZCarbonShim.m */; };
-		4F081BF6229BEBB700B2004B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BC2229BE6D200B2004B /* CoreFoundation.framework */; };
-		4F081BF7229BEBBC00B2004B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BBF229BE6C500B2004B /* Foundation.framework */; };
-		4F081BFA229BEC0000B2004B /* MZCarbonShim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */; };
-		4F1EA9A022835040000E0A3A /* AppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1EA99E22835040000E0A3A /* AppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4F1EA9AD228351D8000E0A3A /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
-		4F1EA9AE228351D8000E0A3A /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
-		4F1EA9AF228351D8000E0A3A /* UnpackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AC228351D8000E0A3A /* UnpackFuncs.swift */; };
-		4F1EA9B7228351E9000E0A3A /* ScalarDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B0228351E9000E0A3A /* ScalarDescriptor.swift */; };
-		4F1EA9B8228351E9000E0A3A /* AddressDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B1228351E9000E0A3A /* AddressDescriptor.swift */; };
-		4F1EA9B9228351E9000E0A3A /* QueryDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B2228351E9000E0A3A /* QueryDescriptors.swift */; };
-		4F1EA9BA228351E9000E0A3A /* ListDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B3228351E9000E0A3A /* ListDescriptor.swift */; };
-		4F1EA9BB228351E9000E0A3A /* Descriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B4228351E9000E0A3A /* Descriptor.swift */; };
-		4F1EA9BC228351E9000E0A3A /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B5228351E9000E0A3A /* AppleEventDescriptor.swift */; };
-		4F1EA9BD228351E9000E0A3A /* RecordDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9B6228351E9000E0A3A /* RecordDescriptor.swift */; };
-		4F1EA9C122835213000E0A3A /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
-		4F1EA9C222835213000E0A3A /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
-		4F1EA9C322835213000E0A3A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
+		4F081B8B229BDD3B00B2004B /* AEMShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* AEMShim.swift */; };
+		4F081BEF229BEAB100B2004B /* AEMShim.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F081BED229BEAB100B2004B /* AEMShim.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4F081BF5229BEB7C00B2004B /* AEMShim.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F081BF4229BEB7C00B2004B /* AEMShim.m */; };
 		4F1EA9CB22835239000E0A3A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9CA22835239000E0A3A /* main.swift */; };
 		4F1EA9DE22835260000E0A3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
-		4F1EA9DF22835276000E0A3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
-		4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */; };
 		4F21AF2822861CB000A1B978 /* AppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1EA99E22835040000E0A3A /* AppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AB228351D8000E0A3A /* Unflatten.swift */; };
 		4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
@@ -64,24 +43,17 @@
 		4F21AF3522861CB000A1B978 /* AppleEventError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BE22835212000E0A3A /* AppleEventError.swift */; };
 		4F21AF3622861CB000A1B978 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 		4F21AF3722861CC800A1B978 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9DD22835260000E0A3A /* Foundation.framework */; };
-		4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */; };
 		4FD23EAD229965E3006792A7 /* AppleEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */; };
-		4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
-		4FD23EB022997BD6006792A7 /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
+		4FD23EB022997BD6006792A7 /* AEMShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* AEMShim.swift */; };
 		4FD23EB9229A8770006792A7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EB8229A8770006792A7 /* main.swift */; };
 		4FD23EBF229A879C006792A7 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */; };
 		4FD23EC2229A87F0006792A7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */; };
 		4FD23EC5229AC73D006792A7 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF1F22861C7500A1B978 /* libAppleEvents.a */; };
+		4FDDFDC322A926CD0063847B /* AEMShim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BEB229BEAB100B2004B /* AEMShim.framework */; };
+		4FDDFDC422A926CD0063847B /* AEMShim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BEB229BEAB100B2004B /* AEMShim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4F081BF8229BEBFA00B2004B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA99222835040000E0A3A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F081BEA229BEAB100B2004B;
-			remoteInfo = MZCarbonShim;
-		};
 		4FD23EBD229A877A006792A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F1EA99222835040000E0A3A /* Project object */;
@@ -96,6 +68,13 @@
 			remoteGlobalIDString = 4F21AF1E22861C7500A1B978;
 			remoteInfo = libAppleEvents;
 		};
+		4FDDFDC522A926CD0063847B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F1EA99222835040000E0A3A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F081BEA229BEAB100B2004B;
+			remoteInfo = MZCarbonShim;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -108,15 +87,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		4F649F40229DE59900A0E8B9 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4FD23EB4229A8770006792A7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -126,20 +96,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		4FDDFDC722A926CD0063847B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4FDDFDC422A926CD0063847B /* AEMShim.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4F081B56229AE1A800B2004B /* test-ae.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "test-ae.py"; sourceTree = "<group>"; };
-		4F081B72229BDD1A00B2004B /* MZAppleEvents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MZAppleEvents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F081B74229BDD1A00B2004B /* MZAppleEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MZAppleEvents.h; sourceTree = "<group>"; };
-		4F081B75229BDD1A00B2004B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4F081BBF229BE6C500B2004B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		4F081BC2229BE6D200B2004B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
-		4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MZCarbonShim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F081BED229BEAB100B2004B /* MZCarbonShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MZCarbonShim.h; sourceTree = "<group>"; };
+		4F081B72229BDD1A00B2004B /* AppleEvents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleEvents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F081BEB229BEAB100B2004B /* AEMShim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEMShim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F081BED229BEAB100B2004B /* AEMShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEMShim.h; sourceTree = "<group>"; };
 		4F081BEE229BEAB100B2004B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4F081BF4229BEB7C00B2004B /* MZCarbonShim.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZCarbonShim.m; sourceTree = "<group>"; };
-		4F1EA99B22835040000E0A3A /* AppleEvents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleEvents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F081BF4229BEB7C00B2004B /* AEMShim.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AEMShim.m; sourceTree = "<group>"; };
 		4F1EA99E22835040000E0A3A /* AppleEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleEvents.h; sourceTree = "<group>"; };
 		4F1EA99F22835040000E0A3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PackFuncs.swift; sourceTree = "<group>"; };
@@ -161,10 +137,11 @@
 		4F1EA9EB2283FC26000E0A3A /* TestDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDescriptors.swift; sourceTree = "<group>"; };
 		4F21AF1F22861C7500A1B978 /* libAppleEvents.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppleEvents.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD23EAB229965E2006792A7 /* AppleEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventHandler.swift; sourceTree = "<group>"; };
-		4FD23EAE22997BD6006792A7 /* CarbonShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonShim.swift; sourceTree = "<group>"; };
+		4FD23EAE22997BD6006792A7 /* AEMShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEMShim.swift; sourceTree = "<group>"; };
 		4FD23EB6229A8770006792A7 /* test-receive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-receive"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD23EB8229A8770006792A7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		4FDDFDC022A926820063847B /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.0.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,8 +149,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081BFA229BEC0000B2004B /* MZCarbonShim.framework in Frameworks */,
-				4F081BC0229BE6C500B2004B /* Foundation.framework in Frameworks */,
+				4FDDFDC322A926CD0063847B /* AEMShim.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,16 +157,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081BF6229BEBB700B2004B /* CoreFoundation.framework in Frameworks */,
-				4F081BF7229BEBBC00B2004B /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4F1EA99822835040000E0A3A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4F1EA9DF22835276000E0A3A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,23 +189,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4F081B73229BDD1A00B2004B /* MZAppleEvents */ = {
+		4F081BEC229BEAB100B2004B /* AEMShim */ = {
 			isa = PBXGroup;
 			children = (
-				4F081B74229BDD1A00B2004B /* MZAppleEvents.h */,
-				4F081B75229BDD1A00B2004B /* Info.plist */,
-			);
-			path = MZAppleEvents;
-			sourceTree = "<group>";
-		};
-		4F081BEC229BEAB100B2004B /* MZCarbonShim */ = {
-			isa = PBXGroup;
-			children = (
-				4F081BED229BEAB100B2004B /* MZCarbonShim.h */,
-				4F081BF4229BEB7C00B2004B /* MZCarbonShim.m */,
+				4F081BED229BEAB100B2004B /* AEMShim.h */,
+				4F081BF4229BEB7C00B2004B /* AEMShim.m */,
 				4F081BEE229BEAB100B2004B /* Info.plist */,
 			);
-			path = MZCarbonShim;
+			path = AEMShim;
 			sourceTree = "<group>";
 		};
 		4F1EA99122835040000E0A3A = {
@@ -248,8 +205,7 @@
 				4F1EA99D22835040000E0A3A /* AppleEvents */,
 				4F1EA9C922835239000E0A3A /* test-send */,
 				4FD23EB7229A8770006792A7 /* test-receive */,
-				4F081B73229BDD1A00B2004B /* MZAppleEvents */,
-				4F081BEC229BEAB100B2004B /* MZCarbonShim */,
+				4F081BEC229BEAB100B2004B /* AEMShim */,
 				4F1EA9DC22835260000E0A3A /* Frameworks */,
 				4F1EA99C22835040000E0A3A /* Products */,
 			);
@@ -258,12 +214,11 @@
 		4F1EA99C22835040000E0A3A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4F1EA99B22835040000E0A3A /* AppleEvents.framework */,
 				4F1EA9C822835239000E0A3A /* test-send */,
 				4F21AF1F22861C7500A1B978 /* libAppleEvents.a */,
 				4FD23EB6229A8770006792A7 /* test-receive */,
-				4F081B72229BDD1A00B2004B /* MZAppleEvents.framework */,
-				4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */,
+				4F081B72229BDD1A00B2004B /* AppleEvents.framework */,
+				4F081BEB229BEAB100B2004B /* AEMShim.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,7 +234,7 @@
 				4F1EA9BE22835212000E0A3A /* AppleEventError.swift */,
 				4F1EA9BF22835212000E0A3A /* Support.swift */,
 				4F1EA9C022835213000E0A3A /* Constants.swift */,
-				4FD23EAE22997BD6006792A7 /* CarbonShim.swift */,
+				4FD23EAE22997BD6006792A7 /* AEMShim.swift */,
 			);
 			path = AppleEvents;
 			sourceTree = "<group>";
@@ -320,8 +275,7 @@
 		4F1EA9DC22835260000E0A3A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4F081BC2229BE6D200B2004B /* CoreFoundation.framework */,
-				4F081BBF229BE6C500B2004B /* Foundation.framework */,
+				4FDDFDC022A926820063847B /* CoreServices.framework */,
 				4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */,
 				4F1EA9DD22835260000E0A3A /* Foundation.framework */,
 			);
@@ -352,7 +306,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081B76229BDD1A00B2004B /* MZAppleEvents.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,15 +313,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081BEF229BEAB100B2004B /* MZCarbonShim.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4F1EA99622835040000E0A3A /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4F1EA9A022835040000E0A3A /* AppleEvents.h in Headers */,
+				4F081BEF229BEAB100B2004B /* AEMShim.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,29 +328,29 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		4F081B71229BDD1A00B2004B /* MZAppleEvents */ = {
+		4F081B71229BDD1A00B2004B /* AppleEvents */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F081B77229BDD1A00B2004B /* Build configuration list for PBXNativeTarget "MZAppleEvents" */;
+			buildConfigurationList = 4F081B77229BDD1A00B2004B /* Build configuration list for PBXNativeTarget "AppleEvents" */;
 			buildPhases = (
 				4F081B6D229BDD1A00B2004B /* Headers */,
 				4F081B6E229BDD1A00B2004B /* Sources */,
 				4F081B6F229BDD1A00B2004B /* Frameworks */,
 				4F081B70229BDD1A00B2004B /* Resources */,
-				4F649F40229DE59900A0E8B9 /* CopyFiles */,
+				4FDDFDC722A926CD0063847B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4F081BF9229BEBFA00B2004B /* PBXTargetDependency */,
+				4FDDFDC622A926CD0063847B /* PBXTargetDependency */,
 			);
-			name = MZAppleEvents;
+			name = AppleEvents;
 			productName = MZAppleEvents;
-			productReference = 4F081B72229BDD1A00B2004B /* MZAppleEvents.framework */;
+			productReference = 4F081B72229BDD1A00B2004B /* AppleEvents.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		4F081BEA229BEAB100B2004B /* MZCarbonShim */ = {
+		4F081BEA229BEAB100B2004B /* AEMShim */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F081BF0229BEAB100B2004B /* Build configuration list for PBXNativeTarget "MZCarbonShim" */;
+			buildConfigurationList = 4F081BF0229BEAB100B2004B /* Build configuration list for PBXNativeTarget "AEMShim" */;
 			buildPhases = (
 				4F081BE6229BEAB100B2004B /* Headers */,
 				4F081BE7229BEAB100B2004B /* Sources */,
@@ -416,27 +361,9 @@
 			);
 			dependencies = (
 			);
-			name = MZCarbonShim;
+			name = AEMShim;
 			productName = MZCarbonShim;
-			productReference = 4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		4F1EA99A22835040000E0A3A /* AppleEvents */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4F1EA9A322835040000E0A3A /* Build configuration list for PBXNativeTarget "AppleEvents" */;
-			buildPhases = (
-				4F1EA99622835040000E0A3A /* Headers */,
-				4F1EA99722835040000E0A3A /* Sources */,
-				4F1EA99822835040000E0A3A /* Frameworks */,
-				4F1EA99922835040000E0A3A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = AppleEvents;
-			productName = AppleEvents;
-			productReference = 4F1EA99B22835040000E0A3A /* AppleEvents.framework */;
+			productReference = 4F081BEB229BEAB100B2004B /* AEMShim.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		4F1EA9C722835239000E0A3A /* test-send */ = {
@@ -499,7 +426,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1100;
 				TargetAttributes = {
 					4F081B71229BDD1A00B2004B = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -507,10 +434,6 @@
 					};
 					4F081BEA229BEAB100B2004B = {
 						CreatedOnToolsVersion = 10.2.1;
-					};
-					4F1EA99A22835040000E0A3A = {
-						CreatedOnToolsVersion = 10.2.1;
-						LastSwiftMigration = 1020;
 					};
 					4F1EA9C722835239000E0A3A = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -529,18 +452,18 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 4F1EA99122835040000E0A3A;
 			productRefGroup = 4F1EA99C22835040000E0A3A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4F1EA99A22835040000E0A3A /* AppleEvents */,
+				4F081B71229BDD1A00B2004B /* AppleEvents */,
 				4F21AF1E22861C7500A1B978 /* libAppleEvents */,
 				4F1EA9C722835239000E0A3A /* test-send */,
 				4FD23EB5229A8770006792A7 /* test-receive */,
-				4F081B71229BDD1A00B2004B /* MZAppleEvents */,
-				4F081BEA229BEAB100B2004B /* MZCarbonShim */,
+				4F081BEA229BEAB100B2004B /* AEMShim */,
 			);
 		};
 /* End PBXProject section */
@@ -554,13 +477,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4F081BE9229BEAB100B2004B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4F1EA99922835040000E0A3A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -589,7 +505,7 @@
 				4F081B88229BDD3B00B2004B /* AppleEventError.swift in Sources */,
 				4F081B89229BDD3B00B2004B /* Support.swift in Sources */,
 				4F081B8A229BDD3B00B2004B /* Constants.swift in Sources */,
-				4F081B8B229BDD3B00B2004B /* CarbonShim.swift in Sources */,
+				4F081B8B229BDD3B00B2004B /* AEMShim.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,30 +513,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081BF5229BEB7C00B2004B /* MZCarbonShim.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4F1EA99722835040000E0A3A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4F1EA9AE228351D8000E0A3A /* Unflatten.swift in Sources */,
-				4F1EA9AD228351D8000E0A3A /* PackFuncs.swift in Sources */,
-				4F1EA9AF228351D8000E0A3A /* UnpackFuncs.swift in Sources */,
-				4F1EA9BB228351E9000E0A3A /* Descriptor.swift in Sources */,
-				4F1EA9B7228351E9000E0A3A /* ScalarDescriptor.swift in Sources */,
-				4F1EA9B8228351E9000E0A3A /* AddressDescriptor.swift in Sources */,
-				4F1EA9BA228351E9000E0A3A /* ListDescriptor.swift in Sources */,
-				4F1EA9BD228351E9000E0A3A /* RecordDescriptor.swift in Sources */,
-				4F1EA9B9228351E9000E0A3A /* QueryDescriptors.swift in Sources */,
-				4F1EA9EC2283FC26000E0A3A /* TestDescriptors.swift in Sources */,
-				4F1EA9BC228351E9000E0A3A /* AppleEventDescriptor.swift in Sources */,
-				4FD23EAC229965E3006792A7 /* AppleEventHandler.swift in Sources */,
-				4F1EA9C122835213000E0A3A /* AppleEventError.swift in Sources */,
-				4F1EA9C222835213000E0A3A /* Support.swift in Sources */,
-				4F1EA9C322835213000E0A3A /* Constants.swift in Sources */,
-				4FD23EAF22997BD6006792A7 /* CarbonShim.swift in Sources */,
+				4F081BF5229BEB7C00B2004B /* AEMShim.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,7 +530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F21AF2922861CB000A1B978 /* Unflatten.swift in Sources */,
-				4FD23EB022997BD6006792A7 /* CarbonShim.swift in Sources */,
+				4FD23EB022997BD6006792A7 /* AEMShim.swift in Sources */,
 				4FD23EAD229965E3006792A7 /* AppleEventHandler.swift in Sources */,
 				4F21AF2A22861CB000A1B978 /* PackFuncs.swift in Sources */,
 				4F21AF2B22861CB000A1B978 /* UnpackFuncs.swift in Sources */,
@@ -666,11 +559,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4F081BF9229BEBFA00B2004B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4F081BEA229BEAB100B2004B /* MZCarbonShim */;
-			targetProxy = 4F081BF8229BEBFA00B2004B /* PBXContainerItemProxy */;
-		};
 		4FD23EBE229A877A006792A7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4F21AF1E22861C7500A1B978 /* libAppleEvents */;
@@ -681,6 +569,11 @@
 			target = 4F21AF1E22861C7500A1B978 /* libAppleEvents */;
 			targetProxy = 4FD23EC3229AC72F006792A7 /* PBXContainerItemProxy */;
 		};
+		4FDDFDC622A926CD0063847B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F081BEA229BEAB100B2004B /* AEMShim */;
+			targetProxy = 4FDDFDC522A926CD0063847B /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -688,14 +581,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = MZAppleEvents/Info.plist;
+				INFOPLIST_FILE = "$(PRODUCT_NAME)/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -703,11 +596,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.MZAppleEvents;
+				PRODUCT_BUNDLE_IDENTIFIER = "uk.nuggle.$(PRODUCT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_UIKITFORMAC = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -719,14 +613,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = MZAppleEvents/Info.plist;
+				INFOPLIST_FILE = "$(PRODUCT_NAME)/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -734,11 +628,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.MZAppleEvents;
+				PRODUCT_BUNDLE_IDENTIFIER = "uk.nuggle.$(PRODUCT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_UIKITFORMAC = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -749,21 +644,21 @@
 		4F081BF1229BEAB100B2004B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = MZCarbonShim/Info.plist;
+				INFOPLIST_FILE = "$(PRODUCT_NAME)/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.MZCarbonShim;
+				PRODUCT_BUNDLE_IDENTIFIER = "uk.nuggle.$(PRODUCT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -775,21 +670,21 @@
 		4F081BF2229BEAB100B2004B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = MZCarbonShim/Info.plist;
+				INFOPLIST_FILE = "$(PRODUCT_NAME)/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.MZCarbonShim;
+				PRODUCT_BUNDLE_IDENTIFIER = "uk.nuggle.$(PRODUCT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -924,64 +819,10 @@
 			};
 			name = Release;
 		};
-		4F1EA9A422835040000E0A3A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = AppleEvents/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.AppleEvents;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		4F1EA9A522835040000E0A3A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = AppleEvents/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = uk.nuggle.AppleEvents;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		4F1EA9CD22835239000E0A3A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -992,6 +833,7 @@
 		4F1EA9CE22835239000E0A3A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1026,6 +868,7 @@
 		4FD23EBB229A8770006792A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
@@ -1037,6 +880,7 @@
 		4FD23EBC229A8770006792A7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
@@ -1048,7 +892,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4F081B77229BDD1A00B2004B /* Build configuration list for PBXNativeTarget "MZAppleEvents" */ = {
+		4F081B77229BDD1A00B2004B /* Build configuration list for PBXNativeTarget "AppleEvents" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4F081B78229BDD1A00B2004B /* Debug */,
@@ -1057,7 +901,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F081BF0229BEAB100B2004B /* Build configuration list for PBXNativeTarget "MZCarbonShim" */ = {
+		4F081BF0229BEAB100B2004B /* Build configuration list for PBXNativeTarget "AEMShim" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4F081BF1229BEAB100B2004B /* Debug */,
@@ -1071,15 +915,6 @@
 			buildConfigurations = (
 				4F1EA9A122835040000E0A3A /* Debug */,
 				4F1EA9A222835040000E0A3A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4F1EA9A322835040000E0A3A /* Build configuration list for PBXNativeTarget "AppleEvents" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4F1EA9A422835040000E0A3A /* Debug */,
-				4F1EA9A522835040000E0A3A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

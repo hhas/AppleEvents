@@ -19,27 +19,23 @@ import Foundation
 
 
 private func handleEvent(port: CFMachPort?, message: UnsafeMutableRawPointer?, size: CFIndex, info: UnsafeMutableRawPointer?) {
-    if let message = message {
-        let header = message.bindMemory(to: UInt32.self, capacity: 6)
-        /*
-             public var msgh_bits: mach_msg_bits_t
-             public var msgh_size: mach_msg_size_t
-             public var msgh_remote_port: mach_port_t
-             public var msgh_local_port: mach_port_t
-             public var msgh_voucher_port: mach_port_name_t
-             public var msgh_id: mach_msg_id_t
-         */
-        print("handleEvent msgh_bits: \(String(format: "%08x", header[0])) msgh_size: \(header[1])")
-    }
-    guard let message = message else { return }
+    // TO DO: reverse-engineer AE-over-Mach serialization format (it's not the same format as AEFlattenDesc!) and eliminate carbonReceive() kludge
+    let header = message!.bindMemory(to: UInt32.self, capacity: 6)
+    /*
+         public var msgh_bits: mach_msg_bits_t
+         public var msgh_size: mach_msg_size_t
+         public var msgh_remote_port: mach_port_t
+         public var msgh_local_port: mach_port_t
+         public var msgh_voucher_port: mach_port_name_t
+         public var msgh_id: mach_msg_id_t
+     */
+    print("handleEvent msgh_bits: \(String(format: "%08x", header[0])) msgh_size: \(header[1])")
     // carbonReceive will return (paramErr=-50) if not an AE; what other codes?
-    let err = carbonReceive(message: message.bindMemory(to: mach_msg_header_t.self, capacity: 1)) {
+    let err = carbonReceive(message: message!.bindMemory(to: mach_msg_header_t.self, capacity: 1)) {
         // errors raised here are automatically packed into reply event
         try (appleEventHandlers[$0.code] ?? defaultEventHandler)($0)
     }
-    if err != 0 {
-        print("handleEvent error: \(err)")
-    } // TO DO: delegate for non-AE messages? (Q. is there a source mode or other filter we can use to exclusively handle AEs?)
+    if err != 0 { print("handleEvent error: \(err)") } // TO DO: delegate for non-AE messages?
 }
 
 

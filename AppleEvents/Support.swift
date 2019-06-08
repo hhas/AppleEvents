@@ -7,13 +7,13 @@
 import Foundation
 
 
-#if !canImport(Carbon)
+//#if !canImport(Carbon)
 
 public typealias OSType = UInt32
 public typealias DescType = OSType
 public typealias AEKeyword = OSType
 
-#endif
+//#endif
 
 
 public typealias EventIdentifier = UInt64 // combined eventClass and eventID

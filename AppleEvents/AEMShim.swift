@@ -1,17 +1,11 @@
 //
-//  CarbonShim.swift
+//  AEMShim.swift
 //
-//  workaround until we have a pure Mach implementation
-//
-//  TO DO: what about pushing this into an XPC service? (that won't work for server-side, as AEGetRegisteredMachPort needs to be called in main process)
+//  workaround until we have a pure Mach implementation; see also AEMShim.m
 //
 
 
-#if canImport(Carbon)
-import Carbon
-#else
-import MZCarbonShim
-#endif
+import AEMShim
 
 
 func carbonDescriptor(from desc: Descriptor, to result: inout AEDesc) {
@@ -48,14 +42,14 @@ public func carbonReceive(message: UnsafeMutablePointer<mach_msg_header_t>, call
     var aeReply = AEDesc(descriptorType: typeNull, dataHandle: nil)
     defer { AEDisposeDesc(&aeEvent); AEDisposeDesc(&aeReply) }
     let err = AEDecodeMessage(message, &aeEvent, &aeReply)
-    AEPrint(&aeEvent, "carbonReceive decoded aeEvent:")
+    //AEPrint(&aeEvent, "carbonReceive decoded aeEvent:")
     if err == 0 {
         do {
             guard let event = nativeDescriptor(from: &aeEvent) as? AppleEventDescriptor else { return 8 }
             if let result = try callback(event) {
                 var aeResult = AEDesc(descriptorType: typeNull, dataHandle: nil)
                 carbonDescriptor(from: result, to: &aeResult)
-                AEPrint(&aeResult, "handler returned aeResult:")
+                //AEPrint(&aeResult, "handler returned aeResult:")
                 AEPutParamDesc(&aeReply, keyAEResult, &aeResult)
             }
         } catch { // TO DO: decide how best to implement application error reporting (standard errors - e.g. 'coercion failed', 'object not found' - might be provided as enum [this would also take any necessary message, failed object, params]; this would be based on standard 'AppleEventError' protocol, allowing apps to define their own error structs/classes should they need to report custom errors as well)
@@ -66,7 +60,7 @@ public func carbonReceive(message: UnsafeMutablePointer<mach_msg_header_t>, call
             carbonDescriptor(from: packAsInt32(Int32(error._code)), to: &aeError)
             AEPutParamDesc(&aeReply, keyErrorNumber, &aeError)
         }
-        AEPrint(&aeReply, "carbonReceive sending aeReply:")
+        //AEPrint(&aeReply, "carbonReceive sending aeReply:")
         if aeReply.descriptorType == typeAppleEvent { AESendMessage(&aeReply, nil, 0x01, -1) }
     }
     return err
