@@ -3,12 +3,13 @@
 //
 //  workaround until we have a pure Mach implementation
 //
-//  TO DO: what about pushing this into an XPC service? (that won't work for server-side, as AEGetRegisteredMachPort needs to be called in main process)
-//
 
 
 #if canImport(Carbon)
 import Carbon
+
+func AEPrint(_ desc: inout AEDesc, _ msg: String) {}
+
 #else
 import MZCarbonShim
 #endif
