@@ -11,7 +11,6 @@
 import Foundation
 
 
-
 public struct ScalarDescriptor: Descriptor, Scalar {
     
     public var debugDescription: String {

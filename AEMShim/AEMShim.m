@@ -1,8 +1,10 @@
 //
-//  MZCarbonShim.m
+//  AEMShim.m
 //
 
-#import "MZCarbonShim.h"
+// CoreServices.framework should be present on all platforms, but will only include AE* symbols on macOS
+
+#import "AEMShim.h"
 
 
 #define LOAD { if (shouldLoad) loadCarbon(); }
@@ -10,7 +12,7 @@
 #define BIND(name) { if (!((ptr_##name) = CFBundleGetFunctionPointerForName(framework, CFSTR(#name)))) exit(5); }
 
 
-char *carbonPath = "/System/Library/Frameworks/CoreServices.framework";
+char *coreServicesPath = "/System/Library/Frameworks/CoreServices.framework";
 
 
 
@@ -29,19 +31,21 @@ int shouldLoad = 1;
 
 void loadCarbon(void) {
     shouldLoad = 0;
-    CFURLRef frameworkURL = CFURLCreateFromFileSystemRepresentation(nil, (UInt8 *)carbonPath, strlen(carbonPath), true);
+    CFURLRef frameworkURL = CFURLCreateFromFileSystemRepresentation(nil, (UInt8 *)coreServicesPath, strlen(coreServicesPath), true);
     CFBundleRef framework = CFBundleCreate(nil, frameworkURL);
     CFRelease(frameworkURL);
-    BIND(AESizeOfFlattenedDesc);
-    BIND(AEFlattenDesc);
-    BIND(AEUnflattenDesc);
-    BIND(AEDisposeDesc);
-    BIND(AEPutParamDesc);
-    BIND(AEGetRegisteredMachPort);
-    BIND(AEDecodeMessage);
-    BIND(AESendMessage);
-    BIND(AEPrintDescToHandle);
-    CFRelease(framework);
+    if (framework) {
+        BIND(AESizeOfFlattenedDesc);
+        BIND(AEFlattenDesc);
+        BIND(AEUnflattenDesc);
+        BIND(AEDisposeDesc);
+        BIND(AEPutParamDesc);
+        BIND(AEGetRegisteredMachPort);
+        BIND(AEDecodeMessage);
+        BIND(AESendMessage);
+        BIND(AEPrintDescToHandle);
+        CFRelease(framework);
+    }
 }
 
 

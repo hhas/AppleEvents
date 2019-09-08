@@ -1,16 +1,18 @@
 //
-//  MZCarbonShim.h
+//  AEMShim.h
+//
+//  various bits of CoreServices/AE.framework that AppleEvents.framework still needs until fully ported over to Mach APIs
 //
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 
 
-//! Project version number for MZCarbonShim.
-FOUNDATION_EXPORT double MZCarbonShimVersionNumber;
+//! Project version number for AEMShim.
+FOUNDATION_EXPORT double AEMShimVersionNumber;
 
-//! Project version string for MZCarbonShim.
-FOUNDATION_EXPORT const unsigned char MZCarbonShimVersionString[];
+//! Project version string for AEMShim.
+FOUNDATION_EXPORT const unsigned char AEMShimVersionString[];
 
 
 

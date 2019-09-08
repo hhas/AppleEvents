@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4F081BEA229BEAB100B2004B"
-               BuildableName = "MZCarbonShim.framework"
-               BlueprintName = "MZCarbonShim"
+               BuildableName = "AEMShim.framework"
+               BlueprintName = "AEMShim"
                ReferencedContainer = "container:AppleEvents.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,8 +46,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F081BEA229BEAB100B2004B"
-            BuildableName = "MZCarbonShim.framework"
-            BlueprintName = "MZCarbonShim"
+            BuildableName = "AEMShim.framework"
+            BlueprintName = "AEMShim"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F081BEA229BEAB100B2004B"
-            BuildableName = "MZCarbonShim.framework"
-            BlueprintName = "MZCarbonShim"
+            BuildableName = "AEMShim.framework"
+            BlueprintName = "AEMShim"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

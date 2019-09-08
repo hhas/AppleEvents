@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-               BuildableName = "test-send"
-               BlueprintName = "test-send"
+               BlueprintIdentifier = "4F081BEA229BEAB100B2004B"
+               BuildableName = "AEMShim.framework"
+               BlueprintName = "AEMShim"
                ReferencedContainer = "container:AppleEvents.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,15 +27,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test-send"
-            BlueprintName = "test-send"
-            ReferencedContainer = "container:AppleEvents.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <Testables>
       </Testables>
    </TestAction>
@@ -49,16 +40,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test-send"
-            BlueprintName = "test-send"
-            ReferencedContainer = "container:AppleEvents.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -66,16 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F1EA9C722835239000E0A3A"
-            BuildableName = "test-send"
-            BlueprintName = "test-send"
+            BlueprintIdentifier = "4F081BEA229BEAB100B2004B"
+            BuildableName = "AEMShim.framework"
+            BlueprintName = "AEMShim"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

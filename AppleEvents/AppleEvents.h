@@ -2,8 +2,6 @@
 //  AppleEvents.h
 //  AppleEvents
 //
-//  Created by Hamish Sanderson on 08/05/2019.
-//
 
 #import <Cocoa/Cocoa.h>
 

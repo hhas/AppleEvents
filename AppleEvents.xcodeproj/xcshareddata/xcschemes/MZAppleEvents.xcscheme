@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4F081B71229BDD1A00B2004B"
-               BuildableName = "MZAppleEvents.framework"
-               BlueprintName = "MZAppleEvents"
+               BuildableName = "AppleEvents.framework"
+               BlueprintName = "AppleEvents"
                ReferencedContainer = "container:AppleEvents.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,8 +46,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F081B71229BDD1A00B2004B"
-            BuildableName = "MZAppleEvents.framework"
-            BlueprintName = "MZAppleEvents"
+            BuildableName = "AppleEvents.framework"
+            BlueprintName = "AppleEvents"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4F081B71229BDD1A00B2004B"
-            BuildableName = "MZAppleEvents.framework"
-            BlueprintName = "MZAppleEvents"
+            BuildableName = "AppleEvents.framework"
+            BlueprintName = "AppleEvents"
             ReferencedContainer = "container:AppleEvents.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
