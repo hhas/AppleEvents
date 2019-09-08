@@ -46,9 +46,34 @@ private let nextElement     = ScalarDescriptor(type: typeEnumerated, data: Data(
 
 
 
+public protocol SpecifierDescriptor: QueryDescriptor {
+    
+    // note: an enhanced AEOM could easily allow multiple properties to be retrieved per query by packing as AEList of typeType (the main challenge is finding a client-side syntax that works); what other behaviors could be improved (e.g. unborking not-equals and is-in tests; simplified query descriptor layouts)
+
+    func userProperty(_ name: String) -> ObjectSpecifierDescriptor
+    func property(_ code: OSType) -> ObjectSpecifierDescriptor
+    func elements(_ code: OSType) -> MultipleObjectSpecifierDescriptor
+}
+
+public extension SpecifierDescriptor {
+    
+    func userProperty(_ name: String) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
+    }
+    
+    func property(_ code: OSType) -> ObjectSpecifierDescriptor {
+        return ObjectSpecifierDescriptor(want: typeProperty, form: .property, seld: packAsType(code), from: self)
+    }
+    
+    func elements(_ code: OSType) -> MultipleObjectSpecifierDescriptor {
+        return MultipleObjectSpecifierDescriptor(want: code, form: .absolutePosition, seld: allPosition, from: self)
+    }
+}
+
+
 // base objects from which queries are constructed
 
-public struct RootSpecifierDescriptor: QueryDescriptor { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifierDescriptor.app.elements(cDocument)`, `RootSpecifierDescriptor.its.property(pName)`
+public struct RootSpecifierDescriptor: SpecifierDescriptor { // abstract wrapper for the terminal descriptor in an object specifier; like a single-object specifier it exposes methods for constructing property and all-elements specifiers, e.g. `RootSpecifierDescriptor.app.elements(cDocument)`, `RootSpecifierDescriptor.its.property(pName)`
     
     public static let app = RootSpecifierDescriptor(nullDescriptor)
     public static let con = RootSpecifierDescriptor(ScalarDescriptor(type: typeCurrentContainer, data: nullData))
@@ -72,22 +97,6 @@ public struct RootSpecifierDescriptor: QueryDescriptor { // abstract wrapper for
     
     public func appendTo(containerData result: inout Data) {
         self.descriptor.appendTo(containerData: &result)
-    }
-}
-
-
-public extension RootSpecifierDescriptor {
-    
-    func userProperty(_ name: String) -> ObjectSpecifierDescriptor {
-        return ObjectSpecifierDescriptor(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
-    }
-    
-    func property(_ code: OSType) -> ObjectSpecifierDescriptor {
-        return ObjectSpecifierDescriptor(want: typeProperty, form: .property, seld: packAsType(code), from: self)
-    }
-    
-    func elements(_ code: OSType) -> ObjectSpecifierDescriptor { // TO DO: MultipleObjectSpecifierDescriptor
-        return ObjectSpecifierDescriptor(want: code, form: .absolutePosition, seld: allPosition, from: self)
     }
 }
 
@@ -172,7 +181,7 @@ public struct InsertionLocationDescriptor: QueryDescriptor {
 
 // object specifier, e.g. `PROPERTY of …`, `every ELEMENT of …`, `ELEMENT INDEX of …`, `(ELEMENTS where TEST) of …`
 
-public struct ObjectSpecifierDescriptor: QueryDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifierDescriptor
+public struct ObjectSpecifierDescriptor: SpecifierDescriptor { // TO DO: want to reuse this implementation in MultipleObjectSpecifierDescriptor
     
     public var debugDescription: String {
         return "<\(Swift.type(of: self)) \(literalFourCharCode(self.want)) \(self.form) \(self.seld) \(self.from)>"
@@ -281,22 +290,6 @@ public struct ObjectSpecifierDescriptor: QueryDescriptor { // TO DO: want to reu
 
 
 public extension ObjectSpecifierDescriptor {
-    
-    // the following are also implemented on Root specifier; Q. is it worth using protocols to mixin? (hardly seems worth it)
-    
-    func userProperty(_ name: String) -> ObjectSpecifierDescriptor {
-        return ObjectSpecifierDescriptor(want: typeProperty, form: .userProperty, seld: packAsString(name), from: self)
-    }
-    
-    // note: an enhanced AEOM could easily allow multiple properties to be retrieved per query by packing as AEList of typeType (the main challenge is finding a client-side syntax that works); what other behaviors could be improved (e.g. unborking not-equals and is-in tests; simplified query descriptor layouts)
-    
-    func property(_ code: OSType) -> ObjectSpecifierDescriptor {
-        return ObjectSpecifierDescriptor(want: typeProperty, form: .property, seld: packAsType(code), from: self)
-    }
-    
-    func elements(_ code: OSType) -> MultipleObjectSpecifierDescriptor {
-        return MultipleObjectSpecifierDescriptor(want: code, form: .absolutePosition, seld: allPosition, from: self)
-    }
     
     // TO DO: SA also exposes the following on Root specifiers
     

@@ -24,11 +24,8 @@
 		4F081B89229BDD3B00B2004B /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9BF22835212000E0A3A /* Support.swift */; };
 		4F081B8A229BDD3B00B2004B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9C022835213000E0A3A /* Constants.swift */; };
 		4F081B8B229BDD3B00B2004B /* CarbonShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD23EAE22997BD6006792A7 /* CarbonShim.swift */; };
-		4F081BC0229BE6C500B2004B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BBF229BE6C500B2004B /* Foundation.framework */; };
 		4F081BEF229BEAB100B2004B /* MZCarbonShim.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F081BED229BEAB100B2004B /* MZCarbonShim.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F081BF5229BEB7C00B2004B /* MZCarbonShim.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F081BF4229BEB7C00B2004B /* MZCarbonShim.m */; };
-		4F081BF6229BEBB700B2004B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BC2229BE6D200B2004B /* CoreFoundation.framework */; };
-		4F081BF7229BEBBC00B2004B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BBF229BE6C500B2004B /* Foundation.framework */; };
 		4F081BFA229BEC0000B2004B /* MZCarbonShim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */; };
 		4F1EA9A022835040000E0A3A /* AppleEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1EA99E22835040000E0A3A /* AppleEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1EA9AD228351D8000E0A3A /* PackFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1EA9AA228351D8000E0A3A /* PackFuncs.swift */; };
@@ -133,8 +130,6 @@
 		4F081B72229BDD1A00B2004B /* MZAppleEvents.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MZAppleEvents.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F081B74229BDD1A00B2004B /* MZAppleEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MZAppleEvents.h; sourceTree = "<group>"; };
 		4F081B75229BDD1A00B2004B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4F081BBF229BE6C500B2004B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		4F081BC2229BE6D200B2004B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		4F081BEB229BEAB100B2004B /* MZCarbonShim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MZCarbonShim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F081BED229BEAB100B2004B /* MZCarbonShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MZCarbonShim.h; sourceTree = "<group>"; };
 		4F081BEE229BEAB100B2004B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -173,7 +168,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F081BFA229BEC0000B2004B /* MZCarbonShim.framework in Frameworks */,
-				4F081BC0229BE6C500B2004B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,8 +175,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F081BF6229BEBB700B2004B /* CoreFoundation.framework in Frameworks */,
-				4F081BF7229BEBBC00B2004B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,8 +312,6 @@
 		4F1EA9DC22835260000E0A3A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4F081BC2229BE6D200B2004B /* CoreFoundation.framework */,
-				4F081BBF229BE6C500B2004B /* Foundation.framework */,
 				4FD23EC1229A87F0006792A7 /* CoreFoundation.framework */,
 				4F1EA9DD22835260000E0A3A /* Foundation.framework */,
 			);
