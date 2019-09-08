@@ -1,26 +1,11 @@
 //
 //  AEMShim.swift
 //
-<<<<<<< HEAD:AppleEvents/CarbonShim.swift
-//  workaround until we have a pure Mach implementation
-//
-
-
-#if canImport(Carbon)
-import Carbon
-
-func AEPrint(_ desc: inout AEDesc, _ msg: String) {}
-
-#else
-import MZCarbonShim
-#endif
-=======
 //  workaround until we have a pure Mach implementation; see also AEMShim.m
 //
 
 
 import AEMShim
->>>>>>> af78e89499737721f62691f28fba42921edd74ea:AppleEvents/AEMShim.swift
 
 
 func carbonDescriptor(from desc: Descriptor, to result: inout AEDesc) {
