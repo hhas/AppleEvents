@@ -1,11 +1,8 @@
 //
-//  AEMShim.swift
+//  Shim.swift
 //
 //  workaround until we have a pure Mach implementation; see also AEMShim.m
 //
-
-
-import AEMShim
 
 
 func carbonDescriptor(from desc: Descriptor, to result: inout AEDesc) {

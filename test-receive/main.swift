@@ -4,7 +4,7 @@
 //
 
 import CoreFoundation
-import Foundation
+//import Foundation
 import AppleEvents
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1100"
+   LastUpgradeVersion = "1030"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F081B71229BDD1A00B2004B"
+               BlueprintIdentifier = "4F257286232644F40002AED8"
                BuildableName = "AppleEvents.framework"
                BlueprintName = "AppleEvents"
                ReferencedContainer = "container:AppleEvents.xcodeproj">
@@ -29,6 +29,8 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -40,6 +42,17 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "4F257286232644F40002AED8"
+            BuildableName = "AppleEvents.framework"
+            BlueprintName = "AppleEvents"
+            ReferencedContainer = "container:AppleEvents.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -50,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F081B71229BDD1A00B2004B"
+            BlueprintIdentifier = "4F257286232644F40002AED8"
             BuildableName = "AppleEvents.framework"
             BlueprintName = "AppleEvents"
             ReferencedContainer = "container:AppleEvents.xcodeproj">

@@ -64,14 +64,9 @@ public let miscEventGetURL: EventIdentifier = 0x4755524C_4755524C // GURL/GURL /
 /******************************************************************************/
 // TO DO: reorganize constants, discarding unwanted (obsolete, duplicative) definitions
 
-// TO DO: macro to avoid compiler throwing 'ambiguous definition' errors if Carbon definitions are already available? (importing AppKit/Foundation automatically pulls in various Carbon headers)
-
-public let kAEISHandleCGI: OSType = 0x73646F63 // 'sdoc' // where is this from? where is it used?
-
-
 // TO DO: separate CoreServices/AE constants from OpenScripting (OSA) constants
 
-//#if !canImport(Carbon)
+#if !canImport(Carbon)
 
 // Swift incorrectly defines the following as Int
 public let formAbsolutePosition: OSType = 0x696E6478
@@ -1289,5 +1284,5 @@ public let typeWhoseRange: OSType = 0x77726E67
 public let typeWildCard: OSType = 0x2A2A2A2A
 public let typeYards: OSType = 0x79617264
 
-//#endif
+#endif
 
