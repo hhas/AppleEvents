@@ -72,7 +72,7 @@ private func unflatten(data: Data, offsets: Offsets) throws -> (descriptor: Desc
         // [format, align,] type, size, DATA
         result = ScalarDescriptor(type: type, data: data[(offsets.type + 8)..<dataEnd])
     }
-    return (result, dataEnd)
+    return (result, dataEnd % 2 == 0 ? dataEnd : dataEnd + 1)
 }
 
 

@@ -11,6 +11,13 @@
 import Foundation
 
 
+// caution: when appending scalar descriptors containing arbitrary-length data (e.g. typeBoolean, typeUTF8Text) to AEList/AERecord/AppleEvent, the appended data must end on even-numbered byte
+
+func align(data: inout Data) {
+    if data.count % 2 != 0 { data += Data([0]) }
+}
+
+
 public struct ScalarDescriptor: Descriptor, Scalar {
     
     public var debugDescription: String {
@@ -53,6 +60,7 @@ public extension Scalar {
         result += encodeUInt32(self.type)          // descriptor type
         result += encodeUInt32(UInt32(data.count)) // remaining bytes
         result += data                           // descriptor data
+        align(data: &result)                                 // even-byte align (e.g. Booleans, UTF8 strings)
     }
 }
 

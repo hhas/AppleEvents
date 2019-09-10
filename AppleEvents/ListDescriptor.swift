@@ -5,7 +5,6 @@
 import Foundation
 
 
-
 public struct ListDescriptor: IterableDescriptor {
     
     public var debugDescription: String {
@@ -45,19 +44,19 @@ public struct ListDescriptor: IterableDescriptor {
                            0, 0, 0, 0,              // align?
                            0x00, 0x00, 0x00, 0x18,  // reserved?
                            0x6C, 0x69, 0x73, 0x74]) // type is always 'list' (repeats 8..<12)
-        result += encodeUInt32(self.count)            // number of items
+        result += encodeUInt32(self.count)          // number of items
         result += Data([0, 0, 0, 0])                // align
-        result += self.data
+        result += self.data                         // items
         result[(result.startIndex + 12)..<(result.startIndex + 16)] = encodeUInt32(UInt32(result.count - 16)) // set remaining bytes
         return result
     }
     
     public func appendTo(containerData result: inout Data) {
-        result += Data([0x6C, 0x69, 0x73, 0x74])           // type is always 'list'
+        result += Data([0x6C, 0x69, 0x73, 0x74])             // type is always 'list'
         result += encodeUInt32(UInt32(self.data.count + 8))  // remaining bytes
         result += encodeUInt32(self.count)                   // number of items
-        result += Data([0, 0, 0, 0])                       // align
-        result += self.data                                // items
+        result += Data([0, 0, 0, 0])                         // align
+        result += self.data                                  // items
     }
 }
 
