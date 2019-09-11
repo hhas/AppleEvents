@@ -100,14 +100,14 @@ public func newPackArrayFunc<T>(using packFunc: @escaping (T) throws -> Descript
 // TO DO: how best to compose pack/unpack/validate behaviors for AERecords? Swift's type system gets a tad twitchy when attempting to nest generic functions (also, where should user-defined record keys be handled? here, or in higher-level client code?)
 
 /*
-    try packAsDictionary(self.lazy.map{ (key: Key, value: Value) -> (AEKeyword, Value) in
+    try packAsRecord(self.lazy.map{ (key: Key, value: Value) -> (AEKeyword, Value) in
             if let key = key as? Symbol, key.code != noOSType { return (key.code, value) }
             throw AppleEventError.unsupportedCoercion
         }, using: appData.pack)
  */
 
 
-public func packAsDictionary<S: Sequence, T>(_ items: S, using packFunc: (T) throws -> Descriptor) throws -> RecordDescriptor
+public func packAsRecord<S: Sequence, T>(_ items: S, using packFunc: (T) throws -> Descriptor) throws -> RecordDescriptor
     where S.Element == (AEKeyword, T) {
         var result = Data()
         var count: UInt32 = 0

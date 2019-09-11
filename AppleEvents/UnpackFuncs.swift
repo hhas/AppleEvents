@@ -4,7 +4,7 @@
 // standard unpack functions for converting AE descriptors to specified Swift types, coercing as needed (or throwing if the given descriptor can't be coerced to the required type)
 //
 
-// TO DO: what about packAsDescriptor/unpackAsDescriptor? (for use in packAsArray/unpackAsArray/packAsDictionary/etc for shallow packing/unpacking); also need to decide on packAsAny/unpackAsAny, and packAs<T>/unpackAs<T> (currently SwiftAutomation implements these, with support for App-specific Symbols and Specifiers)
+// TO DO: what about packAsDescriptor/unpackAsDescriptor? (for use in packAsArray/unpackAsArray/packAsRecord/etc for shallow packing/unpacking); also need to decide on packAsAny/unpackAsAny, and packAs<T>/unpackAs<T> (currently SwiftAutomation implements these, with support for App-specific Symbols and Specifiers)
 
 
 import Foundation
