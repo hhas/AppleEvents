@@ -68,6 +68,7 @@ public struct DescriptorIterator<D: IterableDescriptor>: IteratorProtocol {
     
     init(_ descriptor: D) {
         self.descriptor = descriptor
+        self.offset = self.descriptor.data.startIndex
     }
     
     public mutating func next() -> Element? {

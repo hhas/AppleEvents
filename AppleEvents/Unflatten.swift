@@ -88,13 +88,13 @@ public func unflattenDescriptor(_ data: Data) -> Descriptor { // analogous to AE
 
 // used by list/record/etc to unpack items
 
-// note: startOffset/endOffset is relative to start of data/data slice
-internal func unflattenFirstDescriptor(in data: Data, startingAt startOffset: Int = 0) -> (descriptor: Descriptor, endOffset: Int) {
-    let startOffset = startOffset + data.startIndex
+// TO DO: ensure startOffset is always original Data[Slice]'s index
+
+internal func unflattenFirstDescriptor(in data: Data, startingAt startOffset: Int) -> (descriptor: Descriptor, endOffset: Int) {
+    //print(">>>",startOffset, "in", data.startIndex, data.endIndex)
     if data[startOffset..<(startOffset + 4)] == formatMarker {
         fatalError("Unexpected 'dle2' mark found (expected descriptor type instead).")
     }
-    let (desc, endOffset) = try! unflatten(data: data, offsets: defaultOffsets.add(startOffset))
-    return (desc, endOffset - data.startIndex)
+    return try! unflatten(data: data, offsets: defaultOffsets.add(startOffset))
 }
 

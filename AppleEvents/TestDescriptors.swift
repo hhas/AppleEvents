@@ -8,6 +8,10 @@ import Foundation
 
 public struct ComparisonDescriptor: TestDescriptor {
     
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) \(self.object) \(self.comparison) \(self.value)>"
+    }
+    
     public enum Operator: OSType {
         case lessThan           = 0x3C202020 // kAELessThan
         case lessThanOrEqual    = 0x3C3D2020 // kAELessThanEquals
@@ -124,6 +128,10 @@ public struct ComparisonDescriptor: TestDescriptor {
 
 public struct LogicalDescriptor: TestDescriptor {
     
+    public var debugDescription: String {
+        return "<\(Swift.type(of: self)) \(self.logical) \(self.operands)>"
+    }
+    
     public enum Operator: OSType {
         case AND    = 0x414E4420 // kAEAND
         case OR     = 0x4F522020 // kAEOR
@@ -154,7 +162,7 @@ public struct LogicalDescriptor: TestDescriptor {
     }
     
     private init(logical: Operator, operands: [TestDescriptor]) { // used by AND/OR initializers below
-        if operands.count < 2 { fatalError("Too few operands.") } // TO DO: how to deal with errors?
+        if operands.count < (logical == .NOT ? 1 : 2) { fatalError("Too few operands.") } // TO DO: how to deal with errors?
         self.logical = logical
         var result = Data()
         for op in operands { op.appendTo(containerData: &result) }

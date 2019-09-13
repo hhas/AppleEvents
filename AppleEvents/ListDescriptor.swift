@@ -29,7 +29,8 @@ public struct ListDescriptor: IterableDescriptor {
         return Iterator(self)
     }
     
-    public func element(at offset: Int) -> (item: Element, endOffset: Int) {
+    public func element(at offset: Int) -> (item: Element, endOffset: Int) { // TO DO: type offsets as Data.Index, not Int
+        assert(offset >= self.data.startIndex && offset < self.data.endIndex)
         return unflattenFirstDescriptor(in: self.data, startingAt: offset) as (Element, Int)
     }
     
