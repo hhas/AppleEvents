@@ -386,7 +386,7 @@ public extension MultipleObjectSpecifierDescriptor {
     func byIndex(_ index: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: also accept Int for convenience?
         return ObjectSpecifierDescriptor(want: self.want, form: .absolutePosition, seld: index, from: self.baseQuery)
     }
-    func byName(_ name: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: take Descriptor instead of/as well as String?
+    func byName(_ name: Descriptor) -> ObjectSpecifierDescriptor { // TO DO: also accept String for convenience?
         return ObjectSpecifierDescriptor(want: self.want, form: .name, seld: name, from: self.baseQuery)
     }
     func byID(_ id: Descriptor) -> ObjectSpecifierDescriptor {

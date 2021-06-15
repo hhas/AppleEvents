@@ -288,12 +288,89 @@ public func newUnpackArrayFunc<T>(using unpackFunc: @escaping (Descriptor) throw
 }
 
 public func unpackAsArray<T>(_ descriptor: Descriptor, using unpackFunc: (Descriptor) throws -> T) rethrows -> [T] {
-    if let listDescriptor = descriptor as? ListDescriptor { // any non-list value is coerced to single-item list
+    if let listDescriptor = descriptor as? ListDescriptor {
         return try listDescriptor.array(using: unpackFunc)
     } else {
-        // TO DO: typeQDPoint, typeQDRectangle, typeRGBColor (legacy support as various Carbon-based apps still use these types; typeRGBColor is also used by CocoaScripting)
-        return [try unpackFunc(descriptor)]
+        switch descriptor.type {
+        // there is no neat way to unpack these legacy types directly to [T], so unpack and repack as Int32, then unpack that
+        case typeQDPoint, typeQDRectangle, typeRGBColor:
+            return try (try! unpackCarbonTypeAsIntArray(descriptor) as [Int32]).map { try unpackFunc(packAsInt32($0)) }
+        default: // any non-list value is coerced to single-item list
+            return [try unpackFunc(descriptor)]
+        }
     }
+}
+
+public func unpackCarbonTypeAsIntArray<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> [T] {
+    // legacy support as various Carbon-based apps still use these types; typeRGBColor is also used by CocoaScripting
+    // replicate AppleScript/CocoaScripting behavior, which is to represent points/rects/colors as list of integers
+    switch descriptor.type {
+    case typeQDPoint:
+        return try unpackAsQDPoint(descriptor)
+    case typeQDRectangle:
+        return try unpackAsQDRectangle(descriptor)
+    case typeRGBColor:
+        return try unpackAsRGBColor(descriptor)
+    default:
+        throw AppleEventError.unsupportedCoercion
+    }
+}
+
+private struct RGBColor {
+    var red: UInt16
+    var green: UInt16
+    var blue: UInt16
+}
+
+public func unpackAsRGBColor<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> [T] {
+    guard descriptor.data.count == MemoryLayout<UInt16>.size * 3 else { throw AppleEventError.corruptData }
+    let rgbColor: RGBColor = descriptor.data.withUnsafeBytes { buffer in
+        buffer.bindMemory(to: RGBColor.self)[0]
+    }
+    guard let red = T(exactly: UInt16(bigEndian: rgbColor.red)),
+        let green = T(exactly: UInt16(bigEndian: rgbColor.green)),
+        let blue  = T(exactly: UInt16(bigEndian: rgbColor.blue)) else {
+            throw AppleEventError.unsupportedCoercion
+    }
+    return [red, green, blue]
+}
+
+private struct Point { // derived from MacTypes.h
+    var top: Int16
+    var left: Int16
+}
+
+public func unpackAsQDPoint<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> [T] {
+    guard descriptor.data.count == MemoryLayout<Int16>.size * 2 else { throw AppleEventError.corruptData }
+    let point: Rect = descriptor.data.withUnsafeBytes { buffer in
+        buffer.bindMemory(to: Rect.self)[0]
+    }
+    guard let top = T(exactly: Int16(bigEndian: point.top)),
+        let left = T(exactly: Int16(bigEndian: point.left)) else {
+            throw AppleEventError.unsupportedCoercion
+    }
+    return [left, top] // AppleScript returns {left, top}
+}
+
+private struct Rect { // derived from MacTypes.h
+    var top: Int16
+    var left: Int16
+    var bottom: Int16
+    var right: Int16
+}
+
+public func unpackAsQDRectangle<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> [T] {
+    guard descriptor.data.count == MemoryLayout<Int16>.size * 4 else { throw AppleEventError.corruptData }
+    let rect: Rect = descriptor.data.withUnsafeBytes { buffer in
+        buffer.bindMemory(to: Rect.self)[0]
+    }
+    guard let top = T(exactly: Int16(bigEndian: rect.top)),
+        let left = T(exactly: Int16(bigEndian: rect.left)),
+        let bottom = T(exactly: Int16(bigEndian: rect.bottom)),
+        let right = T(exactly: Int16(bigEndian: rect.right)) else {
+            throw AppleEventError.unsupportedCoercion
+    }
+    return [left, top, right, bottom] // AppleScript returns {left, top, right, bottom}
 }
 
 
@@ -350,8 +427,12 @@ public func unpackAsAny(_ descriptor: Descriptor) throws -> Any {
         result = try unpackAsArray(descriptor, using: unpackAsAny)
     case typeAERecord:
         result = try unpackAsDictionary(descriptor, using: unpackAsAny)
-    case typeQDPoint, typeQDRectangle, typeRGBColor:
-        return try unpackAsArray(descriptor, using: unpackAsInt)
+    case typeQDPoint:
+        return try unpackCarbonTypeAsIntArray(descriptor) as [Int]
+    case typeQDRectangle:
+        return try unpackCarbonTypeAsIntArray(descriptor) as [Int]
+    case typeRGBColor:
+        return try unpackCarbonTypeAsIntArray(descriptor) as [Int]
     default:
         result = descriptor
     }

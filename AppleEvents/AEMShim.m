@@ -71,7 +71,7 @@ extern OSStatus AEDecodeMessage(mach_msg_header_t *header, AppleEvent *event, Ap
     LOAD; return (*ptr_AEDecodeMessage)(header, event, reply);
 }
 extern OSStatus AESendMessage(const AppleEvent *event, AppleEvent *reply, AESendMode sendMode, long timeOutInTicks) {
-    AEPrint(event, "AESendMessage event");
+    //AEPrint(event, "AESendMessage event");
     LOAD; return (*ptr_AESendMessage)(event, reply, sendMode, timeOutInTicks);
 }
 
