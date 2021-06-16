@@ -342,8 +342,8 @@ private struct Point { // derived from MacTypes.h
 
 public func unpackAsQDPoint<T: FixedWidthInteger>(_ descriptor: Descriptor) throws -> [T] {
     guard descriptor.data.count == MemoryLayout<Int16>.size * 2 else { throw AppleEventError.corruptData }
-    let point: Rect = descriptor.data.withUnsafeBytes { buffer in
-        buffer.bindMemory(to: Rect.self)[0]
+    let point: Point = descriptor.data.withUnsafeBytes { buffer in
+        buffer.bindMemory(to: Point.self)[0]
     }
     guard let top = T(exactly: Int16(bigEndian: point.top)),
         let left = T(exactly: Int16(bigEndian: point.left)) else {
