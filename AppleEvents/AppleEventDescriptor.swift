@@ -231,14 +231,14 @@ public struct AppleEventDescriptor: Descriptor {
         result += Data([0x74, 0x69, 0x6D, 0x6F,             // keyTimeoutAttr
                         0x6C, 0x6F, 0x6E, 0x67,             // typeSInt32
                         0x00, 0x00, 0x00, 0x04])
-        result += encodeInt32(120 * 60)                       // TO DO
+        result += encodeInt32(120 * 60)                       // TO DO; what about -1, -2?
         // keySubjectAttr = 0x7375626A // TO DO: should this be implemented as `var subject: QueryDescriptor?`? or left in misc attributes for parent code to deal with (it's arguably an [AppleScript-induced?] design wart: when an AppleScript command has a direct parameter AND an enclosing `tell` block, it can't pack the `tell` target as the direct parameter [its default behavior] as that's already given, so it sticks it in the 'subj' attribute instead; in py-appscript, the high-level appscript API does this automatically while the lower-level aem API leaves client code to set the 'subj' attribute itself)
         for (key, value) in attributes {                    // append any other attributes
             result += encodeUInt32(key)
             value.appendTo(containerData: &result)
         }
         result += Data([0x3b, 0x3b, 0x3b, 0x3b])            // end of attributes ';;;;'
-        result[(result.startIndex + 16)..<(result.startIndex + 20)] = encodeUInt32(UInt32(result.count - 20)) // set offset to parameters
+        result[(result.startIndex + 16)..<(result.startIndex + 20)] = encodeUInt32(UInt32(result.count - 20)) // set offset to parameters // TO DO: FIX: parameter offset is relative to start of data!!!
         for (key, value) in parameters {                    // append parameters
             result += encodeUInt32(key)
             value.appendTo(containerData: &result)
