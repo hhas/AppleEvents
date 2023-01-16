@@ -5,6 +5,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "AppleEvents-Bridging-Header.h"
+
 //! Project version number for AppleEvents.
 FOUNDATION_EXPORT double AppleEventsVersionNumber;
 
